@@ -12,11 +12,20 @@ from .r_utils import get_kostra_r
 
 
 class HbMethodAIO(html.Div):
+    """
+    HbMethodAIO is an All-in-One component that is composed of a parent `html.Div` with a
+    `dcc.Store` ("`data_store`") and a `dcc.Graph` ("`scatterplot`") component as children.
+    """
+
     class Ids:
+        """"
+        A set of functions that create pattern-matching IDs of the subcomponents.
+        """
         @staticmethod
         def data_store(aio_id: str) -> dict:
             """
             Returns the component ID for the data store.
+
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -30,6 +39,7 @@ class HbMethodAIO(html.Div):
         def scatterplot(aio_id: str) -> dict:
             """
             Returns the component ID for the scatterplot.
+
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -43,6 +53,7 @@ class HbMethodAIO(html.Div):
         def p_c(aio_id: str) -> dict:
             """
             Returns the component ID for the pC dropdown.
+
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -56,6 +67,7 @@ class HbMethodAIO(html.Div):
         def p_u(aio_id: str) -> dict:
             """
             Returns the component ID for the pU dropdown.
+
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -69,6 +81,7 @@ class HbMethodAIO(html.Div):
         def p_a(aio_id: str) -> dict:
             """
             Returns the component ID for the pA dropdown.
+
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -82,6 +95,7 @@ class HbMethodAIO(html.Div):
         def hb_filter_op(aio_id: str) -> dict:
             """
             Returns the component ID for the filter operator dropdown.
+
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -95,6 +109,7 @@ class HbMethodAIO(html.Div):
         def hb_filter_value(aio_id: str) -> dict:
             """
             Returns the component ID for the filter value dropdown.
+
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -113,6 +128,7 @@ class HbMethodAIO(html.Div):
                      x_2_name: str) -> pd.DataFrame:
         """
         Runs the TH-error method on the data.
+
         :param data: Dataframe with the data
         :param id_field_name: Field name for the ID
         :param x_1_name: X1 field name
@@ -138,6 +154,7 @@ class HbMethodAIO(html.Div):
                       filter_value: int) -> Figure:
         """"
         Runs the HB-method on the data.
+
         :param data: Dataframe with the data
         :param field_id: Field ID
         :param p_c: pC value
@@ -215,6 +232,7 @@ class HbMethodAIO(html.Div):
     def empty_scatter_plot() -> Figure:
         """
         Creates a blank figure for use when no data is available.
+
         :return: Figure
         """
         empty_scatter_plot = px.scatter(x=[])
@@ -249,6 +267,7 @@ class HbMethodAIO(html.Div):
     ):
         """
         Creates a new HbMethodAIO component.
+
         :param data:
         :param field_id:
         :param id_field_name:
