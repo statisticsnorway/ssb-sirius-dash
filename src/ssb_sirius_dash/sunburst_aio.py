@@ -8,7 +8,13 @@ from dash import dcc
 class SunburstAIO(dcc.Graph):
     class Ids:
         @staticmethod
-        def sunburst(aio_id):
+        def sunburst(aio_id: str) -> dict:
+            """
+            Returns the component ID for the sunburst component.
+
+            :param aio_id: The All-in-One component ID
+            :return: The component ID for the sunburst component
+            """
             return {
                 'component': 'SunburstAIO',
                 'subcomponent': 'sunburst',
@@ -18,12 +24,20 @@ class SunburstAIO(dcc.Graph):
     ids = Ids
 
     def __init__(
-            self,
-            data: pd.DataFrame,
-            path: list[str],
-            values: str,
-            aio_id: str = None,
+        self,
+        data: pd.DataFrame,
+        path: list[str],
+        values: str,
+        aio_id: str | None = None
     ):
+        """
+        SunburstAIO is an All-in-One component that is composed.
+
+        :param data: DataFrame
+        :param path: Path to show in the sunburst
+        :param values: Name of value column
+        :param aio_id: The All-in-One component ID used to generate the sunburst component's dictionary IDs.
+        """
         self.aio_id = aio_id if aio_id else str(uuid.uuid4())
 
         figure = px.sunburst(data,

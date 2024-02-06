@@ -16,7 +16,7 @@ class HbMethodAIO(html.Div):
         @staticmethod
         def data_store(aio_id: str) -> dict:
             """
-            Returns the component ID for the data store
+            Returns the component ID for the data store.
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -29,7 +29,7 @@ class HbMethodAIO(html.Div):
         @staticmethod
         def scatterplot(aio_id: str) -> dict:
             """
-            Returns the component ID for the scatterplot
+            Returns the component ID for the scatterplot.
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -42,7 +42,7 @@ class HbMethodAIO(html.Div):
         @staticmethod
         def p_c(aio_id: str) -> dict:
             """
-            Returns the component ID for the pC dropdown
+            Returns the component ID for the pC dropdown.
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -55,7 +55,7 @@ class HbMethodAIO(html.Div):
         @staticmethod
         def p_u(aio_id: str) -> dict:
             """
-            Returns the component ID for the pU dropdown
+            Returns the component ID for the pU dropdown.
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -68,7 +68,7 @@ class HbMethodAIO(html.Div):
         @staticmethod
         def p_a(aio_id: str) -> dict:
             """
-            Returns the component ID for the pA dropdown
+            Returns the component ID for the pA dropdown.
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -81,7 +81,7 @@ class HbMethodAIO(html.Div):
         @staticmethod
         def hb_filter_op(aio_id: str) -> dict:
             """
-            Returns the component ID for the filter operator dropdown
+            Returns the component ID for the filter operator dropdown.
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -94,7 +94,7 @@ class HbMethodAIO(html.Div):
         @staticmethod
         def hb_filter_value(aio_id: str) -> dict:
             """
-            Returns the component ID for the filter value dropdown
+            Returns the component ID for the filter value dropdown.
             :param aio_id: Component aio-ID
             :return: Component ID
             """
@@ -112,7 +112,7 @@ class HbMethodAIO(html.Div):
                      x_1_name: str,
                      x_2_name: str) -> pd.DataFrame:
         """
-        Runs the TH-error method on the data
+        Runs the TH-error method on the data.
         :param data: Dataframe with the data
         :param id_field_name: Field name for the ID
         :param x_1_name: X1 field name
@@ -137,7 +137,7 @@ class HbMethodAIO(html.Div):
                       filter_op: str,
                       filter_value: int) -> Figure:
         """"
-        Runs the HB-method on the data
+        Runs the HB-method on the data.
         :param data: Dataframe with the data
         :param field_id: Field ID
         :param p_c: pC value
@@ -214,7 +214,7 @@ class HbMethodAIO(html.Div):
     @staticmethod
     def empty_scatter_plot() -> Figure:
         """
-        Creates a blank figure for use when no data is available
+        Creates a blank figure for use when no data is available.
         :return: Figure
         """
         empty_scatter_plot = px.scatter(x=[])
@@ -245,10 +245,10 @@ class HbMethodAIO(html.Div):
         default_filter_op: str = "<",
         default_filter_value: int = 100_000,
 
-        aio_id: str = None
+        aio_id: str | None = None
     ):
         """
-        Creates a new HbMethodAIO component
+        Creates a new HbMethodAIO component.
         :param data:
         :param field_id:
         :param id_field_name:
@@ -393,7 +393,7 @@ class HbMethodAIO(html.Div):
                           filter_value: str,
                           data) -> Figure:
         """
-        Updates the scatterplot figure
+        Updates the scatterplot figure.
 
         :param p_c: pC value
         :param p_u: pU value
