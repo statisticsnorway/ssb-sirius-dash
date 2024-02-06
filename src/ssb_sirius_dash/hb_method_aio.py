@@ -22,7 +22,7 @@ from rpy2.robjects import pandas2ri
 from .r_utils import get_kostra_r
 
 
-class HbMethodAIO(Div):
+class HbMethodAIO(Div):  # type: ignore
     """HbMethodAIO is an All-in-One component that is composed of a parent `html.Div`."""
 
     class Ids:
@@ -405,7 +405,7 @@ class HbMethodAIO(Div):
             State(ids.data_store(MATCH), "data"),
             State(ids.field_id_store(MATCH), "data"),
         ],
-    )
+    )  # type: ignore
     def update_figures_cb(
         p_c: str,
         p_u: str,

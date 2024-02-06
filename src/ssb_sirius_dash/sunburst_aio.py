@@ -6,7 +6,7 @@ import plotly.express as px
 from dash.dcc import Graph
 
 
-class SunburstAIO(Graph):
+class SunburstAIO(Graph):  # type: ignore
     """SunburstAIO is an All-in-One component that is composed."""
 
     class Ids:
