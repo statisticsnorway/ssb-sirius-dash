@@ -395,7 +395,7 @@ class HbMethodAIO(Div):
         p_a: str,
         filter_operator: str,
         filter_value: str,
-        data: dict[str, list[dict[str, any]] | int]
+        data: dict[str, list[dict[str, any]] | int],
     ) -> Figure:
         """Updates the scatterplot figure.
 
@@ -417,5 +417,5 @@ class HbMethodAIO(Div):
             p_u=float(p_u),
             p_a=float(p_a),
             filter_op=str(filter_operator),
-            filter_value=int(filter_value)
+            filter_value=int(filter_value),
         )
