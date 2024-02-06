@@ -14,7 +14,12 @@ from .r_utils import get_kostra_r
 class HbMethodAIO(html.Div):
     class Ids:
         @staticmethod
-        def data_store(aio_id):
+        def data_store(aio_id: str) -> dict:
+            """
+            Returns the component ID for the data store
+            :param aio_id: Component aio-ID
+            :return: Component ID
+            """
             return {
                 'component': 'HbMethodAIO',
                 'subcomponent': 'data_store',
@@ -22,7 +27,12 @@ class HbMethodAIO(html.Div):
             }
 
         @staticmethod
-        def scatterplot(aio_id):
+        def scatterplot(aio_id: str) -> dict:
+            """
+            Returns the component ID for the scatterplot
+            :param aio_id: Component aio-ID
+            :return: Component ID
+            """
             return {
                 'component': 'HbMethodAIO',
                 'subcomponent': 'scatterplot',
@@ -30,7 +40,12 @@ class HbMethodAIO(html.Div):
             }
 
         @staticmethod
-        def p_c(aio_id):
+        def p_c(aio_id: str) -> dict:
+            """
+            Returns the component ID for the pC dropdown
+            :param aio_id: Component aio-ID
+            :return: Component ID
+            """
             return {
                 'component': 'HbMethodAIO',
                 'subcomponent': 'p_c',
@@ -38,7 +53,12 @@ class HbMethodAIO(html.Div):
             }
 
         @staticmethod
-        def p_u(aio_id):
+        def p_u(aio_id: str) -> dict:
+            """
+            Returns the component ID for the pU dropdown
+            :param aio_id: Component aio-ID
+            :return: Component ID
+            """
             return {
                 'component': 'HbMethodAIO',
                 'subcomponent': 'p_u',
@@ -46,7 +66,12 @@ class HbMethodAIO(html.Div):
             }
 
         @staticmethod
-        def p_a(aio_id):
+        def p_a(aio_id: str) -> dict:
+            """
+            Returns the component ID for the pA dropdown
+            :param aio_id: Component aio-ID
+            :return: Component ID
+            """
             return {
                 'component': 'HbMethodAIO',
                 'subcomponent': 'p_a',
@@ -54,7 +79,12 @@ class HbMethodAIO(html.Div):
             }
 
         @staticmethod
-        def hb_filter_op(aio_id):
+        def hb_filter_op(aio_id: str) -> dict:
+            """
+            Returns the component ID for the filter operator dropdown
+            :param aio_id: Component aio-ID
+            :return: Component ID
+            """
             return {
                 'component': 'HbMethodAIO',
                 'subcomponent': 'hb_filter_op',
@@ -62,7 +92,12 @@ class HbMethodAIO(html.Div):
             }
 
         @staticmethod
-        def hb_filter_value(aio_id):
+        def hb_filter_value(aio_id: str) -> dict:
+            """
+            Returns the component ID for the filter value dropdown
+            :param aio_id: Component aio-ID
+            :return: Component ID
+            """
             return {
                 'component': 'HbMethodAIO',
                 'subcomponent': 'hb_filter_value',
@@ -76,6 +111,14 @@ class HbMethodAIO(html.Div):
                      id_field_name: str,
                      x_1_name: str,
                      x_2_name: str) -> pd.DataFrame:
+        """
+        Runs the TH-error method on the data
+        :param data: Dataframe with the data
+        :param id_field_name: Field name for the ID
+        :param x_1_name: X1 field name
+        :param x_2_name: X2 field name
+        :return: Dataframe without outliers
+        """
         with conversion.localconverter(default_converter + pandas2ri.converter):
             th_error_result = get_kostra_r().ThError(
                 data=data,
@@ -93,6 +136,17 @@ class HbMethodAIO(html.Div):
                       p_a: float,
                       filter_op: str,
                       filter_value: int) -> Figure:
+        """"
+        Runs the HB-method on the data
+        :param data: Dataframe with the data
+        :param field_id: Field ID
+        :param p_c: pC value
+        :param p_u: pU value
+        :param p_a: pA value
+        :param filter_op: Filter operator
+        :param filter_value: Filter value
+        :return: Figure for the scatterplot
+        """
         with conversion.localconverter(default_converter + pandas2ri.converter):
             hb_metoden_df = get_kostra_r().Hb(
                 data=data,
@@ -176,22 +230,37 @@ class HbMethodAIO(html.Div):
         return empty_scatter_plot
 
     def __init__(
-            self,
-            data: pd.DataFrame,
-            field_id: int,
+        self,
+        data: pd.DataFrame,
+        field_id: int,
 
-            id_field_name: str,
-            x_1_name: str,
-            x_2_name: str,
+        id_field_name: str,
+        x_1_name: str,
+        x_2_name: str,
 
-            default_p_c: int = 100,
-            default_p_u: float = 0.5,
-            default_p_a: float = 0.05,
+        default_p_c: int = 100,
+        default_p_u: float = 0.5,
+        default_p_a: float = 0.05,
 
-            default_filter_op: str = "<",
-            default_filter_value: int = 100_000,
+        default_filter_op: str = "<",
+        default_filter_value: int = 100_000,
 
-            aio_id: str = None):
+        aio_id: str = None
+    ):
+        """
+        Creates a new HbMethodAIO component
+        :param data:
+        :param field_id:
+        :param id_field_name:
+        :param x_1_name:
+        :param x_2_name:
+        :param default_p_c:
+        :param default_p_u:
+        :param default_p_a:
+        :param default_filter_op:
+        :param default_filter_value:
+        :param aio_id:
+        """
         self.aio_id = aio_id if aio_id else str(uuid.uuid4())
 
         th_result = HbMethodAIO.run_th_error(data, id_field_name, x_1_name, x_2_name)
