@@ -413,7 +413,7 @@ class HbMethodAIO(Div):
         filter_operator: str,
         filter_value: str,
         data: dict[str, dict[str, str]],
-        field_id: dict[str, int]
+        field_id: dict[str, int],
     ) -> Figure:
         """Updates the scatterplot figure.
 
