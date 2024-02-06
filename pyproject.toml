@@ -16,6 +16,10 @@ Changelog = "https://github.com/statisticsnorway/ssb-sirius-dash/releases"
 [tool.poetry.dependencies]
 python = "^3.9"
 click = ">=8.0.1"
+dash = "^2.15.0"
+dash-bootstrap-components = "^1.5.0"
+pandas = "^2.2.0"
+rpy2 = "^3.5.15"
 
 [tool.poetry.group.dev.dependencies]
 pygments = ">=2.10.0"
