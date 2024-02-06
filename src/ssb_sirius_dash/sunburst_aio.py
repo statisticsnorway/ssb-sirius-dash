@@ -7,8 +7,10 @@ from dash import dcc
 
 class SunburstAIO(dcc.Graph):
     """SunburstAIO is an All-in-One component that is composed."""
+
     class Ids:
         """A set of functions that create pattern-matching callbacks of the subcomponents."""
+
         @staticmethod
         def sunburst(aio_id: str) -> dict:
             """Returns the component ID for the sunburst component.
@@ -17,9 +19,9 @@ class SunburstAIO(dcc.Graph):
             :return: The component ID for the sunburst component
             """
             return {
-                'component': 'SunburstAIO',
-                'subcomponent': 'sunburst',
-                'aio_id': aio_id
+                "component": "SunburstAIO",
+                "subcomponent": "sunburst",
+                "aio_id": aio_id,
             }
 
     ids = Ids
@@ -29,7 +31,7 @@ class SunburstAIO(dcc.Graph):
         data: pd.DataFrame,
         path: list[str],
         values: str,
-        aio_id: str | None = None
+        aio_id: str | None = None,
     ) -> None:
         """SunburstAIO is an All-in-One component that is composed.
 
@@ -40,9 +42,7 @@ class SunburstAIO(dcc.Graph):
         """
         self.aio_id = aio_id if aio_id else str(uuid.uuid4())
 
-        figure = px.sunburst(data,
-                             path=path,
-                             values=values)
+        figure = px.sunburst(data, path=path, values=values)
 
         figure.update_layout(
             plot_bgcolor="#1F2833",
@@ -52,7 +52,4 @@ class SunburstAIO(dcc.Graph):
             yaxis=dict(color="#66FCF1"),
         )
 
-        super().__init__(
-            id=self.ids.sunburst(self.aio_id),
-            figure=figure
-        )
+        super().__init__(id=self.ids.sunburst(self.aio_id), figure=figure)

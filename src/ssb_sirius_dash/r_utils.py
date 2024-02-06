@@ -20,5 +20,7 @@ def get_kostra_r() -> InstalledSTPackage:
 
     start_time = timeit.default_timer()
     globals()["_kostra_r"] = importr("Kostra")
-    logger.info("Finished loading Kostra in %3g seconds", (timeit.default_timer() - start_time))
+    logger.info(
+        "Finished loading Kostra in %3g seconds", (timeit.default_timer() - start_time)
+    )
     return globals()["_kostra_r"]
