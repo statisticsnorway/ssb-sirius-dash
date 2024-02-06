@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -37,6 +38,19 @@ class HbMethodAIO(Div):
             return {
                 "component": "HbMethodAIO",
                 "subcomponent": "data_store",
+                "aio_id": aio_id,
+            }
+
+        @staticmethod
+        def field_id_store(aio_id: str) -> dict[str, str]:
+            """Returns the component ID for the field-ID store.
+
+            :param aio_id: Component aio-ID
+            :return: Component ID
+            """
+            return {
+                "component": "HbMethodAIO",
+                "subcomponent": "field_id_store",
                 "aio_id": aio_id,
             }
 
@@ -244,7 +258,7 @@ class HbMethodAIO(Div):
         default_p_a: float = 0.05,
         default_filter_op: str = "<",
         default_filter_value: int = 100_000,
-        aio_id: str | None = None,
+        aio_id: Optional[str] = None,
     ) -> None:
         """Creates a new HbMethodAIO component.
 
@@ -264,11 +278,13 @@ class HbMethodAIO(Div):
 
         th_result = HbMethodAIO.run_th_error(data, id_field_name, x_1_name, x_2_name)
 
-        data_dict = {"df": th_result.to_dict("records"), "field_id": field_id}
+        data_dict = {"df": th_result.to_dict("records")}
+        field_id_dict = {"field_id": field_id}
 
         super().__init__(
             children=[
                 dcc.Store(data=data_dict, id=self.ids.data_store(self.aio_id)),
+                dcc.Store(data=field_id_dict, id=self.ids.field_id_store(self.aio_id)),
                 dbc.Row(
                     id="hb-parameters",
                     className="m-2",
@@ -387,6 +403,7 @@ class HbMethodAIO(Div):
             Input(ids.hb_filter_op(MATCH), "value"),
             Input(ids.hb_filter_value(MATCH), "value"),
             State(ids.data_store(MATCH), "data"),
+            State(ids.field_id_store(MATCH), "data"),
         ],
     )
     def update_figures_cb(
@@ -395,7 +412,8 @@ class HbMethodAIO(Div):
         p_a: str,
         filter_operator: str,
         filter_value: str,
-        data: dict[str, list[dict[str, any]] | int],
+        data: dict[str, dict[str, str]],
+        field_id: dict[str, int]
     ) -> Figure:
         """Updates the scatterplot figure.
 
@@ -407,12 +425,13 @@ class HbMethodAIO(Div):
         :param filter_value:
 
         :param data: data from the store
+        :param field_id: field-ID
 
         :return: figure for the scatterplot
         """
         return HbMethodAIO.run_hb_method(
             data=pd.DataFrame(data["df"]),
-            field_id=data["field_id"],
+            field_id=field_id["field_id"],
             p_c=int(p_c),
             p_u=float(p_u),
             p_a=float(p_a),

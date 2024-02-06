@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 import pandas as pd
 import plotly.express as px
@@ -31,7 +32,7 @@ class SunburstAIO(Graph):
         data: pd.DataFrame,
         path: list[str],
         values: str,
-        aio_id: str | None = None,
+        aio_id: Optional[str] = None,
     ) -> None:
         """SunburstAIO is an All-in-One component that is composed.
 
