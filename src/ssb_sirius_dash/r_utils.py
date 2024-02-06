@@ -1,5 +1,6 @@
 import logging
 import timeit
+from typing import Optional
 
 from rpy2.robjects.packages import InstalledSTPackage
 from rpy2.robjects.packages import importr
@@ -7,7 +8,7 @@ from rpy2.robjects.packages import importr
 logger = logging.getLogger(__name__)
 
 # Global variable to store the R package Kostra
-_kostra_r: InstalledSTPackage | None = None
+_kostra_r: Optional[InstalledSTPackage] = None
 
 
 def get_kostra_r() -> InstalledSTPackage:
