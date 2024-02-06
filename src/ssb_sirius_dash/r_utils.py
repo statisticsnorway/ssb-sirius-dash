@@ -10,7 +10,7 @@ _kostra_r: InstalledSTPackage | None = None
 
 def get_kostra_r() -> InstalledSTPackage:
     """
-    Loads the R package Kostra
+    Loads the R package Kostra.
 
     :return: Kostra
     """

@@ -264,7 +264,7 @@ class HbMethodAIO(html.Div):
         default_filter_value: int = 100_000,
 
         aio_id: str | None = None
-    ):
+    ) -> None:
         """
         Creates a new HbMethodAIO component.
 
@@ -410,7 +410,7 @@ class HbMethodAIO(html.Div):
                           p_a: str,
                           filter_operator: str,
                           filter_value: str,
-                          data) -> Figure:
+                          data: dict) -> Figure:
         """
         Updates the scatterplot figure.
 

@@ -6,7 +6,13 @@ from dash import dcc
 
 
 class SunburstAIO(dcc.Graph):
+    """
+    SunburstAIO is an All-in-One component that is composed.
+    """
     class Ids:
+        """
+        A set of functions that create pattern-matching callbacks of the subcomponents.
+        """
         @staticmethod
         def sunburst(aio_id: str) -> dict:
             """
@@ -29,7 +35,7 @@ class SunburstAIO(dcc.Graph):
         path: list[str],
         values: str,
         aio_id: str | None = None
-    ):
+    ) -> None:
         """
         SunburstAIO is an All-in-One component that is composed.
 
