@@ -27,7 +27,7 @@ class HbMethodAIO(html.Div):
         """A set of functions that create pattern-matching IDs of the subcomponents."""
 
         @staticmethod
-        def data_store(aio_id: str) -> dict:
+        def data_store(aio_id: str) -> dict[str, str]:
             """Returns the component ID for the data store.
 
             :param aio_id: Component aio-ID
@@ -40,7 +40,7 @@ class HbMethodAIO(html.Div):
             }
 
         @staticmethod
-        def scatterplot(aio_id: str) -> dict:
+        def scatterplot(aio_id: str) -> dict[str, str]:
             """Returns the component ID for the scatterplot.
 
             :param aio_id: Component aio-ID
@@ -53,7 +53,7 @@ class HbMethodAIO(html.Div):
             }
 
         @staticmethod
-        def p_c(aio_id: str) -> dict:
+        def p_c(aio_id: str) -> dict[str, str]:
             """Returns the component ID for the pC dropdown.
 
             :param aio_id: Component aio-ID
@@ -62,7 +62,7 @@ class HbMethodAIO(html.Div):
             return {"component": "HbMethodAIO", "subcomponent": "p_c", "aio_id": aio_id}
 
         @staticmethod
-        def p_u(aio_id: str) -> dict:
+        def p_u(aio_id: str) -> dict[str, str]:
             """Returns the component ID for the pU dropdown.
 
             :param aio_id: Component aio-ID
@@ -71,7 +71,7 @@ class HbMethodAIO(html.Div):
             return {"component": "HbMethodAIO", "subcomponent": "p_u", "aio_id": aio_id}
 
         @staticmethod
-        def p_a(aio_id: str) -> dict:
+        def p_a(aio_id: str) -> dict[str, str]:
             """Returns the component ID for the pA dropdown.
 
             :param aio_id: Component aio-ID
@@ -80,7 +80,7 @@ class HbMethodAIO(html.Div):
             return {"component": "HbMethodAIO", "subcomponent": "p_a", "aio_id": aio_id}
 
         @staticmethod
-        def hb_filter_op(aio_id: str) -> dict:
+        def hb_filter_op(aio_id: str) -> dict[str, str]:
             """Returns the component ID for the filter operator dropdown.
 
             :param aio_id: Component aio-ID
@@ -93,7 +93,7 @@ class HbMethodAIO(html.Div):
             }
 
         @staticmethod
-        def hb_filter_value(aio_id: str) -> dict:
+        def hb_filter_value(aio_id: str) -> dict[str, str]:
             """Returns the component ID for the filter value dropdown.
 
             :param aio_id: Component aio-ID

@@ -12,7 +12,7 @@ class SunburstAIO(dcc.Graph):
         """A set of functions that create pattern-matching callbacks of the subcomponents."""
 
         @staticmethod
-        def sunburst(aio_id: str) -> dict:
+        def sunburst(aio_id: str) -> dict[str, str]:
             """Returns the component ID for the sunburst component.
 
             :param aio_id: The All-in-One component ID
