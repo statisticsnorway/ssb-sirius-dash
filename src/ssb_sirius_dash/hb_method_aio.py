@@ -10,6 +10,7 @@ from dash import State
 from dash import callback
 from dash import dcc
 from dash import html
+from dash.html import Div
 from dash.html import Figure
 from plotly.graph_objs import Scatter
 from plotly.graph_objs import scatter
@@ -20,7 +21,7 @@ from rpy2.robjects import pandas2ri
 from .r_utils import get_kostra_r
 
 
-class HbMethodAIO(html.Div):
+class HbMethodAIO(Div):
     """HbMethodAIO is an All-in-One component that is composed of a parent `html.Div`."""
 
     class Ids:
@@ -394,7 +395,7 @@ class HbMethodAIO(html.Div):
         p_a: str,
         filter_operator: str,
         filter_value: str,
-        data: dict,
+        data: dict[str, list[dict[str, any]] | int]
     ) -> Figure:
         """Updates the scatterplot figure.
 
@@ -416,5 +417,5 @@ class HbMethodAIO(html.Div):
             p_u=float(p_u),
             p_a=float(p_a),
             filter_op=str(filter_operator),
-            filter_value=int(filter_value),
+            filter_value=int(filter_value)
         )

@@ -2,10 +2,10 @@ import uuid
 
 import pandas as pd
 import plotly.express as px
-from dash import dcc
+from dash.dcc import Graph
 
 
-class SunburstAIO(dcc.Graph):
+class SunburstAIO(Graph):
     """SunburstAIO is an All-in-One component that is composed."""
 
     class Ids:
