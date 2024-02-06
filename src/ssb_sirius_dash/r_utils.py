@@ -1,6 +1,8 @@
-from rpy2.robjects.packages import importr, InstalledSTPackage
-import timeit
 import logging
+import timeit
+
+from rpy2.robjects.packages import InstalledSTPackage
+from rpy2.robjects.packages import importr
 
 logger = logging.getLogger(__name__)
 
@@ -9,8 +11,7 @@ _kostra_r: InstalledSTPackage | None = None
 
 
 def get_kostra_r() -> InstalledSTPackage:
-    """
-    Loads the R package Kostra.
+    """Loads the R package Kostra.
 
     :return: Kostra
     """
