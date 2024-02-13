@@ -248,7 +248,12 @@ class HbMethodAIO(html.Div):  # type: ignore
         """
         self.aio_id = aio_id if aio_id else str(uuid.uuid4())
 
-        th_result = th_error(data, id_field_name, x_1_name, x_2_name)
+        th_result = th_error(
+            data=data,
+            id_field_name=id_field_name,
+            x_1_field_name=x_1_name,
+            x_2_field_name=x_2_name,
+        )
 
         data_dict = {"df": th_result.to_dict("records"), "field_id": field_id}
 
