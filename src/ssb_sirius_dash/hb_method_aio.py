@@ -12,7 +12,7 @@ from dash import State
 from dash import callback
 from dash import dcc
 from dash import html
-from dash.html import Figure
+from plotly.graph_objs import Figure
 from plotly.graph_objs import Scatter
 from plotly.graph_objs import scatter
 
