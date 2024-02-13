@@ -15,7 +15,7 @@ def test_sunburst_aio_ids_sunburst() -> None:
             ]
         ),
         path=["gruppe", "korttype", "felt"],
-        values="beloep"
+        values="beloep",
     )
 
     # test that the sunburst method returns a dictionary
