@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 from typing import Optional
 
 import pandas as pd
@@ -13,7 +14,7 @@ class SunburstAIO(Graph):  # type: ignore
         """A set of functions that create pattern-matching callbacks of the subcomponents."""
 
         @staticmethod
-        def sunburst(aio_id: str) -> dict[str, str]:
+        def sunburst(aio_id: Any) -> dict[str, Any]:
             """Returns the component ID for the sunburst component.
 
             :param aio_id: The All-in-One component ID
