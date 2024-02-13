@@ -13,10 +13,11 @@ from dash import callback
 from dash import dcc
 from dash import html
 from dash.html import Figure
-from kostra_r_wrapper import hb_method
-from kostra_r_wrapper import th_error
 from plotly.graph_objs import Scatter
 from plotly.graph_objs import scatter
+
+from .kostra_r_wrapper import hb_method
+from .kostra_r_wrapper import th_error
 
 
 def _generate_hb_aio_id(subcomponent: str, aio_id: str) -> dict[str, str]:
@@ -373,7 +374,7 @@ class HbMethodAIO(html.Div):  # type: ignore
             Input(ids.hb_filter_value(MATCH), "value"),
             State(ids.data_store(MATCH), "data"),
         ],
-    )
+    )  # type: ignore
     def update_figures_cb(
         p_c: str,
         p_u: str,
