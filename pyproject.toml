@@ -8,6 +8,7 @@ readme = "README.md"
 homepage = "https://github.com/statisticsnorway/ssb-sirius-dash"
 repository = "https://github.com/statisticsnorway/ssb-sirius-dash"
 documentation = "https://statisticsnorway.github.io/ssb-sirius-dash"
+packages = [{ include = "ssb_sirius_dash", from = "src" }]
 classifiers = ["Development Status :: 1 - Planning"]
 
 [tool.poetry.urls]

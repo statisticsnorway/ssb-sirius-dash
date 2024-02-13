@@ -1,5 +1,6 @@
 import pandas as pd
-from src.ssb_sirius_dash.sunburst_aio import SunburstAIO
+
+from ssb_sirius_dash.sunburst_aio import SunburstAIO
 
 
 # test that class Ids has a method sunburst that returns a dictionary
