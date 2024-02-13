@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 from typing import Optional
 
 import dash_bootstrap_components as dbc
@@ -11,139 +12,105 @@ from dash import State
 from dash import callback
 from dash import dcc
 from dash import html
-from dash.html import Div
-from dash.html import Figure
+from plotly.graph_objs import Figure
 from plotly.graph_objs import Scatter
 from plotly.graph_objs import scatter
-from rpy2.robjects import conversion
-from rpy2.robjects import default_converter
-from rpy2.robjects import pandas2ri
 
-from .r_utils import get_kostra_r
+from .kostra_r_wrapper import hb_method
+from .kostra_r_wrapper import th_error
 
 
-class HbMethodAIO(Div):  # type: ignore
+def _generate_hb_aio_id(subcomponent: str, aio_id: Any) -> dict[str, Any]:
+    return {"component": "HbMethodAIO", "subcomponent": subcomponent, "aio_id": aio_id}
+
+
+#
+# component ids
+#
+HB_DATA_STORE_ID = "data_store"
+HB_SCATTERPLOT_ID = "scatterplot"
+HB_PC_ID = "p_c"
+HB_PU_ID = "p_u"
+HB_PA_ID = "p_a"
+HB_FILTER_OP_ID = "hb_filter_op"
+HB_FILTER_VALUE_ID = "hb_filter_value"
+
+
+class HbMethodAIO(html.Div):  # type: ignore
     """HbMethodAIO is an All-in-One component that is composed of a parent `html.Div`."""
 
     class Ids:
         """A set of functions that create pattern-matching IDs of the subcomponents."""
 
         @staticmethod
-        def data_store(aio_id: str) -> dict[str, str]:
+        def data_store(aio_id: Any) -> dict[str, Any]:
             """Returns the component ID for the data store.
 
             :param aio_id: Component aio-ID
             :return: Component ID
             """
-            return {
-                "component": "HbMethodAIO",
-                "subcomponent": "data_store",
-                "aio_id": aio_id,
-            }
+            return _generate_hb_aio_id(HB_DATA_STORE_ID, aio_id)
 
         @staticmethod
-        def field_id_store(aio_id: str) -> dict[str, str]:
-            """Returns the component ID for the field-ID store.
-
-            :param aio_id: Component aio-ID
-            :return: Component ID
-            """
-            return {
-                "component": "HbMethodAIO",
-                "subcomponent": "field_id_store",
-                "aio_id": aio_id,
-            }
-
-        @staticmethod
-        def scatterplot(aio_id: str) -> dict[str, str]:
+        def scatterplot(aio_id: Any) -> dict[str, Any]:
             """Returns the component ID for the scatterplot.
 
             :param aio_id: Component aio-ID
             :return: Component ID
             """
-            return {
-                "component": "HbMethodAIO",
-                "subcomponent": "scatterplot",
-                "aio_id": aio_id,
-            }
+            return _generate_hb_aio_id(HB_SCATTERPLOT_ID, aio_id)
 
         @staticmethod
-        def p_c(aio_id: str) -> dict[str, str]:
+        def p_c(aio_id: Any) -> dict[str, Any]:
             """Returns the component ID for the pC dropdown.
 
             :param aio_id: Component aio-ID
             :return: Component ID
             """
-            return {"component": "HbMethodAIO", "subcomponent": "p_c", "aio_id": aio_id}
+            return _generate_hb_aio_id(HB_PC_ID, aio_id)
 
         @staticmethod
-        def p_u(aio_id: str) -> dict[str, str]:
+        def p_u(aio_id: Any) -> dict[str, Any]:
             """Returns the component ID for the pU dropdown.
 
             :param aio_id: Component aio-ID
             :return: Component ID
             """
-            return {"component": "HbMethodAIO", "subcomponent": "p_u", "aio_id": aio_id}
+            return _generate_hb_aio_id(HB_PU_ID, aio_id)
 
         @staticmethod
-        def p_a(aio_id: str) -> dict[str, str]:
+        def p_a(aio_id: Any) -> dict[str, Any]:
             """Returns the component ID for the pA dropdown.
 
             :param aio_id: Component aio-ID
             :return: Component ID
             """
-            return {"component": "HbMethodAIO", "subcomponent": "p_a", "aio_id": aio_id}
+            return _generate_hb_aio_id(HB_PA_ID, aio_id)
 
         @staticmethod
-        def hb_filter_op(aio_id: str) -> dict[str, str]:
-            """Returns the component ID for the filter operator dropdown.
+        def hb_filter_op(aio_id: Any) -> dict[str, Any]:
+            """Returns the component ID for the filter operation dropdown.
 
             :param aio_id: Component aio-ID
             :return: Component ID
             """
-            return {
-                "component": "HbMethodAIO",
-                "subcomponent": "hb_filter_op",
-                "aio_id": aio_id,
-            }
+            return _generate_hb_aio_id(HB_FILTER_OP_ID, aio_id)
 
         @staticmethod
-        def hb_filter_value(aio_id: str) -> dict[str, str]:
+        def hb_filter_value(aio_id: Any) -> dict[str, Any]:
             """Returns the component ID for the filter value dropdown.
 
             :param aio_id: Component aio-ID
             :return: Component ID
             """
-            return {
-                "component": "HbMethodAIO",
-                "subcomponent": "hb_filter_value",
-                "aio_id": aio_id,
-            }
+            return _generate_hb_aio_id(HB_FILTER_VALUE_ID, aio_id)
 
     ids = Ids
 
     @staticmethod
-    def run_th_error(
-        data: pd.DataFrame, id_field_name: str, x_1_name: str, x_2_name: str
-    ) -> pd.DataFrame:
-        """Runs the TH-error method on the data.
-
-        :param data: Dataframe with the data
-        :param id_field_name: Field name for the ID
-        :param x_1_name: X1 field name
-        :param x_2_name: X2 field name
-        :return: Dataframe without outliers
-        """
-        with conversion.localconverter(default_converter + pandas2ri.converter):
-            th_error_result = get_kostra_r().ThError(
-                data=data, id=id_field_name, x1=x_1_name, x2=x_2_name
-            )
-            return th_error_result[th_error_result.outlier == 0]
-
-    @staticmethod
     def run_hb_method(
         data: pd.DataFrame,
-        field_id: int,
+        field_id: str,
         p_c: int,
         p_u: float,
         p_a: float,
@@ -161,68 +128,73 @@ class HbMethodAIO(Div):  # type: ignore
         :param filter_value: Filter value
         :return: Figure for the scatterplot
         """
-        with conversion.localconverter(default_converter + pandas2ri.converter):
-            hb_metoden_df = get_kostra_r().Hb(
-                data=data, id="id", x1="x1", x2="x2", pC=p_c, pU=p_u, pA=p_a
+        hb_metoden_df = hb_method(
+            data=data,
+            id_field_name="id",
+            x_1_field_name="x1",
+            x_2_field_name="x2",
+            p_c=p_c,
+            p_u=p_u,
+            p_a=p_a,
+        )
+
+        df_query = f"outlier == 1 & maxX {filter_op} {filter_value}"
+        significant_outliers = hb_metoden_df.query(df_query)
+        significant_outliers = significant_outliers.sort_values(by=["maxX"])
+
+        x = significant_outliers["maxX"]
+        z = significant_outliers["upperLimit"]
+        k = significant_outliers["lowerLimit"]
+
+        scatter_plot = px.scatter(
+            significant_outliers,
+            x="maxX",
+            y="ratio",
+            title=f"Post {field_id} - outliers med HB-metoden ({len(significant_outliers)} stk.)",
+        )
+
+        scatter_plot.add_trace(
+            Scatter(
+                x=x,
+                y=z,
+                name="Øvre grense",
+                mode="lines",
+                line=scatter.Line(color="yellow"),
+                showlegend=True,
             )
+        )
 
-            df_query = f"outlier == 1 & maxX {filter_op} {filter_value}"
-            significant_outliers = hb_metoden_df.query(df_query)
-            significant_outliers = significant_outliers.sort_values(by=["maxX"])
-
-            x = significant_outliers["maxX"]
-            z = significant_outliers["upperLimit"]
-            k = significant_outliers["lowerLimit"]
-
-            scatter_plot = px.scatter(
-                significant_outliers,
-                x="maxX",
-                y="ratio",
-                title=f"Post {field_id} - outliers med HB-metoden ({len(significant_outliers)} stk.)",
+        scatter_plot.add_trace(
+            Scatter(
+                x=x,
+                y=k,
+                name="Nedre grense",
+                mode="lines",
+                line=scatter.Line(color="red"),
+                showlegend=True,
             )
+        )
 
-            scatter_plot.add_trace(
-                Scatter(
-                    x=x,
-                    y=z,
-                    name="Øvre grense",
-                    mode="lines",
-                    line=scatter.Line(color="yellow"),
-                    showlegend=True,
-                )
-            )
+        hover_template = (
+            "Norsk-ID: <b>%{customdata}</b>"
+            "<br>Beløp i hele 1000: <b>%{x}</b>"
+            "<br>Forholdstall (ratio): <b>%{y}</b>"
+        )
 
-            scatter_plot.add_trace(
-                Scatter(
-                    x=x,
-                    y=k,
-                    name="Nedre grense",
-                    mode="lines",
-                    line=scatter.Line(color="red"),
-                    showlegend=True,
-                )
-            )
+        scatter_plot.update_traces(
+            customdata=significant_outliers["id"], hovertemplate=hover_template
+        )
 
-            hover_template = (
-                "Norsk-ID: <b>%{customdata}</b>"
-                "<br>Beløp i hele 1000: <b>%{x}</b>"
-                "<br>Forholdstall (ratio): <b>%{y}</b>"
-            )
-
-            scatter_plot.update_traces(
-                customdata=significant_outliers["id"], hovertemplate=hover_template
-            )
-
-            scatter_plot.update_layout(
-                xaxis_title="Beløp i hele 1000",
-                yaxis_title="Forholdstall",
-                plot_bgcolor="#1F2833",
-                paper_bgcolor="#1F2833",
-                font_color="#66FCF1",
-                xaxis=dict(color="#66FCF1", hoverformat=",.2f"),
-                yaxis=dict(color="#66FCF1", hoverformat=",.2f"),
-            )
-            return scatter_plot
+        scatter_plot.update_layout(
+            xaxis_title="Beløp i hele 1000",
+            yaxis_title="Forholdstall",
+            plot_bgcolor="#1F2833",
+            paper_bgcolor="#1F2833",
+            font_color="#66FCF1",
+            xaxis=dict(color="#66FCF1", hoverformat=",.2f"),
+            yaxis=dict(color="#66FCF1", hoverformat=",.2f"),
+        )
+        return scatter_plot
 
     @staticmethod
     def empty_scatter_plot() -> Figure:
@@ -249,7 +221,7 @@ class HbMethodAIO(Div):  # type: ignore
     def __init__(
         self,
         data: pd.DataFrame,
-        field_id: int,
+        field_id: str,
         id_field_name: str,
         x_1_name: str,
         x_2_name: str,
@@ -276,15 +248,18 @@ class HbMethodAIO(Div):  # type: ignore
         """
         self.aio_id = aio_id if aio_id else str(uuid.uuid4())
 
-        th_result = HbMethodAIO.run_th_error(data, id_field_name, x_1_name, x_2_name)
+        th_result = th_error(
+            data=data,
+            id_field_name=id_field_name,
+            x_1_field_name=x_1_name,
+            x_2_field_name=x_2_name,
+        )
 
-        data_dict = {"df": th_result.to_dict("records")}
-        field_id_dict = {"field_id": field_id}
+        data_dict = {"df": th_result.to_dict("records"), "field_id": field_id}
 
         super().__init__(
             children=[
                 dcc.Store(data=data_dict, id=self.ids.data_store(self.aio_id)),
-                dcc.Store(data=field_id_dict, id=self.ids.field_id_store(self.aio_id)),
                 dbc.Row(
                     id="hb-parameters",
                     className="m-2",
@@ -403,7 +378,6 @@ class HbMethodAIO(Div):  # type: ignore
             Input(ids.hb_filter_op(MATCH), "value"),
             Input(ids.hb_filter_value(MATCH), "value"),
             State(ids.data_store(MATCH), "data"),
-            State(ids.field_id_store(MATCH), "data"),
         ],
     )  # type: ignore
     def update_figures_cb(
@@ -412,8 +386,7 @@ class HbMethodAIO(Div):  # type: ignore
         p_a: str,
         filter_operator: str,
         filter_value: str,
-        data: dict[str, dict[str, str]],
-        field_id: dict[str, int],
+        data: dict[str, Any],
     ) -> Figure:
         """Updates the scatterplot figure.
 
@@ -425,13 +398,12 @@ class HbMethodAIO(Div):  # type: ignore
         :param filter_value:
 
         :param data: data from the store
-        :param field_id: field-ID
 
         :return: figure for the scatterplot
         """
         return HbMethodAIO.run_hb_method(
             data=pd.DataFrame(data["df"]),
-            field_id=field_id["field_id"],
+            field_id=data["field_id"],
             p_c=int(p_c),
             p_u=float(p_u),
             p_a=float(p_a),
