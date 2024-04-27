@@ -13,7 +13,6 @@ def example_function(number1: int, number2: int) -> str:
     documentation from code, type hinting, testing, and testing examples
     in the code.
 
-
     Args:
         number1: The first number.
         number2: The second number, which will be compared to number1.
