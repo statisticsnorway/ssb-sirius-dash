@@ -21,6 +21,7 @@ dash = "^2.15.0"
 dash-bootstrap-components = "^1.5.0"
 pandas = "^2.2.0"
 rpy2 = "^3.5.15"
+pytest-env = "^1.1.3"
 
 [tool.poetry.group.dev.dependencies]
 pygments = ">=2.10.0"
@@ -43,6 +44,9 @@ myst-parser = { version = ">=0.16.1" }
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+env = [
+    "R_HOME = dummy"
+]
 
 [tool.poetry.scripts]
 ssb-sirius-dash = "ssb_sirius_dash.__main__:main"
