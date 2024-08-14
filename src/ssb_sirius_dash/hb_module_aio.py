@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 from kostra_r_wrapper import hb_method
 
 
-class Hb(html.Div):
+class hb(html.Div):
     """
     A Dash component that encapsulates the functionality for running and interacting with the HB-method,
     a statistical technique used for detecting outliers.
@@ -66,6 +66,16 @@ class Hb(html.Div):
             "subcomponent": "save_button",
             "aio_id": aio_id,
         }
+        variable_store = lambda aio_id: {
+            "component": "hb_AIO",
+            "subcomponent": "variable_store",
+            "aio_id": aio_id,
+        }
+        ident_store = lambda aio_id: {
+            "component": "hb_AIO",
+            "subcomponent": "ident_store",
+            "aio_id": aio_id,
+        }
         input_pu = lambda aio_id: {
             "component": "hb_AIO",
             "subcomponent": "input_pu",
@@ -107,6 +117,8 @@ class Hb(html.Div):
                         dbc.ModalHeader(dbc.ModalTitle("HB-metoden")),
                         dbc.ModalBody(
                             [
+                                dcc.Store(id = self.ids.variable_store(aio_id)),
+                                dcc.Store(id = self.ids.ident_store(aio_id)),
                                 dbc.Row(
                                     [
                                         dbc.Col(
@@ -267,7 +279,7 @@ class Hb(html.Div):
         Output(ids.input_pc(MATCH), "value"),
         Output(ids.input_pu(MATCH), "value"),
         Output(ids.input_pa(MATCH), "value"),
-        Input("selector", "value"),
+        Input(ids.variable_store(MATCH), "data"),
     )
     def set_hb_parameters(field):
         default_settings = {
@@ -301,7 +313,7 @@ class Hb(html.Div):
 
     @callback(
         Output(ids.save_button(MATCH), "n_clicks"),
-        State("selector", "value"),
+        State(ids.variable_store(MATCH), "data"),
         State(ids.input_pc(MATCH), "value"),
         State(ids.input_pu(MATCH), "value"),
         State(ids.input_pa(MATCH), "value"),
@@ -368,7 +380,7 @@ class Hb(html.Div):
 
     @callback(
         Output(ids.graph(MATCH), "figure"),
-        State("selector", "value"),
+        State(ids.variable_store(MATCH), "data"),
         State(ids.input_pc(MATCH), "value"),
         State(ids.input_pu(MATCH), "value"),
         State(ids.input_pa(MATCH), "value"),
@@ -384,7 +396,7 @@ class Hb(html.Div):
             raise PreventUpdate
 
     @callback(
-        Output("identifikator", "filterModel"),
+        Output(ids.ident_store(MATCH), "data"),
         Input(ids.graph(MATCH), "clickData"),
         prevent_initial_call=True,
     )
