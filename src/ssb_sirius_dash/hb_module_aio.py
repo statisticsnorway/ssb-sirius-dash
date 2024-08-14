@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output, State, callback, MATCH
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
-from kostra_r_wrapper import hb_method
+from .kostra_r_wrapper import hb_method
 
 
 class hb(html.Div):
@@ -388,7 +388,7 @@ class hb(html.Div):
     )
     def use_hb(field, pC, pU, pA, n_click):
         if n_click:
-            data = sfp.duckdb_til_df(filtrere="Ja")
+            #data = # TODO: Datainngang
             data = data.loc[data["felt"] == field]
             data = hb_method(data, pC, pU, pA)
             return _make_hb_figure(data, field)
