@@ -1,12 +1,10 @@
 import json
-import dapla as dp
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html, callback
 from dash.exceptions import PreventUpdate
-from klass import KlassClassification
-from ssb_sirius_dash.kostra_r_wrapper import hb_method
+from .kostra_r_wrapper import hb_method
 from .modal_functions import sidebar_button
 
 states_options = [

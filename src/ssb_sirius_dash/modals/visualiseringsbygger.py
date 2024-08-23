@@ -2,7 +2,6 @@ import dash_bootstrap_components as dbc
 from dash import dash_table, html, dcc, callback
 import dash_ag_grid as dag
 from dash.dependencies import Input, Output, State
-import os
 import pandas as pd
 import plotly.express as px
 from .modal_functions import sidebar_button
