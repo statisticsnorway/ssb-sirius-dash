@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html, callback
 from dash.exceptions import PreventUpdate
-from .kostra_r_wrapper import hb_method
+from ..kostra_r_wrapper import hb_method
 from .modal_functions import sidebar_button
 
 states_options = [

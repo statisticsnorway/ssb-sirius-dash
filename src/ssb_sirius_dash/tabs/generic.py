@@ -1,6 +1,5 @@
 import dash_ag_grid as dag
-import dash_html_components as html
-from dash import dcc, callback
+from dash import dcc, html, callback
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
