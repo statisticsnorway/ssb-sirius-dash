@@ -4,17 +4,17 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 input_options = {
-    "orgb": Input("skjerm-bedrift", "value"),
-    "orgf": Input("skjerm-foretak", "value"),
-    "oppgavegiver": Input("skjerm-oppgavegiver", "value"),
-    "skjemaident": Input("skjerm-skjemaident", "value"),
+    "orgb": Input("var-bedrift", "value"),
+    "orgf": Input("var-foretak", "value"),
+    "oppgavegiver": Input("var-oppgavegiver", "value"),
+    "skjemaident": Input("var-skjemaident", "value"),
 }
 
 states_options = [
     {
-        "aar": ("skjerm-aar", "value"),
-        "termin": ("skjerm-termin", "value"),
-        "nace": ("skjerm-nace", "value"),
+        "aar": ("var-aar", "value"),
+        "termin": ("var-termin", "value"),
+        "nace": ("var-nace", "value"),
     }
 ]
 
