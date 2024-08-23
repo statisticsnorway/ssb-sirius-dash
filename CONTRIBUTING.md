@@ -30,6 +30,39 @@ and/or steps to reproduce the issue.
 
 Request features on the [Issue Tracker].
 
+## How to make your own module/modal
+### The class structure
+Each module is written as a class containing a layout and callbacks:
+
+    class Module:
+        def __init__(self, database, selected_state_keys, selected_ident, variable):
+            self.database = database
+            self.callbacks(selected_state_keys, selected_ident, variable)
+        
+        def layout(self):
+            return html.Div() # the Div should contain the layout of the module
+        
+        def callbacks(self)
+            @callback()
+            def module_callback():
+
+#### Use @callback
+In order for this to work you need to use @callback and not @app.callback. This is to make the callback code more modular and work with this way of importing it.
+
+#### Allowing customized functions
+If you need the user to define a function for some use case in your module you can include customized functions in the class by adding a parameter to the __init__:
+
+    class Module:
+        def __init__(self, database, selected_state_keys, selected_ident, variable, custom_function):
+            self.database = database
+            self.custom_function = custom_function
+            self.callbacks(selected_state_keys, selected_ident, variable)
+            
+An example of a use-case for this is a function to get/transform data to adhere to a specific format.
+
+#### All in one (AiO) components
+As our goal is to make a library of easily reusable, customizable and expandable modules/views we have decided to avoid using AiO when possible. As they require a bit more complicated syntax it requires more effort to understand and contribute, which we want to avoid.
+
 ## How to set up your development environment
 
 You need Python 3.9+ and the following tools:
