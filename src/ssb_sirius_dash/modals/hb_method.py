@@ -9,16 +9,16 @@ from .modal_functions import sidebar_button
 
 states_options = [
     {
-        "aar": ("skjerm-aar", "value"),
-        "termin": ("skjerm-termin", "value"),
-        "nace": ("skjerm-nace", "value")
+        "aar": ("var-aar", "value"),
+        "termin": ("var-termin", "value"),
+        "nace": ("var-nace", "value")
     }
 ]
 
 ident_options = [
     {
-        "orgb": ("skjerm-bedrift", "value"),
-        "orgf": ("skjerm-foretak", "value"),
+        "orgb": ("var-bedrift", "value"),
+        "orgf": ("var-foretak", "value"),
     }
 ]
 
