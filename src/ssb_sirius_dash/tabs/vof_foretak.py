@@ -156,23 +156,24 @@ class VoFForetakTab:
             Input("var-foretak", "value"),
             State("var-aar", "value"),
         )
-        def table_orgb(orgf, aar):
-            df = self.database.execute(
-                f"SELECT * FROM ssb_foretak WHERE orgnr = '{orgf}'",
-            ).df()
-            
-            df["ansatte_totalt"] = df["ansatte_totalt"].fillna(0)
-            
-            orgnr = df["orgnr"][0]
-            navn = df["navn"][0]
-            nace = df["nace1"][0]
-            statuskode = df["statuskode"][0]
-            ansatte = df["antall_ansatte"][0]
-            sektor = df["sektor_2014"][0]
-            kommune = df["kommune_nr"][0]
-            orgform = df["org_form"][0]
-            størrelse = "S (placeholder)"
-            ansatte_tot = df["ansatte_totalt"][0]
-            undersektor = df["undersektor_2014"][0]
-            typen = df["sf_type"][0]
-            return orgnr, navn, nace, statuskode, ansatte, sektor, kommune, orgform, størrelse, ansatte_tot, undersektor, typen
+        def vof_data(orgf, aar):
+            if orgf is not None:
+                df = self.database.execute(
+                    f"SELECT * FROM ssb_foretak WHERE orgnr = '{orgf}'",
+                ).df()
+
+                df["ansatte_totalt"] = df["ansatte_totalt"].fillna(0)
+
+                orgnr = df["orgnr"][0]
+                navn = df["navn"][0]
+                nace = df["nace1"][0]
+                statuskode = df["statuskode"][0]
+                ansatte = df["antall_ansatte"][0]
+                sektor = df["sektor_2014"][0]
+                kommune = df["kommune_nr"][0]
+                orgform = df["org_form"][0]
+                størrelse = "S (placeholder)"
+                ansatte_tot = df["ansatte_totalt"][0]
+                undersektor = df["undersektor_2014"][0]
+                typen = df["sf_type"][0]
+                return orgnr, navn, nace, statuskode, ansatte, sektor, kommune, orgform, størrelse, ansatte_tot, undersektor, typen
