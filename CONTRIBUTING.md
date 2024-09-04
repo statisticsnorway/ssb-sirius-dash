@@ -34,17 +34,42 @@ Request features on the [Issue Tracker].
 ### The class structure
 Each module is written as a class containing a layout and callbacks:
 
-    class Module:
-        def __init__(self, database, selected_state_keys, selected_ident, variable):
+    class SSB_SIRIUS_Module:
+        def __init__(self, database):
             self.database = database
-            self.callbacks(selected_state_keys, selected_ident, variable)
-        
-        def layout(self):
-            return html.Div() # the Div should contain the layout of the module
-        
-        def callbacks(self)
-            @callback()
-            def module_callback():
+            self.callbacks()
+
+        def layout():
+            layout = html.Div(
+                [
+                    dbc.Modal(
+                        [
+                            dbc.ModalHeader(
+                                [
+                                    dbc.ModalTitle("MODALNAVN")
+                                ]
+                            ),
+                            dbc.ModalBody(
+                                [
+                                    "Din layout her"
+                                ]
+                            )
+                        ]
+                    ),
+                    sidebar_button("icon", "label", "sidebar-MODALNAVN-button")
+                ]
+            )
+
+        def callbacks():
+            @callback(
+                Output("MODALNAVN-modal", "is_open"),
+                Input("sidebar-MODALNAVN-button", "n_clicks"),
+                State("MODALNAVN-modal", "is_open")
+            )
+            def MODALNAVN_modal_toggle(n, is_open):
+                if n:
+                    return not is_open
+                return is_open
 
 #### Use @callback
 In order for this to work you need to use @callback and not @app.callback. This is to make the callback code more modular and work with this way of importing it.
