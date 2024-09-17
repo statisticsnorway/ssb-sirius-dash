@@ -1,27 +1,27 @@
-import dash_ag_grid as dag
+import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from dash import Input, Output, State, callback, html, dcc
+from dash import Input
+from dash import Output
+from dash import State
+from dash import callback
+from dash import dcc
+from dash import html
 from dash.exceptions import PreventUpdate
-import dash_bootstrap_components as dbc
 
 from .modal_functions import sidebar_button
 
 
 class KvalitetsindikatorerModule:
-    """
-    indicators: list
-        List of indicators to include.
+    """indicators: list
+    List of indicators to include.
     """
 
-    def __init__(
-        self, indicators
-    ):
+    def __init__(self, indicators):
 
         self.indicators = indicators
         self.callbacks()
-
 
     def layout(self):
         return html.Div(
@@ -31,11 +31,14 @@ class KvalitetsindikatorerModule:
                         dbc.ModalHeader([dbc.ModalTitle("kvalitetsindikatorer")]),
                         dbc.ModalBody(
                             [
-                                html.Div([indicator.card for indicator in self.indicators], style={
-        'display': 'grid',
-        'gridTemplateColumns': 'repeat(auto-fit, minmax(200px, 1fr))',
-        'gridGap': '20px'
-    })
+                                html.Div(
+                                    [indicator.card for indicator in self.indicators],
+                                    style={
+                                        "display": "grid",
+                                        "gridTemplateColumns": "repeat(auto-fit, minmax(200px, 1fr))",
+                                        "gridGap": "20px",
+                                    },
+                                )
                             ]
                         ),
                     ],
@@ -48,7 +51,6 @@ class KvalitetsindikatorerModule:
                 ),
             ]
         )
-    
 
     def callbacks(self):
         @callback(
@@ -84,7 +86,7 @@ class KvalitetsindikatorEditeringsandel:
         self.get_change_data = get_change_data_func
         self.database = database
         if key_vars:
-            self.key_vars = key_vars # TODO
+            self.key_vars = key_vars  # TODO
 
         self.callbacks()
 
@@ -94,14 +96,13 @@ class KvalitetsindikatorEditeringsandel:
                     [
                         dbc.CardBody(
                             [
-                                html.H5(f"1 - Editeringsandel", className="card-title"),
+                                html.H5("1 - Editeringsandel", className="card-title"),
                                 dcc.Graph(
                                     figure=go.Figure(
                                         go.Indicator(
                                             mode="number+delta",
                                             value=self.editeringsandel(
-                                                self.database,
-                                                self.periode
+                                                self.database, self.periode
                                             ),
                                             number={"prefix": ""},
                                             # delta={"position": "bottom", "reference": self.editeringsandel(self.periode-1)}, # TODO
@@ -109,13 +110,9 @@ class KvalitetsindikatorEditeringsandel:
                                         )
                                     ).update_layout(
                                         height=150,
-                                        margin=dict(
-                                            l=20, r=20, t=20, b=20
-                                        ),
+                                        margin=dict(l=20, r=20, t=20, b=20),
                                     ),
-                                    config={
-                                        "displayModeBar": False
-                                    },
+                                    config={"displayModeBar": False},
                                 ),
                             ]
                         ),
@@ -143,11 +140,13 @@ class KvalitetsindikatorEditeringsandel:
                                             options=[
                                                 {"label": x, "value": x}
                                                 for x in [var_name, *grouping_vars]
-                                            ]
+                                            ],
                                         )
                                     ],
                                 ),
-                                dcc.Loading(id="kvalitet-editeringsandel-details",)
+                                dcc.Loading(
+                                    id="kvalitet-editeringsandel-details",
+                                ),
                             ]
                         ),
                     ],
@@ -194,25 +193,31 @@ class KvalitetsindikatorEditeringsandel:
             if n:
                 return not is_open
             return is_open
-        
+
         @callback(
             Output("kvalitet-editeringsandel-details", "children"),
-            Input("kvalitet-editeringsandel-dropdown", "value")
+            Input("kvalitet-editeringsandel-dropdown", "value"),
         )
         def editeringsandel_detailed(grouping_var):
             if grouping_var:
-                detail_data = self.editeringsandel_details(grouping_var, self.database, self.periode)
-                return dcc.Graph(figure=px.bar(detail_data, x="editeringsandel", y = grouping_var, orientation="h"))
+                detail_data = self.editeringsandel_details(
+                    grouping_var, self.database, self.periode
+                )
+                return dcc.Graph(
+                    figure=px.bar(
+                        detail_data,
+                        x="editeringsandel",
+                        y=grouping_var,
+                        orientation="h",
+                    )
+                )
             else:
                 raise PreventUpdate
 
 
-
 class KvalitetsindikatorEffektaveditering:
-    """
-    
-    
-    """
+    """ """
+
     def __init__(
         self,
         get_current_data_func,
@@ -228,34 +233,34 @@ class KvalitetsindikatorEffektaveditering:
         self.key_vars = key_vars
         self.grouping_vars = grouping_vars
         self.database = database
-        
+
         self.callbacks()
-        
+
         self.card = html.Div(
             [
                 dbc.Card(
                     [
                         dbc.CardBody(
                             [
-                                html.H5("4 - Effekten av editering", className="card-title"),
+                                html.H5(
+                                    "4 - Effekten av editering", className="card-title"
+                                ),
                                 dcc.Graph(
                                     figure=go.Figure(
                                         go.Indicator(
                                             mode="number+delta",
-                                            value=self.get_comparison_data(self.periode)["effekt av editering"][0],
+                                            value=self.get_comparison_data(
+                                                self.periode
+                                            )["effekt av editering"][0],
                                             number={"prefix": ""},
                                             # delta={"position": "bottom", "reference": self.editeringsandel(self.periode-1)}, # TODO
                                             domain={"x": [0, 1], "y": [0, 1]},
                                         )
                                     ).update_layout(
                                         height=150,
-                                        margin=dict(
-                                            l=20, r=20, t=20, b=20
-                                        ),
+                                        margin=dict(l=20, r=20, t=20, b=20),
                                     ),
-                                    config={
-                                        "displayModeBar": False
-                                    },
+                                    config={"displayModeBar": False},
                                 ),
                             ]
                         ),
@@ -283,11 +288,13 @@ class KvalitetsindikatorEffektaveditering:
                                             options=[
                                                 {"label": x, "value": x}
                                                 for x in [*grouping_vars]
-                                            ]
+                                            ],
                                         )
                                     ],
                                 ),
-                                dcc.Loading(id="kvalitet-effekt-details",)
+                                dcc.Loading(
+                                    id="kvalitet-effekt-details",
+                                ),
                             ]
                         ),
                     ],
@@ -295,26 +302,38 @@ class KvalitetsindikatorEffektaveditering:
                 ),
             ]
         )
-    
-    def get_comparison_data(self, periode, grouping = None):
+
+    def get_comparison_data(self, periode, grouping=None):
         if grouping is None:
-            grouping=[]
+            grouping = []
         elif isinstance(grouping, str):
             grouping = [grouping]
-        edited = self.get_current_data(self.database, periode).melt(
-            id_vars=["oppgavegivernummer", *grouping], value_vars=self.key_vars
-        ).groupby([*grouping, "variable"]).agg({"value": "sum"}).rename(columns={"value": "editert"}).reset_index()
+        edited = (
+            self.get_current_data(self.database, periode)
+            .melt(id_vars=["oppgavegivernummer", *grouping], value_vars=self.key_vars)
+            .groupby([*grouping, "variable"])
+            .agg({"value": "sum"})
+            .rename(columns={"value": "editert"})
+            .reset_index()
+        )
 
-        ueditert = self.get_original_data(self.database, periode).melt(
-            id_vars=["oppgavegivernummer", *grouping], value_vars=self.key_vars
-        ).groupby([*grouping, "variable"]).agg({"value": "sum"}).rename(columns={"value": "ueditert"}).reset_index()
+        ueditert = (
+            self.get_original_data(self.database, periode)
+            .melt(id_vars=["oppgavegivernummer", *grouping], value_vars=self.key_vars)
+            .groupby([*grouping, "variable"])
+            .agg({"value": "sum"})
+            .rename(columns={"value": "ueditert"})
+            .reset_index()
+        )
 
-        merged = edited.merge(ueditert, on = [*grouping, "variable"])
+        merged = edited.merge(ueditert, on=[*grouping, "variable"])
 
-        merged["effekt av editering"] = (merged["ueditert"] - merged["editert"]) / merged["editert"] * 100
+        merged["effekt av editering"] = (
+            (merged["ueditert"] - merged["editert"]) / merged["editert"] * 100
+        )
 
         return merged
-    
+
     def callbacks(self):
         @callback(
             Output("effekt-modal", "is_open"),
@@ -325,14 +344,21 @@ class KvalitetsindikatorEffektaveditering:
             if n:
                 return not is_open
             return is_open
-        
+
         @callback(
             Output("kvalitet-effekt-details", "children"),
-            Input("kvalitet-effekt-dropdown", "value")
+            Input("kvalitet-effekt-dropdown", "value"),
         )
         def kvalitet_effekt_detailed(grouping_var):
             if grouping_var:
                 detail_data = self.get_comparison_data(self.periode, grouping_var)
-                return dcc.Graph(figure=px.bar(detail_data, x="effekt av editering", y = grouping_var, orientation="h"))
+                return dcc.Graph(
+                    figure=px.bar(
+                        detail_data,
+                        x="effekt av editering",
+                        y=grouping_var,
+                        orientation="h",
+                    )
+                )
             else:
                 raise PreventUpdate
