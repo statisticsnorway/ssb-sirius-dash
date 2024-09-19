@@ -10,7 +10,7 @@ from dapla import FileClient
 VOF_COLUMNS = [
     "orgnr",
     "navn",
-    "nace1",
+    "sn07_1",
     "org_form",
     "statuskode",
     "antall_ansatte",
@@ -18,9 +18,8 @@ VOF_COLUMNS = [
     "sektor_2014",
     "undersektor_2014",
     "sf_type",
-    "kommune_nr"
+    "f_kommunenr"
 ]
-
 
 class VoFForetakTab:
     def __init__(self):
@@ -166,11 +165,11 @@ class VoFForetakTab:
 
                 orgnr = df["orgnr"][0]
                 navn = df["navn"][0]
-                nace = df["nace1"][0]
+                nace = df["sn07_1"][0]
                 statuskode = df["statuskode"][0]
                 ansatte = df["antall_ansatte"][0]
                 sektor = df["sektor_2014"][0]
-                kommune = df["kommune_nr"][0]
+                kommune = df["f_kommunenr"][0]
                 orgform = df["org_form"][0]
                 størrelse = "S (placeholder)"
                 ansatte_tot = df["ansatte_totalt"][0]
