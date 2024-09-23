@@ -215,6 +215,113 @@ class KvalitetsindikatorEditeringsandel:
                 raise PreventUpdate
 
 
+class KvalitetsindikatorKontrollutslagsandel:
+    def __init__(
+        self,
+        kontrolldokumentasjon,
+    ):
+        """Kontrolldokumentasjon skal være et datasett med kolonnene:
+        kontroll_id | Enheter kontrollert | Kontrollutslag
+        """
+        self.kontrolldokumentasjon = kontrolldokumentasjon
+        self.kontrollutslagsandel_total, self.kontrollutslagsandel_detaljer = (
+            self.kontrollutslag()
+        )
+
+        self.callbacks()
+
+        self.card = html.Div(
+            [
+                dbc.Card(
+                    [
+                        dbc.CardBody(
+                            [
+                                html.H5(
+                                    "2 - Kontrollutslagsandel", className="card-title"
+                                ),
+                                dcc.Graph(
+                                    figure=go.Figure(
+                                        go.Indicator(
+                                            mode="number+delta",
+                                            value=self.kontrollutslagsandel_total,
+                                            number={"prefix": ""},
+                                            # delta={"position": "bottom", "reference": self.editeringsandel(self.periode-1)}, # TODO
+                                            domain={"x": [0, 1], "y": [0, 1]},
+                                        )
+                                    ).update_layout(
+                                        height=150,
+                                        margin=dict(l=20, r=20, t=20, b=20),
+                                    ),
+                                    config={"displayModeBar": False},
+                                ),
+                            ]
+                        ),
+                        dbc.CardFooter(
+                            dbc.Button(
+                                "Detaljer",
+                                id="kvalitet-kontrollutslagsandel-button-details",
+                            )
+                        ),
+                    ],
+                    style={
+                        "width": "18rem",
+                        "margin": "10px",
+                    },
+                ),
+                dbc.Modal(
+                    [
+                        dbc.ModalHeader("2 - Kontrollutslagsandel"),
+                        dbc.ModalBody(
+                            [
+                                html.Div(
+                                    children=[
+                                        dag.AgGrid(
+                                            columnDefs=[
+                                                {"field": x}
+                                                for x in self.kontrollutslagsandel_detaljer.columns
+                                            ],
+                                            rowData=self.kontrollutslagsandel_detaljer.to_dict(
+                                                "records"
+                                            ),
+                                        )
+                                    ],
+                                ),
+                                dcc.Loading(
+                                    id="kvalitet-kontrollutslagsandel-details",
+                                ),
+                            ]
+                        ),
+                    ],
+                    id="kontrollutslagsandel-modal",
+                ),
+            ]
+        )
+
+    def kontrollutslag(self):
+        total = (
+            self.kontrolldokumentasjon["Kontrollutslag"].sum()
+            / self.kontrolldokumentasjon["Enheter kontrollert"].sum()
+        )
+
+        self.kontrolldokumentasjon["kontrollutslagsandel"] = (
+            self.kontrolldokumentasjon["Kontrollutslag"]
+            / self.kontrolldokumentasjon["Enheter kontrollert"]
+        )
+
+        return total, self.kontrolldokumentasjon
+
+    def callbacks(self):
+        @callback(
+            Output("kontrollutslagsandel-modal", "is_open"),
+            Input("kvalitet-kontrollutslagsandel-button-details", "n_clicks"),
+            State("kontrollutslagsandel-modal", "is_open"),
+        )
+        def kvalitetkontrollutslagsandel_modaltoggle(n, is_open):
+            if n:
+                return not is_open
+            return is_open
+
+
 class KvalitetsindikatorEffektaveditering:
     """ """
 
