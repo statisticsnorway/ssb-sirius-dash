@@ -1,9 +1,16 @@
 import json
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
-from dash import Input, Output, State, dcc, html, callback
+from dash import Input
+from dash import Output
+from dash import State
+from dash import callback
+from dash import dcc
+from dash import html
 from dash.exceptions import PreventUpdate
+
 from ..kostra_r_wrapper import hb_method
 from .modal_functions import sidebar_button
 
@@ -12,7 +19,7 @@ states_options = [
         "aar": ("var-aar", "value"),
         "termin": ("var-termin", "value"),
         "nace": ("var-nace", "value"),
-        "nspekfelt": ("var-nspekfelt", "value")
+        "nspekfelt": ("var-nspekfelt", "value"),
     }
 ]
 
@@ -23,13 +30,25 @@ ident_options = [
     }
 ]
 
+
 class HBMethodModule:
-    def __init__(self, database, hb_get_data_func, selected_state_keys, selected_ident, variable):
+    def __init__(
+        self,
+        database,
+        hb_get_data_func,
+        selected_state_keys,
+        selected_ident,
+        variable,
+        save_path_for_settings,
+    ):
         self.database = database
         self.hb_get_data = hb_get_data_func
+        self.save_path_for_settings = save_path_for_settings or None
         self.callbacks(selected_state_keys, selected_ident, variable)
 
-    def make_hb_data(self, data_df: pd.DataFrame, p_c: int, p_u: float, p_a: float, ident, variable) -> pd.DataFrame:
+    def make_hb_data(
+        self, data_df: pd.DataFrame, p_c: int, p_u: float, p_a: float, ident, variable
+    ) -> pd.DataFrame:
         hb_result = hb_method(
             data=data_df,
             p_c=p_c,
@@ -119,13 +138,47 @@ class HBMethodModule:
                                                 "Åpne infoboks", id="open", n_clicks=0
                                             ),
                                         ),
+                                        (
+                                            dbc.Col(
+                                                dbc.Button(
+                                                    "Lagre parametere for variabel",
+                                                    id="save-settings",
+                                                )
+                                            )
+                                            if self.save_path_for_settings
+                                            else None
+                                        ),
                                     ]
                                 ),
                                 dbc.Row(
                                     [
-                                        self._build_input_field("Skriv inn pC", "hb_pC", 20, 0, None, 20, "Parameter that controls the length of the confidence interval."),
-                                        self._build_input_field("Skriv inn pU", "hb_pU", 0.5, 0, 1, 0.5, "Parameter that adjusts for different level of the variables."),
-                                        self._build_input_field("Skriv inn pA", "hb_pA", 0.05, 0, 1, 0.05, "Parameter that adjusts for small differences between the median and the 1st or 3rd quartile."),
+                                        self._build_input_field(
+                                            "Skriv inn pC",
+                                            "hb_pC",
+                                            20,
+                                            0,
+                                            None,
+                                            20,
+                                            "Parameter that controls the length of the confidence interval.",
+                                        ),
+                                        self._build_input_field(
+                                            "Skriv inn pU",
+                                            "hb_pU",
+                                            0.5,
+                                            0,
+                                            1,
+                                            0.5,
+                                            "Parameter that adjusts for different level of the variables.",
+                                        ),
+                                        self._build_input_field(
+                                            "Skriv inn pA",
+                                            "hb_pA",
+                                            0.05,
+                                            0,
+                                            1,
+                                            0.05,
+                                            "Parameter that adjusts for small differences between the median and the 1st or 3rd quartile.",
+                                        ),
                                     ],
                                     style={"margin": "20px"},
                                 ),
@@ -144,7 +197,16 @@ class HBMethodModule:
             ]
         )
 
-    def _build_input_field(self, label, id_name, default_value, min_value, max_value, initial_value, tooltip_text):
+    def _build_input_field(
+        self,
+        label,
+        id_name,
+        default_value,
+        min_value,
+        max_value,
+        initial_value,
+        tooltip_text,
+    ):
         return dbc.Col(
             dbc.Stack(
                 [
@@ -176,7 +238,10 @@ class HBMethodModule:
 
     def callbacks(self, selected_state_keys, selected_ident, variable):
         states_dict = states_options[0]
-        dynamic_states = [State(states_dict[key][0], states_dict[key][1]) for key in selected_state_keys]
+        dynamic_states = [
+            State(states_dict[key][0], states_dict[key][1])
+            for key in selected_state_keys
+        ]
 
         ident = ident_options[0][selected_ident]
         component_id, property_name = ident
@@ -188,11 +253,13 @@ class HBMethodModule:
             State("hb_pC", "value"),
             State("hb_pU", "value"),
             State("hb_pA", "value"),
-            *dynamic_states
+            *dynamic_states,
         )
         def use_hb(n_click, pC, pU, pA, *dynamic_states):
-            states_values = dynamic_states[:len(selected_state_keys)]
-            state_params = {key: value for key, value in zip(selected_state_keys, states_values)}
+            states_values = dynamic_states[: len(selected_state_keys)]
+            state_params = {
+                key: value for key, value in zip(selected_state_keys, states_values)
+            }
 
             args = []
             for key in selected_state_keys:
@@ -230,3 +297,40 @@ class HBMethodModule:
             if clickdata:
                 ident = clickdata["points"][0]["hovertext"]
                 return ident
+
+        # Må også legge til callback som oppdaterer verdier når variabelvelger oppdateres.
+        # Mulighet for å velge hvilke states som skal påvirke lagret verdi?
+        if self.save_path_for_settings:
+
+            @callback(
+                Input("save-settings", "n_clicks"),
+                State("hb_pC", "value"),
+                State("hb_pU", "value"),
+                State("hb_pA", "value"),
+            )
+            def hb_save_parameter_settings(self, field, pC, pU, pA, nace, n_click):
+                path = self.save_path_for_settings
+                if n_click:
+                    try:
+                        dp.FileClient.ls(f"{path}/hb_settings.json")
+                        with dp.FileClient.gcs_open(
+                            f"{path}/hb_settings.json",
+                            "r",
+                        ) as outfile:
+                            settings = json.load(outfile)
+                    except FileNotFoundError:
+                        settings = {}
+                    settings[f"{nace}_{field}"] = {
+                        "pC": pC,
+                        "pU": pU,
+                        "pA": pA,
+                    }
+                    print(settings)
+                    with dp.FileClient.gcs_open(
+                        f"{path}/hb_settings.json",
+                        "w",
+                    ) as outfile:
+                        json.dump(settings, outfile)
+                    return None
+                else:
+                    raise PreventUpdate
