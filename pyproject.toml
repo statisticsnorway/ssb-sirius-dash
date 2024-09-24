@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ssb-sirius-dash"
-version = "0.2.0a3"
+version = "0.2.0a6"
 description = "SSB Sirius Dash"
 authors = ["Stian Elisenberg <seg@ssb.no>"]
 license = "MIT"
@@ -24,6 +24,7 @@ rpy2 = "^3.5.15"
 dash-mantine-components = "^0.14.4"
 dash-ag-grid = "^31.2.0"
 dash-bootstrap-templates = "^1.2.4"
+duckdb = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pygments = ">=2.10.0"

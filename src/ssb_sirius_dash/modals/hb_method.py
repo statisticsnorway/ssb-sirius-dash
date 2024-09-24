@@ -11,7 +11,8 @@ states_options = [
     {
         "aar": ("var-aar", "value"),
         "termin": ("var-termin", "value"),
-        "nace": ("var-nace", "value")
+        "nace": ("var-nace", "value"),
+        "nspekfelt": ("var-nspekfelt", "value")
     }
 ]
 

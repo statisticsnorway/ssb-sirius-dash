@@ -11,6 +11,7 @@ variable_options = {
     "fylke": {"title": "Fylke", "id": "var-fylke", "type": "text"},
     "skjemaenhet": {"title": "Skjemaenhet", "id": "var-skjemaenhet", "type": "text"},
     "prodcomkode": {"title": "Prodcomkode", "id": "var-prodcomkode", "type": "text"},
+    "nspekfelt": {"title": "NSPEK-felt", "id": "var-nspekfelt", "type": "text"},
 }
 
 
