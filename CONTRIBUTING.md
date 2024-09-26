@@ -30,7 +30,16 @@ and/or steps to reproduce the issue.
 
 Request features on the [Issue Tracker].
 
+## General suggestions
+### The user should modify data to fit the requirements of your modal/tab
+In order to keep the code easier to work with, describe how the required data should look instead of creating functionality to handle different formats.
+
+## How to make your own tab
+
+
 ## How to make your own module/modal
+
+
 ### The class structure
 Each module is written as a class containing a layout and callbacks:
 
@@ -75,14 +84,14 @@ Each module is written as a class containing a layout and callbacks:
 In order for this to work you need to use @callback and not @app.callback. This is to make the callback code more modular and work with this way of importing it.
 
 #### Allowing customized functions
-If you need the user to define a function for some use case in your module you can include customized functions in the class by adding a parameter to the __init__:
+If you need the user to define a function for some use case in your module you can include user-created functions in the class by adding a parameter to the __init__:
 
     class Module:
         def __init__(self, database, selected_state_keys, selected_ident, variable, custom_function):
             self.database = database
             self.custom_function = custom_function
             self.callbacks(selected_state_keys, selected_ident, variable)
-            
+
 An example of a use-case for this is a function to get/transform data to adhere to a specific format.
 
 #### All in one (AiO) components
