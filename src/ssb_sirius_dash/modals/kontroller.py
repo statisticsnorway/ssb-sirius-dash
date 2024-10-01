@@ -7,8 +7,9 @@ from dash import State
 from dash import callback
 from dash import html
 
-from ..control.framework import lag_kontroll_dokumentasjon
 from ssb_sirius_dash import sidebar_button
+
+from ..control.framework import lag_kontroll_dokumentasjon
 
 # +
 ident_options = [
