@@ -27,9 +27,7 @@ class Kontroller:
 
             import dapla as dp
 
-            with dp.FileClient.gcs_open(
-                "ssb-sirius-editering-data-produkt-prod/test/kontrollrapport.json", "r"
-            ) as outfile:
+            with dp.FileClient.gcs_open(kontroll_dokumentasjon_path, "r") as outfile:
                 data = json.load(outfile)
             self.kontrolltabell = lag_kontroll_dokumentasjon(data)
             self.utslagstabell = pd.DataFrame(data["kontrollutslag"])
