@@ -1,11 +1,13 @@
 # %%
 import numpy as np
 import pandas as pd
-from kontroll_rammeverk import Kontrolltype
-from kontroll_rammeverk import automatisk_oppretting
-from kontroll_rammeverk import kontroll
-from kontroll_rammeverk import lag_kvalitetsrapport
 
+from ssb_sirius_dash import Kontrolltype
+from ssb_sirius_dash import automatisk_oppretting
+from ssb_sirius_dash import kontroll
+from ssb_sirius_dash import lag_kvalitetsrapport
+
+# %%
 eksempel_data = pd.DataFrame(
     {"Alder": [120, 90, -50, 10, 20, 40], "ident": [1, 2, 3, 4, 5, 6]}
 )
