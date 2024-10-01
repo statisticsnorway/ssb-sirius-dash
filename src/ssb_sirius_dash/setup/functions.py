@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import html
 
+
 def skjermcard(text, component_id, input_type, value=None):
     if value is None:
         value = ""
@@ -21,10 +22,11 @@ def skjermcard(text, component_id, input_type, value=None):
                 ],
                 style={"max-height": "100%"},
             ),
-        style={"max-height": "100%"},
+            style={"max-height": "100%"},
         )
     )
     return card
+
 
 def sidebar_button(icon, text, component_id, additional_styling=None):
     if additional_styling is None:

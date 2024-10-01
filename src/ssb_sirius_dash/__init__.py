@@ -1,6 +1,7 @@
 """SSB Sirius Dash."""
-import os
+
 import importlib
+import os
 
 # Path to the src folder
 src_dir = os.path.dirname(__file__)
@@ -14,7 +15,9 @@ for root, dirs, files in os.walk(src_dir):
             module_path = module_path.replace(os.sep, ".").replace(".py", "")
 
             # Import the module dynamically
-            module = importlib.import_module(f".{module_path}", package="ssb_sirius_dash")
+            module = importlib.import_module(
+                f".{module_path}", package="ssb_sirius_dash"
+            )
 
             # Get all attributes that don't start with "_"
             for attr_name in dir(module):

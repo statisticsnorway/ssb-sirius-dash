@@ -1,11 +1,13 @@
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
-from dash import html, callback
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
-import pyarrow.parquet as pq
 import duckdb
+import pyarrow.parquet as pq
 from dapla import FileClient
+from dash import callback
+from dash import html
+from dash.dependencies import Input
+from dash.dependencies import Output
+from dash.dependencies import State
 
 VOF_COLUMNS = [
     "orgnr",
@@ -18,8 +20,9 @@ VOF_COLUMNS = [
     "sektor_2014",
     "undersektor_2014",
     "sf_type",
-    "f_kommunenr"
+    "f_kommunenr",
 ]
+
 
 class VoFForetakTab:
     def __init__(self):
@@ -44,23 +47,17 @@ class VoFForetakTab:
 
     def register_table(self):
         fs = FileClient.get_gcs_file_system()
-        fil_ssb_foretak = "ssb-vof-data-delt-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
-        ssb_foretak = pq.read_table(
-            fil_ssb_foretak,
-            columns=VOF_COLUMNS,
-            filesystem = fs
+        fil_ssb_foretak = (
+            "ssb-vof-data-delt-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
         )
+        ssb_foretak = pq.read_table(fil_ssb_foretak, columns=VOF_COLUMNS, filesystem=fs)
         dsbbase = duckdb.connect()
         dsbbase.register("ssb_foretak", ssb_foretak)
         return dsbbase
 
     def layout(self):
         layout = html.Div(
-            style = {
-                "height": "100%",
-                "display": "flex",
-                "flexDirection": "column"
-            },
+            style={"height": "100%", "display": "flex", "flexDirection": "column"},
             children=[
                 html.Div(
                     style={
@@ -78,23 +75,12 @@ class VoFForetakTab:
                                 "grid-template-columns": "20% 80%",
                             },
                             children=[
-                                self.generate_card("Orgnr", "tab-vof_foretak-orgnrcard", "text"),
-                                self.generate_card("Navn", "tab-vof_foretak-navncard", "text"),
-                            ]
-                        ),
-                        html.Div(
-                            style={
-                                "height": "100%",
-                                "overflow": "hidden",
-                                "display": "grid",
-                                "grid-template-columns": "20% 20% 20% 20% 20%",
-                            },
-                            children=[
-                                self.generate_card("Nace", "tab-vof_foretak-nacecard", "text"),
-                                self.generate_card("Statuskode", "tab-vof_foretak-statuscard", "text"),
-                                self.generate_card("Ansatte", "tab-vof_foretak-ansattecard", "text"),
-                                self.generate_card("Sektor 2014", "tab-vof_foretak-sektorcard", "text"),
-                                self.generate_card("Kommunenummer", "tab-vof_foretak-kommunecard", "text"),
+                                self.generate_card(
+                                    "Orgnr", "tab-vof_foretak-orgnrcard", "text"
+                                ),
+                                self.generate_card(
+                                    "Navn", "tab-vof_foretak-navncard", "text"
+                                ),
                             ],
                         ),
                         html.Div(
@@ -105,11 +91,56 @@ class VoFForetakTab:
                                 "grid-template-columns": "20% 20% 20% 20% 20%",
                             },
                             children=[
-                                self.generate_card("Organisasjonsform", "tab-vof_foretak-orgformcard", "text"),
-                                self.generate_card("Størrelseskode", "tab-vof_foretak-størrelsecard", "text"),
-                                self.generate_card("Ansatte tot.", "tab-vof_foretak-totansattecard", "text"),
-                                self.generate_card("Undersektor", "tab-vof_foretak-undersektorcard", "text"),
-                                self.generate_card("Type", "tab-vof_foretak-typecard", "text"),
+                                self.generate_card(
+                                    "Nace", "tab-vof_foretak-nacecard", "text"
+                                ),
+                                self.generate_card(
+                                    "Statuskode", "tab-vof_foretak-statuscard", "text"
+                                ),
+                                self.generate_card(
+                                    "Ansatte", "tab-vof_foretak-ansattecard", "text"
+                                ),
+                                self.generate_card(
+                                    "Sektor 2014", "tab-vof_foretak-sektorcard", "text"
+                                ),
+                                self.generate_card(
+                                    "Kommunenummer",
+                                    "tab-vof_foretak-kommunecard",
+                                    "text",
+                                ),
+                            ],
+                        ),
+                        html.Div(
+                            style={
+                                "height": "100%",
+                                "overflow": "hidden",
+                                "display": "grid",
+                                "grid-template-columns": "20% 20% 20% 20% 20%",
+                            },
+                            children=[
+                                self.generate_card(
+                                    "Organisasjonsform",
+                                    "tab-vof_foretak-orgformcard",
+                                    "text",
+                                ),
+                                self.generate_card(
+                                    "Størrelseskode",
+                                    "tab-vof_foretak-størrelsecard",
+                                    "text",
+                                ),
+                                self.generate_card(
+                                    "Ansatte tot.",
+                                    "tab-vof_foretak-totansattecard",
+                                    "text",
+                                ),
+                                self.generate_card(
+                                    "Undersektor",
+                                    "tab-vof_foretak-undersektorcard",
+                                    "text",
+                                ),
+                                self.generate_card(
+                                    "Type", "tab-vof_foretak-typecard", "text"
+                                ),
                             ],
                         ),
                         html.Div(
@@ -119,7 +150,7 @@ class VoFForetakTab:
                                     style={
                                         "textAlign": "center",
                                         "fontWeight": "bold",
-                                    }
+                                    },
                                 ),
                             ]
                         ),
@@ -175,4 +206,17 @@ class VoFForetakTab:
                 ansatte_tot = df["ansatte_totalt"][0]
                 undersektor = df["undersektor_2014"][0]
                 typen = df["sf_type"][0]
-                return orgnr, navn, nace, statuskode, ansatte, sektor, kommune, orgform, størrelse, ansatte_tot, undersektor, typen
+                return (
+                    orgnr,
+                    navn,
+                    nace,
+                    statuskode,
+                    ansatte,
+                    sektor,
+                    kommune,
+                    orgform,
+                    størrelse,
+                    ansatte_tot,
+                    undersektor,
+                    typen,
+                )
