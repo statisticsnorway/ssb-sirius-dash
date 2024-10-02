@@ -15,7 +15,7 @@ classifiers = ["Development Status :: 1 - Planning"]
 Changelog = "https://github.com/statisticsnorway/ssb-sirius-dash/releases"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.13"
 click = ">=8.0.1"
 dash = "^2.15.0"
 dash-bootstrap-components = "^1.5.0"
@@ -25,8 +25,8 @@ dash-mantine-components = "^0.14.4"
 dash-ag-grid = "^31.2.0"
 dash-bootstrap-templates = "^1.2.4"
 duckdb = "^1.0.0"
-dapla-toolbelt = "^3.0.1"
 pyarrow = "^17.0.0"
+dapla-toolbelt = "^2.0.8"
 
 [tool.poetry.group.dev.dependencies]
 pygments = ">=2.10.0"
