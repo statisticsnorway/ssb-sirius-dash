@@ -9,6 +9,7 @@ from dash import html
 
 from ssb_sirius_dash import sidebar_button
 
+from ..control.framework import Kvalitetsrapport
 from ..control.framework import lag_kontroll_dokumentasjon
 
 # +
@@ -21,15 +22,10 @@ ident_options = [
 
 
 class Kontroller:
-    def __init__(self, ident, kontroll_dokumentasjon_path=None):
+    def __init__(self, ident, kvalitetsrapport_path):
         self.ident = ident_options[0][ident]
-        if kontroll_dokumentasjon_path:
-            import json
-
-            import dapla as dp
-
-            with dp.FileClient.gcs_open(kontroll_dokumentasjon_path, "r") as outfile:
-                data = json.load(outfile)
+        if kvalitetsrapport_path:
+            data = Kvalitetsrapport.from_json(kvalitetsrapport_path).to_dict()
             self.kontrolltabell = lag_kontroll_dokumentasjon(data)
             self.utslagstabell = pd.DataFrame(data["kontrollutslag"])
         self.callbacks()
