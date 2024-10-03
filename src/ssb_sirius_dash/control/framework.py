@@ -226,9 +226,53 @@ class Kvalitetsrapport:
             "kontrolldokumentasjon": kontroll_dokumentasjon,
         }
 
-    def save_report(self, path):
+    def save_report(self, path: str):
         with dp.FileClient.gcs_open(path, "w") as outfile:
             json.dump(self.to_dict(), outfile)
+
+    @classmethod
+    def from_json(cls, path: str):
+        import json
+
+        with dp.FileClient.gcs_open(path, "r") as outfile:
+            json_data = json.load(outfile)
+        return cls.from_dict(json_data)
+
+    @classmethod
+    def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]):
+        statistics_name = kvalitetsrapport_dict["statistikknavn"]
+        quality_control_id = kvalitetsrapport_dict["quality_control_id"]
+        data_location = kvalitetsrapport_dict["data_plassering"]
+        data_period = kvalitetsrapport_dict["data_periode"]
+        quality_control_datetime = datetime.datetime.fromisoformat(
+            kvalitetsrapport_dict["kvalitetsrapport opprettet"]
+        )
+
+        quality_control_results = [
+            Kontrolltype[result]
+            for result in kvalitetsrapport_dict["typer_kontrollutslag"]
+        ]
+
+        quality_control_errors = [
+            Feilrapport(
+                sub_control_id=error["kontrollnavn"],
+                result_type=Kontrolltype[error["kontrolltype"]],
+                context_id=error["observasjon_id"],
+                error_description=error.get("feilbeskrivelse"),
+                important_variables=error.get("relevante_variabler"),
+            )
+            for error in kvalitetsrapport_dict["kontrollutslag"]
+        ]
+
+        return cls(
+            statistics_name=statistics_name,
+            quality_control_id=quality_control_id,
+            data_location=data_location,
+            data_period=data_period,
+            quality_control_datetime=quality_control_datetime,
+            quality_control_results=quality_control_results,
+            quality_control_errors=quality_control_errors,
+        )
 
 
 def lag_kvalitetsrapport(
