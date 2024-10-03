@@ -104,15 +104,15 @@ class Kontroller:
             State("kontroll-table-overview", "rowData"),
         )
         def kontroll_main_click(click, rowData):
-            print(click)
-            kontroll = rowData[click["rowIndex"]]["kontroll_id"]
-            return {
-                "kontrollnavn": {
-                    "filterType": "text",
-                    "type": "contains",
-                    "filter": kontroll,
+            if click:
+                kontroll = rowData[click["rowIndex"]]["kontroll_id"]
+                return {
+                    "kontrollnavn": {
+                        "filterType": "text",
+                        "type": "contains",
+                        "filter": kontroll,
+                    }
                 }
-            }
 
         @callback(
             Output(self.ident[0], self.ident[1]),
@@ -120,4 +120,5 @@ class Kontroller:
             State("kontroll-table-detailed", "rowData"),
         )
         def kontroll_detail_click(click, rowData):
-            return rowData[click["rowIndex"]]["observasjon_id"]
+            if click:
+                return rowData[click["rowIndex"]]["observasjon_id"]
