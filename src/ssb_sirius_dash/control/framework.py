@@ -195,7 +195,7 @@ class Kvalitetsrapport:
         quality_control_datetime: datetime,
         quality_control_results: list[Kontrolltype],
         quality_control_errors: list[Feilrapport],
-        corrections=list[Feilrapport],
+        quality_control_documentation=None,
     ):
         self.statistics_name = statistics_name
         self.quality_control_id = quality_control_id
@@ -204,6 +204,7 @@ class Kvalitetsrapport:
         self.quality_control_datetime = quality_control_datetime
         self.quality_control_results = quality_control_results
         self.quality_control_errors = quality_control_errors
+        self.quality_control_documentation = quality_control_documentation
 
     def to_dict(self) -> dict[str, Any]:
         """Converts the quality control result into a dictionary format.
@@ -223,7 +224,11 @@ class Kvalitetsrapport:
             "kontrollutslag": [
                 error.to_dict() for error in self.quality_control_errors
             ],
-            "kontrolldokumentasjon": kontroll_dokumentasjon,
+            "kontrolldokumentasjon": (
+                self.quality_control_documentation
+                if self.quality_control_documentation is not None
+                else kontroll_dokumentasjon
+            ),
         }
 
     def save_report(self, path: str):
@@ -263,6 +268,7 @@ class Kvalitetsrapport:
             )
             for error in kvalitetsrapport_dict["kontrollutslag"]
         ]
+        quality_control_documentation = kvalitetsrapport_dict["kontrolldokumentasjon"]
 
         return cls(
             statistics_name=statistics_name,
@@ -272,6 +278,7 @@ class Kvalitetsrapport:
             quality_control_datetime=quality_control_datetime,
             quality_control_results=quality_control_results,
             quality_control_errors=quality_control_errors,
+            quality_control_documentation=quality_control_documentation,
         )
 
 
