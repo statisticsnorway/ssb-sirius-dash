@@ -204,7 +204,6 @@ class Kvalitetsrapport:
         self.quality_control_datetime = quality_control_datetime
         self.quality_control_results = quality_control_results
         self.quality_control_errors = quality_control_errors
-        self.corrections = corrections
 
     def to_dict(self) -> dict[str, Any]:
         """Converts the quality control result into a dictionary format.
@@ -224,7 +223,6 @@ class Kvalitetsrapport:
             "kontrollutslag": [
                 error.to_dict() for error in self.quality_control_errors
             ],
-            "korreksjoner": [error.to_dict() for error in self.quality_control_errors],
             "kontrolldokumentasjon": kontroll_dokumentasjon,
         }
 
