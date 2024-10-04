@@ -469,3 +469,104 @@ class KvalitetsindikatorEffektaveditering:
                 )
             else:
                 raise PreventUpdate
+
+
+class KvalitetsindikatorTreffsikkerhet:
+    def __init__(kvalitetsrapport_path, get_edits_list_func):
+        self.kvalitetsrapport_path = kvalitetsrapport_path
+        self.kvalitetsrapport = "temp"  # lese med kontroll framework
+        self.get_edits_list_func = get_edits_list_func
+
+        self.treffsikkerhet = self.beregn_treffsikkerhet()
+
+        self.card = html.Div(
+            [
+                dbc.Card(
+                    [
+                        dbc.CardBody(
+                            [
+                                html.H5("26 - Treffsikkerhet", className="card-title"),
+                                dcc.Graph(
+                                    figure=go.Figure(
+                                        go.Indicator(
+                                            mode="number+delta",
+                                            value=self.treffsikkerhet["total"],
+                                            number={"prefix": ""},
+                                            # delta={"position": "bottom", "reference": self.editeringsandel(self.periode-1)}, # TODO
+                                            domain={"x": [0, 1], "y": [0, 1]},
+                                        )
+                                    ).update_layout(
+                                        height=150,
+                                        margin=dict(l=20, r=20, t=20, b=20),
+                                    ),
+                                    config={"displayModeBar": False},
+                                ),
+                            ]
+                        ),
+                        dbc.CardFooter(
+                            dbc.Button(
+                                "Detaljer",
+                                id="kvalitet-treffsikkerhet-button-details",
+                            )
+                        ),
+                    ],
+                    style={
+                        "width": "18rem",
+                        "margin": "10px",
+                    },
+                ),
+                dbc.Modal(
+                    [
+                        dbc.ModalHeader("26 - Treffsikkerhet"),
+                        dbc.ModalBody(
+                            [
+                                html.Div(
+                                    dcc.Graph(
+                                        figure=px.bar(
+                                            y=self.treffsikkerhet.keys(),
+                                            x=self.treffsikkerhet.values(),
+                                            orientation="h",
+                                        )
+                                    )
+                                ),
+                            ]
+                        ),
+                    ],
+                    id="treffsikkerhet-modal",
+                ),
+            ]
+        )
+
+        self.callbacks()
+
+    def beregn_treffsikkerhet(self):
+        if isinstance(self.kvalitetsrapport, Kvalitetsrapport):
+            kvalitetsrapport = self.kvalitetsrapport.to_dict()
+        edits = self.get_edits_list_func()
+        treffsikkerhet = {
+            "total": (len(edits) / len(self.kvalitetsrapport["kontrollutslag"])) * 100
+        }
+        for i in self.kvalitetsrapport["kontrolldokumentasjon"]:
+            kontrollutslag = self.kvalitetsrapport["kontrolldokumentasjon"][i][
+                "Kontrollutslag"
+            ]
+            celler_markert = [
+                (x["observasjon_id"], var)
+                for x in self.kvalitetsrapport["kontrollutslag"]
+                if x["kontrollnavn"] == i
+                for var in x["relevante_variabler"]
+            ]
+            celler_markert_editert = [x for x in edits if x in celler_markert]
+            treffsikkerhet[i] = (len(celler_markert_editert) / kontrollutslag) * 100
+        return treffsikkerhet
+
+    def callbacks(self):
+        @callback(
+            Output("treffsikkerhet-modal", "is_open"),
+            Input("kvalitet-treffsikkerhet-button-details", "n_clicks"),
+            State("treffsikkerhet-modal", "is_open"),
+        )
+        def kvalitettreffsikkerhet_modaltoggle(n, is_open):
+            if n:
+                return not is_open
+            return is_open
