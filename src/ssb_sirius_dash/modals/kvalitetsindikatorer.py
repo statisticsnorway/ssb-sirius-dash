@@ -543,21 +543,28 @@ class KvalitetsindikatorTreffsikkerhet:
         if isinstance(self.kvalitetsrapport, Kvalitetsrapport):
             kvalitetsrapport = self.kvalitetsrapport.to_dict()
         edits = self.get_edits_list_func()
-        treffsikkerhet = {
-            "total": (len(edits) / len(self.kvalitetsrapport["kontrollutslag"])) * 100
-        }
-        for i in self.kvalitetsrapport["kontrolldokumentasjon"]:
-            kontrollutslag = self.kvalitetsrapport["kontrolldokumentasjon"][i][
+        treffsikkerhet = {}
+        total_kontrollutslag = 0
+        total_celler_markert_editert = 0
+        for i in kvalitetsrapport["kontrolldokumentasjon"]:
+            kontrollutslag = kvalitetsrapport["kontrolldokumentasjon"][i][
                 "Kontrollutslag"
             ]
+            total_kontrollutslag = total_kontrollutslag + kontrollutslag
             celler_markert = [
                 (x["observasjon_id"], var)
-                for x in self.kvalitetsrapport["kontrollutslag"]
+                for x in kvalitetsrapport["kontrollutslag"]
                 if x["kontrollnavn"] == i
                 for var in x["relevante_variabler"]
             ]
-            celler_markert_editert = [x for x in edits if x in celler_markert]
-            treffsikkerhet[i] = (len(celler_markert_editert) / kontrollutslag) * 100
+            celler_markert_editert = len([x for x in edits if x in celler_markert])
+            total_celler_markert_editert = (
+                total_celler_markert_editert + celler_markert_editert
+            )
+            treffsikkerhet[i] = (celler_markert_editert / kontrollutslag) * 100
+        treffsikkerhet["total"] = (
+            total_celler_markert_editert / total_kontrollutslag
+        ) * 100
         return treffsikkerhet
 
     def callbacks(self):
