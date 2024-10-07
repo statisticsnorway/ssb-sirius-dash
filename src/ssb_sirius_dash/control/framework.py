@@ -195,7 +195,7 @@ class Kvalitetsrapport:
         quality_control_datetime: datetime,
         quality_control_results: list[Kontrolltype],
         quality_control_errors: list[Feilrapport],
-        corrections=list[Feilrapport],
+        quality_control_documentation=None,
     ):
         self.statistics_name = statistics_name
         self.quality_control_id = quality_control_id
@@ -204,7 +204,7 @@ class Kvalitetsrapport:
         self.quality_control_datetime = quality_control_datetime
         self.quality_control_results = quality_control_results
         self.quality_control_errors = quality_control_errors
-        self.corrections = corrections
+        self.quality_control_documentation = quality_control_documentation
 
     def to_dict(self) -> dict[str, Any]:
         """Converts the quality control result into a dictionary format.
@@ -224,13 +224,62 @@ class Kvalitetsrapport:
             "kontrollutslag": [
                 error.to_dict() for error in self.quality_control_errors
             ],
-            "korreksjoner": [error.to_dict() for error in self.quality_control_errors],
-            "kontrolldokumentasjon": kontroll_dokumentasjon,
+            "kontrolldokumentasjon": (
+                self.quality_control_documentation
+                if self.quality_control_documentation is not None
+                else kontroll_dokumentasjon
+            ),
         }
 
-    def save_report(self, path):
+    def save_report(self, path: str):
         with dp.FileClient.gcs_open(path, "w") as outfile:
             json.dump(self.to_dict(), outfile)
+
+    @classmethod
+    def from_json(cls, path: str):
+        import json
+
+        with dp.FileClient.gcs_open(path, "r") as outfile:
+            json_data = json.load(outfile)
+        return cls.from_dict(json_data)
+
+    @classmethod
+    def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]):
+        statistics_name = kvalitetsrapport_dict["statistikknavn"]
+        quality_control_id = kvalitetsrapport_dict["quality_control_id"]
+        data_location = kvalitetsrapport_dict["data_plassering"]
+        data_period = kvalitetsrapport_dict["data_periode"]
+        quality_control_datetime = datetime.datetime.fromisoformat(
+            kvalitetsrapport_dict["kvalitetsrapport opprettet"]
+        )
+
+        quality_control_results = [
+            Kontrolltype[result]
+            for result in kvalitetsrapport_dict["typer_kontrollutslag"]
+        ]
+
+        quality_control_errors = [
+            Feilrapport(
+                sub_control_id=error["kontrollnavn"],
+                result_type=Kontrolltype[error["kontrolltype"]],
+                context_id=error["observasjon_id"],
+                error_description=error.get("feilbeskrivelse"),
+                important_variables=error.get("relevante_variabler"),
+            )
+            for error in kvalitetsrapport_dict["kontrollutslag"]
+        ]
+        quality_control_documentation = kvalitetsrapport_dict["kontrolldokumentasjon"]
+
+        return cls(
+            statistics_name=statistics_name,
+            quality_control_id=quality_control_id,
+            data_location=data_location,
+            data_period=data_period,
+            quality_control_datetime=quality_control_datetime,
+            quality_control_results=quality_control_results,
+            quality_control_errors=quality_control_errors,
+            quality_control_documentation=quality_control_documentation,
+        )
 
 
 def lag_kvalitetsrapport(
