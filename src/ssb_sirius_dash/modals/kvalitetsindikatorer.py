@@ -10,7 +10,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
-from .modal_functions import sidebar_button
+from ssb_sirius_dash import sidebar_button
 
 
 class KvalitetsindikatorerModule:
