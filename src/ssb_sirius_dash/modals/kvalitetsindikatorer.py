@@ -472,9 +472,28 @@ class KvalitetsindikatorEffektaveditering:
 
 
 class KvalitetsindikatorTreffsikkerhet:
-    def __init__(kvalitetsrapport_path, get_edits_list_func):
+    def __init__(
+        self, get_edits_list_func, kvalitetsrapport=None, kvalitetsrapport_path=None
+    ):
+        if kvalitetsrapport_path and kvalitetsrapport:
+            raise ValueError(
+                "Remove either kvalitetsrapport or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kvalitetsrapport and kvalitetsrapport_path is defined. If both are defined, it will not work."
+            )
+        if kvalitetsrapport_path:
+            import json
+
+            import dapla as dp
+
+            with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
+                data = json.load(outfile)
+            self.kvalitetsrapport = data
+        elif kvalitetsrapport:
+            self.kvalitetsrapport = kvalitetsrapport
+        else:
+            raise ValueError(
+                "Either kvalitetsrapport or kvalitetsrapport_path needs to have a value."
+            )
         self.kvalitetsrapport_path = kvalitetsrapport_path
-        self.kvalitetsrapport = "temp"  # lese med kontroll framework
         self.get_edits_list_func = get_edits_list_func
 
         self.treffsikkerhet = self.beregn_treffsikkerhet()
@@ -542,6 +561,8 @@ class KvalitetsindikatorTreffsikkerhet:
     def beregn_treffsikkerhet(self):
         if isinstance(self.kvalitetsrapport, Kvalitetsrapport):
             kvalitetsrapport = self.kvalitetsrapport.to_dict()
+        else:
+            kvalitetsrapport = self.kvalitetsrapport
         edits = self.get_edits_list_func()
         treffsikkerhet = {}
         total_kontrollutslag = 0
