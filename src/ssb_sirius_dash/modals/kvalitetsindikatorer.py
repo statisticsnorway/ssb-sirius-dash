@@ -58,7 +58,7 @@ class KvalitetsindikatorerModule:
             Input("sidebar-kvalitetsindikatorer-button", "n_clicks"),
             State("kvalitetsindikatorer-modal", "is_open"),
         )
-        def makrotabellmodal_toggle(n, is_open):
+        def kvalitetsindikatorermodal_toggle(n, is_open):
             if n:
                 return not is_open
             return is_open
