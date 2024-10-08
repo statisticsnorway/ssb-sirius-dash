@@ -1,7 +1,10 @@
 import dash_ag_grid as dag
-from dash import dcc, html, callback
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
+from dash import callback
+from dash import dcc
+from dash import html
+from dash.dependencies import Input
+from dash.dependencies import Output
+from dash.dependencies import State
 
 input_options = {
     "orgb": Input("var-bedrift", "value"),

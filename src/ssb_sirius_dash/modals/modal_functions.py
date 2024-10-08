@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import html
 
+
 def sidebar_button(icon, text, component_id, additional_styling=None):
     if additional_styling is None:
         additional_styling = {}
