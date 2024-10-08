@@ -10,7 +10,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
-from .modal_functions import sidebar_button
+from ssb_sirius_dash import sidebar_button
 
 
 class KvalitetsindikatorerModule:
@@ -58,7 +58,7 @@ class KvalitetsindikatorerModule:
             Input("sidebar-kvalitetsindikatorer-button", "n_clicks"),
             State("kvalitetsindikatorer-modal", "is_open"),
         )
-        def makrotabellmodal_toggle(n, is_open):
+        def kvalitetsindikatorermodal_toggle(n, is_open):
             if n:
                 return not is_open
             return is_open
@@ -469,3 +469,132 @@ class KvalitetsindikatorEffektaveditering:
                 )
             else:
                 raise PreventUpdate
+
+
+class KvalitetsindikatorTreffsikkerhet:
+    def __init__(
+        self, get_edits_list_func, kvalitetsrapport=None, kvalitetsrapport_path=None
+    ):
+        if kvalitetsrapport_path and kvalitetsrapport:
+            raise ValueError(
+                "Remove either kvalitetsrapport or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kvalitetsrapport and kvalitetsrapport_path is defined. If both are defined, it will not work."
+            )
+        if kvalitetsrapport_path:
+            import json
+
+            import dapla as dp
+
+            with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
+                data = json.load(outfile)
+            self.kvalitetsrapport = data
+        elif kvalitetsrapport:
+            self.kvalitetsrapport = kvalitetsrapport
+        else:
+            raise ValueError(
+                "Either kvalitetsrapport or kvalitetsrapport_path needs to have a value."
+            )
+        self.kvalitetsrapport_path = kvalitetsrapport_path
+        self.get_edits_list_func = get_edits_list_func
+
+        self.treffsikkerhet = self.beregn_treffsikkerhet()
+
+        self.card = html.Div(
+            [
+                dbc.Card(
+                    [
+                        dbc.CardBody(
+                            [
+                                html.H5("26 - Treffsikkerhet", className="card-title"),
+                                dcc.Graph(
+                                    figure=go.Figure(
+                                        go.Indicator(
+                                            mode="number+delta",
+                                            value=self.treffsikkerhet["total"],
+                                            number={"prefix": ""},
+                                            # delta={"position": "bottom", "reference": self.editeringsandel(self.periode-1)}, # TODO
+                                            domain={"x": [0, 1], "y": [0, 1]},
+                                        )
+                                    ).update_layout(
+                                        height=150,
+                                        margin=dict(l=20, r=20, t=20, b=20),
+                                    ),
+                                    config={"displayModeBar": False},
+                                ),
+                            ]
+                        ),
+                        dbc.CardFooter(
+                            dbc.Button(
+                                "Detaljer",
+                                id="kvalitet-treffsikkerhet-button-details",
+                            )
+                        ),
+                    ],
+                    style={
+                        "width": "18rem",
+                        "margin": "10px",
+                    },
+                ),
+                dbc.Modal(
+                    [
+                        dbc.ModalHeader("26 - Treffsikkerhet"),
+                        dbc.ModalBody(
+                            [
+                                html.Div(
+                                    dcc.Graph(
+                                        figure=px.bar(
+                                            y=self.treffsikkerhet.keys(),
+                                            x=self.treffsikkerhet.values(),
+                                            orientation="h",
+                                        )
+                                    )
+                                ),
+                            ]
+                        ),
+                    ],
+                    id="treffsikkerhet-modal",
+                ),
+            ]
+        )
+
+        self.callbacks()
+
+    def beregn_treffsikkerhet(self):
+        if isinstance(self.kvalitetsrapport, Kvalitetsrapport):
+            kvalitetsrapport = self.kvalitetsrapport.to_dict()
+        else:
+            kvalitetsrapport = self.kvalitetsrapport
+        edits = self.get_edits_list_func()
+        treffsikkerhet = {}
+        total_kontrollutslag = 0
+        total_celler_markert_editert = 0
+        for i in kvalitetsrapport["kontrolldokumentasjon"]:
+            kontrollutslag = kvalitetsrapport["kontrolldokumentasjon"][i][
+                "Kontrollutslag"
+            ]
+            total_kontrollutslag = total_kontrollutslag + kontrollutslag
+            celler_markert = [
+                (x["observasjon_id"], var)
+                for x in kvalitetsrapport["kontrollutslag"]
+                if x["kontrollnavn"] == i
+                for var in x["relevante_variabler"]
+            ]
+            celler_markert_editert = len([x for x in edits if x in celler_markert])
+            total_celler_markert_editert = (
+                total_celler_markert_editert + celler_markert_editert
+            )
+            treffsikkerhet[i] = (celler_markert_editert / kontrollutslag) * 100
+        treffsikkerhet["total"] = (
+            total_celler_markert_editert / total_kontrollutslag
+        ) * 100
+        return treffsikkerhet
+
+    def callbacks(self):
+        @callback(
+            Output("treffsikkerhet-modal", "is_open"),
+            Input("kvalitet-treffsikkerhet-button-details", "n_clicks"),
+            State("treffsikkerhet-modal", "is_open"),
+        )
+        def kvalitettreffsikkerhet_modaltoggle(n, is_open):
+            if n:
+                return not is_open
+            return is_open
