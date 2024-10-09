@@ -237,7 +237,11 @@ class KvalitetsindikatorKontrollutslagsandel:
 
             with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
                 data = json.load(outfile)
-            self.kontrolldokumentasjon = pd.DataFrame(data["kontrolldokumentasjon"]).T
+            self.kontrolldokumentasjon = (
+                pd.DataFrame(data["kontrolldokumentasjon"])
+                .T.reset_index()
+                .rename(columns={"index": "kontroll_id"})
+            )
         elif kontrolldokumentasjon:
             self.kontrolldokumentasjon = kontrolldokumentasjon
         else:
@@ -298,11 +302,23 @@ class KvalitetsindikatorKontrollutslagsandel:
                                         dag.AgGrid(
                                             columnDefs=[
                                                 {"field": x}
-                                                for x in self.kontrollutslagsandel_detaljer.columns
+                                                for x in self.kontrollutslagsandel_detaljer[
+                                                    [
+                                                        "kontroll_id",
+                                                        "kontrollutslagsandel",
+                                                        "Enheter kontrollert",
+                                                        "Kontrollutslag",
+                                                    ]
+                                                ].columns
                                             ],
-                                            rowData=self.kontrollutslagsandel_detaljer.to_dict(
-                                                "records"
-                                            ),
+                                            rowData=self.kontrollutslagsandel_detaljer[
+                                                [
+                                                    "kontroll_id",
+                                                    "kontrollutslagsandel",
+                                                    "Enheter kontrollert",
+                                                    "Kontrollutslag",
+                                                ]
+                                            ].to_dict("records"),
                                         )
                                     ],
                                 ),
