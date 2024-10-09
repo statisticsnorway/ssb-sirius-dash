@@ -10,6 +10,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
+from ssb_sirius_dash import Kvalitetsrapport
 from ssb_sirius_dash import sidebar_button
 
 
@@ -218,12 +219,30 @@ class KvalitetsindikatorEditeringsandel:
 class KvalitetsindikatorKontrollutslagsandel:
     def __init__(
         self,
-        kontrolldokumentasjon,
+        kontrolldokumentasjon=None,
+        kvalitetsrapport_path=None,
     ):
         """Kontrolldokumentasjon skal være et datasett med kolonnene:
         kontroll_id | Enheter kontrollert | Kontrollutslag
         """
-        self.kontrolldokumentasjon = kontrolldokumentasjon
+        if kvalitetsrapport_path and kontrolldokumentasjon:
+            raise ValueError(
+                "Remove either kontrolldokumentasjon or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kontrolldokumentasjon and kvalitetsrapport_path is defined. If both are defined, it will not work."
+            )
+        if kvalitetsrapport_path:
+            import json
+
+            import dapla as dp
+
+            with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
+                data = json.load(outfile)
+            self.kontrolldokumentasjon = data["kontrolldokumentasjon"]
+        elif kontrolldokumentasjon:
+            self.kontrolldokumentasjon = kontrolldokumentasjon
+        else:
+            raise ValueError(
+                "Either kontrolldokumentasjon or kvalitetsrapport_path needs to have a value."
+            )
         self.kontrollutslagsandel_total, self.kontrollutslagsandel_detaljer = (
             self.kontrollutslag()
         )
@@ -493,7 +512,6 @@ class KvalitetsindikatorTreffsikkerhet:
             raise ValueError(
                 "Either kvalitetsrapport or kvalitetsrapport_path needs to have a value."
             )
-        self.kvalitetsrapport_path = kvalitetsrapport_path
         self.get_edits_list_func = get_edits_list_func
 
         self.treffsikkerhet = self.beregn_treffsikkerhet()
