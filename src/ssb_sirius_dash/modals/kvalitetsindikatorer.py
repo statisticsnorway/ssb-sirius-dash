@@ -12,7 +12,8 @@ from dash import html
 from dash.exceptions import PreventUpdate
 
 from ssb_sirius_dash import Kvalitetsrapport
-from ssb_sirius_dash import sidebar_button
+
+from .modal_functions import sidebar_button
 
 
 class KvalitetsindikatorerModule:
@@ -75,18 +76,16 @@ class KvalitetsindikatorEditeringsandel:
         get_change_data_func,
         periode,
         var_name,
-        grouping_vars,
         ident_var,
-        database,
+        grouping_vars=None,
         key_vars=None,
     ):
         self.periode = periode
         self.ident_var = ident_var
         self.var_name = var_name
-        self.grouping_vars = grouping_vars
+        self.grouping_vars = grouping_vars if grouping_vars else []
         self.get_current_data = get_current_data_func
         self.get_change_data = get_change_data_func
-        self.database = database
         if key_vars:
             self.key_vars = key_vars  # TODO
 
@@ -103,9 +102,7 @@ class KvalitetsindikatorEditeringsandel:
                                     figure=go.Figure(
                                         go.Indicator(
                                             mode="number+delta",
-                                            value=self.editeringsandel(
-                                                self.database, self.periode
-                                            ),
+                                            value=self.editeringsandel(self.periode),
                                             number={"prefix": ""},
                                             # delta={"position": "bottom", "reference": self.editeringsandel(self.periode-1)}, # TODO
                                             domain={"x": [0, 1], "y": [0, 1]},
@@ -141,7 +138,7 @@ class KvalitetsindikatorEditeringsandel:
                                             id="kvalitet-editeringsandel-dropdown",
                                             options=[
                                                 {"label": x, "value": x}
-                                                for x in [var_name, *grouping_vars]
+                                                for x in [var_name, *self.grouping_vars]
                                             ],
                                         )
                                     ],
@@ -157,32 +154,29 @@ class KvalitetsindikatorEditeringsandel:
             ]
         )
 
-    def editeringsandel(self, database, periode):
-        total = pd.DataFrame(
-            self.get_current_data(database, periode).agg({self.ident_var: "nunique"})
-        )
-        changes = pd.DataFrame(
-            self.get_change_data(database, periode).agg({self.ident_var: "nunique"})
-        )
+    def editeringsandel(self, periode):
+        total = pd.DataFrame(self.get_current_data().agg({self.ident_var: "nunique"}))
+        changes = pd.DataFrame(self.get_change_data().agg({self.ident_var: "nunique"}))
         return (changes / total * 100).iloc[0][0]
 
-    def editeringsandel_details(self, group, database, periode):
+    def editeringsandel_details(self, group, periode):
         if isinstance(group, str):
             group = [group]
         total = (
-            self.get_current_data(database, periode, group)
+            self.get_current_data()
             .groupby(group)
             .agg({self.ident_var: "nunique"})
             .rename(columns={self.ident_var: "units"})
         )
         changes = (
-            self.get_change_data(database, periode, group)
+            self.get_change_data()
             .groupby(group)
             .agg({self.ident_var: "nunique"})
             .rename(columns={self.ident_var: "edited_units"})
         )
         c = pd.merge(total, changes, on=group, how="left").fillna(0)
         c["editeringsandel"] = c["edited_units"] / c["units"] * 100
+        print(c)
         return c.reset_index()
 
     def callbacks(self):
@@ -202,9 +196,7 @@ class KvalitetsindikatorEditeringsandel:
         )
         def editeringsandel_detailed(grouping_var):
             if grouping_var:
-                detail_data = self.editeringsandel_details(
-                    grouping_var, self.database, self.periode
-                )
+                detail_data = self.editeringsandel_details(grouping_var, self.periode)
                 return dcc.Graph(
                     figure=px.bar(
                         detail_data,
@@ -366,16 +358,18 @@ class KvalitetsindikatorEffektaveditering:
         get_current_data_func,
         get_original_data_func,
         periode,
+        ident_var,
         key_vars,
         grouping_vars,
-        database,
     ):
         self.get_current_data = get_current_data_func
         self.get_original_data = get_original_data_func
         self.periode = periode
+        self.ident_var = ident_var
         self.key_vars = key_vars
-        self.grouping_vars = grouping_vars
-        self.database = database
+        if isinstance(grouping_vars, str):
+            grouping_vars = [grouping_vars]
+        self.grouping_vars = grouping_vars if grouping_vars else []
 
         self.callbacks()
 
@@ -452,8 +446,8 @@ class KvalitetsindikatorEffektaveditering:
         elif isinstance(grouping, str):
             grouping = [grouping]
         edited = (
-            self.get_current_data(self.database, periode)
-            .melt(id_vars=["oppgavegivernummer", *grouping], value_vars=self.key_vars)
+            self.get_current_data()
+            .melt(id_vars=[self.ident_var, *grouping], value_vars=self.key_vars)
             .groupby([*grouping, "variable"])
             .agg({"value": "sum"})
             .rename(columns={"value": "editert"})
@@ -461,8 +455,8 @@ class KvalitetsindikatorEffektaveditering:
         )
 
         ueditert = (
-            self.get_original_data(self.database, periode)
-            .melt(id_vars=["oppgavegivernummer", *grouping], value_vars=self.key_vars)
+            self.get_original_data()
+            .melt(id_vars=[self.ident_var, *grouping], value_vars=self.key_vars)
             .groupby([*grouping, "variable"])
             .agg({"value": "sum"})
             .rename(columns={"value": "ueditert"})
