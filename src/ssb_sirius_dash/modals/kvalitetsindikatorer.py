@@ -1,3 +1,4 @@
+import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
@@ -236,7 +237,7 @@ class KvalitetsindikatorKontrollutslagsandel:
 
             with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
                 data = json.load(outfile)
-            self.kontrolldokumentasjon = data["kontrolldokumentasjon"]
+            self.kontrolldokumentasjon = pd.DataFrame(data["kontrolldokumentasjon"]).T
         elif kontrolldokumentasjon:
             self.kontrolldokumentasjon = kontrolldokumentasjon
         else:
