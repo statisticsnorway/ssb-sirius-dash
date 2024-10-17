@@ -11,8 +11,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
-from ssb_sirius_dash import Kvalitetsrapport
-
+from ..control.framework import Kvalitetsrapport
 from .modal_functions import sidebar_button
 
 
