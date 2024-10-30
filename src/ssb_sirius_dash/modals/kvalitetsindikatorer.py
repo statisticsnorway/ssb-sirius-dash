@@ -1,3 +1,4 @@
+import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
@@ -10,6 +11,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
+from ..control.framework import Kvalitetsrapport
 from .modal_functions import sidebar_button
 
 
@@ -58,7 +60,7 @@ class KvalitetsindikatorerModule:
             Input("sidebar-kvalitetsindikatorer-button", "n_clicks"),
             State("kvalitetsindikatorer-modal", "is_open"),
         )
-        def makrotabellmodal_toggle(n, is_open):
+        def kvalitetsindikatorermodal_toggle(n, is_open):
             if n:
                 return not is_open
             return is_open
@@ -73,18 +75,16 @@ class KvalitetsindikatorEditeringsandel:
         get_change_data_func,
         periode,
         var_name,
-        grouping_vars,
         ident_var,
-        database,
+        grouping_vars=None,
         key_vars=None,
     ):
         self.periode = periode
         self.ident_var = ident_var
         self.var_name = var_name
-        self.grouping_vars = grouping_vars
+        self.grouping_vars = grouping_vars if grouping_vars else []
         self.get_current_data = get_current_data_func
         self.get_change_data = get_change_data_func
-        self.database = database
         if key_vars:
             self.key_vars = key_vars  # TODO
 
@@ -101,9 +101,7 @@ class KvalitetsindikatorEditeringsandel:
                                     figure=go.Figure(
                                         go.Indicator(
                                             mode="number+delta",
-                                            value=self.editeringsandel(
-                                                self.database, self.periode
-                                            ),
+                                            value=self.editeringsandel(self.periode),
                                             number={"prefix": ""},
                                             # delta={"position": "bottom", "reference": self.editeringsandel(self.periode-1)}, # TODO
                                             domain={"x": [0, 1], "y": [0, 1]},
@@ -139,7 +137,7 @@ class KvalitetsindikatorEditeringsandel:
                                             id="kvalitet-editeringsandel-dropdown",
                                             options=[
                                                 {"label": x, "value": x}
-                                                for x in [var_name, *grouping_vars]
+                                                for x in [var_name, *self.grouping_vars]
                                             ],
                                         )
                                     ],
@@ -155,32 +153,29 @@ class KvalitetsindikatorEditeringsandel:
             ]
         )
 
-    def editeringsandel(self, database, periode):
-        total = pd.DataFrame(
-            self.get_current_data(database, periode).agg({self.ident_var: "nunique"})
-        )
-        changes = pd.DataFrame(
-            self.get_change_data(database, periode).agg({self.ident_var: "nunique"})
-        )
+    def editeringsandel(self, periode):
+        total = pd.DataFrame(self.get_current_data().agg({self.ident_var: "nunique"}))
+        changes = pd.DataFrame(self.get_change_data().agg({self.ident_var: "nunique"}))
         return (changes / total * 100).iloc[0][0]
 
-    def editeringsandel_details(self, group, database, periode):
+    def editeringsandel_details(self, group, periode):
         if isinstance(group, str):
             group = [group]
         total = (
-            self.get_current_data(database, periode, group)
+            self.get_current_data()
             .groupby(group)
             .agg({self.ident_var: "nunique"})
             .rename(columns={self.ident_var: "units"})
         )
         changes = (
-            self.get_change_data(database, periode, group)
+            self.get_change_data()
             .groupby(group)
             .agg({self.ident_var: "nunique"})
             .rename(columns={self.ident_var: "edited_units"})
         )
         c = pd.merge(total, changes, on=group, how="left").fillna(0)
         c["editeringsandel"] = c["edited_units"] / c["units"] * 100
+        print(c)
         return c.reset_index()
 
     def callbacks(self):
@@ -200,9 +195,7 @@ class KvalitetsindikatorEditeringsandel:
         )
         def editeringsandel_detailed(grouping_var):
             if grouping_var:
-                detail_data = self.editeringsandel_details(
-                    grouping_var, self.database, self.periode
-                )
+                detail_data = self.editeringsandel_details(grouping_var, self.periode)
                 return dcc.Graph(
                     figure=px.bar(
                         detail_data,
@@ -218,12 +211,34 @@ class KvalitetsindikatorEditeringsandel:
 class KvalitetsindikatorKontrollutslagsandel:
     def __init__(
         self,
-        kontrolldokumentasjon,
+        kontrolldokumentasjon=None,
+        kvalitetsrapport_path=None,
     ):
         """Kontrolldokumentasjon skal være et datasett med kolonnene:
         kontroll_id | Enheter kontrollert | Kontrollutslag
         """
-        self.kontrolldokumentasjon = kontrolldokumentasjon
+        if kvalitetsrapport_path and kontrolldokumentasjon:
+            raise ValueError(
+                "Remove either kontrolldokumentasjon or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kontrolldokumentasjon and kvalitetsrapport_path is defined. If both are defined, it will not work."
+            )
+        if kvalitetsrapport_path:
+            import json
+
+            import dapla as dp
+
+            with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
+                data = json.load(outfile)
+            self.kontrolldokumentasjon = (
+                pd.DataFrame(data["kontrolldokumentasjon"])
+                .T.reset_index()
+                .rename(columns={"index": "kontroll_id"})
+            )
+        elif kontrolldokumentasjon:
+            self.kontrolldokumentasjon = kontrolldokumentasjon
+        else:
+            raise ValueError(
+                "Either kontrolldokumentasjon or kvalitetsrapport_path needs to have a value."
+            )
         self.kontrollutslagsandel_total, self.kontrollutslagsandel_detaljer = (
             self.kontrollutslag()
         )
@@ -278,11 +293,23 @@ class KvalitetsindikatorKontrollutslagsandel:
                                         dag.AgGrid(
                                             columnDefs=[
                                                 {"field": x}
-                                                for x in self.kontrollutslagsandel_detaljer.columns
+                                                for x in self.kontrollutslagsandel_detaljer[
+                                                    [
+                                                        "kontroll_id",
+                                                        "kontrollutslagsandel",
+                                                        "Enheter kontrollert",
+                                                        "Kontrollutslag",
+                                                    ]
+                                                ].columns
                                             ],
-                                            rowData=self.kontrollutslagsandel_detaljer.to_dict(
-                                                "records"
-                                            ),
+                                            rowData=self.kontrollutslagsandel_detaljer[
+                                                [
+                                                    "kontroll_id",
+                                                    "kontrollutslagsandel",
+                                                    "Enheter kontrollert",
+                                                    "Kontrollutslag",
+                                                ]
+                                            ].to_dict("records"),
                                         )
                                     ],
                                 ),
@@ -330,16 +357,18 @@ class KvalitetsindikatorEffektaveditering:
         get_current_data_func,
         get_original_data_func,
         periode,
+        ident_var,
         key_vars,
         grouping_vars,
-        database,
     ):
         self.get_current_data = get_current_data_func
         self.get_original_data = get_original_data_func
         self.periode = periode
+        self.ident_var = ident_var
         self.key_vars = key_vars
-        self.grouping_vars = grouping_vars
-        self.database = database
+        if isinstance(grouping_vars, str):
+            grouping_vars = [grouping_vars]
+        self.grouping_vars = grouping_vars if grouping_vars else []
 
         self.callbacks()
 
@@ -416,8 +445,8 @@ class KvalitetsindikatorEffektaveditering:
         elif isinstance(grouping, str):
             grouping = [grouping]
         edited = (
-            self.get_current_data(self.database, periode)
-            .melt(id_vars=["oppgavegivernummer", *grouping], value_vars=self.key_vars)
+            self.get_current_data()
+            .melt(id_vars=[self.ident_var, *grouping], value_vars=self.key_vars)
             .groupby([*grouping, "variable"])
             .agg({"value": "sum"})
             .rename(columns={"value": "editert"})
@@ -425,8 +454,8 @@ class KvalitetsindikatorEffektaveditering:
         )
 
         ueditert = (
-            self.get_original_data(self.database, periode)
-            .melt(id_vars=["oppgavegivernummer", *grouping], value_vars=self.key_vars)
+            self.get_original_data()
+            .melt(id_vars=[self.ident_var, *grouping], value_vars=self.key_vars)
             .groupby([*grouping, "variable"])
             .agg({"value": "sum"})
             .rename(columns={"value": "ueditert"})
@@ -469,3 +498,131 @@ class KvalitetsindikatorEffektaveditering:
                 )
             else:
                 raise PreventUpdate
+
+
+class KvalitetsindikatorTreffsikkerhet:
+    def __init__(
+        self, get_edits_list_func, kvalitetsrapport=None, kvalitetsrapport_path=None
+    ):
+        if kvalitetsrapport_path and kvalitetsrapport:
+            raise ValueError(
+                "Remove either kvalitetsrapport or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kvalitetsrapport and kvalitetsrapport_path is defined. If both are defined, it will not work."
+            )
+        if kvalitetsrapport_path:
+            import json
+
+            import dapla as dp
+
+            with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
+                data = json.load(outfile)
+            self.kvalitetsrapport = data
+        elif kvalitetsrapport:
+            self.kvalitetsrapport = kvalitetsrapport
+        else:
+            raise ValueError(
+                "Either kvalitetsrapport or kvalitetsrapport_path needs to have a value."
+            )
+        self.get_edits_list_func = get_edits_list_func
+
+        self.treffsikkerhet = self.beregn_treffsikkerhet()
+
+        self.card = html.Div(
+            [
+                dbc.Card(
+                    [
+                        dbc.CardBody(
+                            [
+                                html.H5("26 - Treffsikkerhet", className="card-title"),
+                                dcc.Graph(
+                                    figure=go.Figure(
+                                        go.Indicator(
+                                            mode="number+delta",
+                                            value=self.treffsikkerhet["total"],
+                                            number={"prefix": ""},
+                                            # delta={"position": "bottom", "reference": self.editeringsandel(self.periode-1)}, # TODO
+                                            domain={"x": [0, 1], "y": [0, 1]},
+                                        )
+                                    ).update_layout(
+                                        height=150,
+                                        margin=dict(l=20, r=20, t=20, b=20),
+                                    ),
+                                    config={"displayModeBar": False},
+                                ),
+                            ]
+                        ),
+                        dbc.CardFooter(
+                            dbc.Button(
+                                "Detaljer",
+                                id="kvalitet-treffsikkerhet-button-details",
+                            )
+                        ),
+                    ],
+                    style={
+                        "width": "18rem",
+                        "margin": "10px",
+                    },
+                ),
+                dbc.Modal(
+                    [
+                        dbc.ModalHeader("26 - Treffsikkerhet"),
+                        dbc.ModalBody(
+                            [
+                                html.Div(
+                                    dcc.Graph(
+                                        figure=px.bar(
+                                            y=self.treffsikkerhet.keys(),
+                                            x=self.treffsikkerhet.values(),
+                                            orientation="h",
+                                        )
+                                    )
+                                ),
+                            ]
+                        ),
+                    ],
+                    id="treffsikkerhet-modal",
+                ),
+            ]
+        )
+
+        self.callbacks()
+
+    def beregn_treffsikkerhet(self):
+        if isinstance(self.kvalitetsrapport, Kvalitetsrapport):
+            kvalitetsrapport = self.kvalitetsrapport.to_dict()
+        else:
+            kvalitetsrapport = self.kvalitetsrapport
+        edits = self.get_edits_list_func()
+        treffsikkerhet = {}
+        total_kontrollutslag = 0
+        total_celler_markert_editert = 0
+        for i in kvalitetsrapport["kontrolldokumentasjon"]:
+            kontrollutslag = kvalitetsrapport["kontrolldokumentasjon"][i][
+                "Kontrollutslag"
+            ]
+            total_kontrollutslag = total_kontrollutslag + kontrollutslag
+            celler_markert = [
+                (x["observasjon_id"], var)
+                for x in kvalitetsrapport["kontrollutslag"]
+                if x["kontrollnavn"] == i
+                for var in x["relevante_variabler"]
+            ]
+            celler_markert_editert = len([x for x in edits if x in celler_markert])
+            total_celler_markert_editert = (
+                total_celler_markert_editert + celler_markert_editert
+            )
+            treffsikkerhet[i] = (celler_markert_editert / kontrollutslag) * 100
+        treffsikkerhet["total"] = (
+            total_celler_markert_editert / total_kontrollutslag
+        ) * 100
+        return treffsikkerhet
+
+    def callbacks(self):
+        @callback(
+            Output("treffsikkerhet-modal", "is_open"),
+            Input("kvalitet-treffsikkerhet-button-details", "n_clicks"),
+            State("treffsikkerhet-modal", "is_open"),
+        )
+        def kvalitettreffsikkerhet_modaltoggle(n, is_open):
+            if n:
+                return not is_open
+            return is_open

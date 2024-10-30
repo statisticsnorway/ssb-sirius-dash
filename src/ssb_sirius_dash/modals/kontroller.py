@@ -7,9 +7,9 @@ from dash import State
 from dash import callback
 from dash import html
 
-from ssb_sirius_dash import sidebar_button
-
+from ..control.framework import Kvalitetsrapport
 from ..control.framework import lag_kontroll_dokumentasjon
+from .modal_functions import sidebar_button
 
 # +
 ident_options = [
@@ -21,15 +21,10 @@ ident_options = [
 
 
 class Kontroller:
-    def __init__(self, ident, kontroll_dokumentasjon_path=None):
+    def __init__(self, ident, kvalitetsrapport_path):
         self.ident = ident_options[0][ident]
-        if kontroll_dokumentasjon_path:
-            import json
-
-            import dapla as dp
-
-            with dp.FileClient.gcs_open(kontroll_dokumentasjon_path, "r") as outfile:
-                data = json.load(outfile)
+        if kvalitetsrapport_path:
+            data = Kvalitetsrapport.from_json(kvalitetsrapport_path).to_dict()
             self.kontrolltabell = lag_kontroll_dokumentasjon(data)
             self.utslagstabell = pd.DataFrame(data["kontrollutslag"])
         self.callbacks()
@@ -104,15 +99,15 @@ class Kontroller:
             State("kontroll-table-overview", "rowData"),
         )
         def kontroll_main_click(click, rowData):
-            print(click)
-            kontroll = rowData[click["rowIndex"]]["kontroll_id"]
-            return {
-                "kontrollnavn": {
-                    "filterType": "text",
-                    "type": "contains",
-                    "filter": kontroll,
+            if click:
+                kontroll = rowData[click["rowIndex"]]["kontroll_id"]
+                return {
+                    "kontrollnavn": {
+                        "filterType": "text",
+                        "type": "contains",
+                        "filter": kontroll,
+                    }
                 }
-            }
 
         @callback(
             Output(self.ident[0], self.ident[1]),
@@ -120,4 +115,5 @@ class Kontroller:
             State("kontroll-table-detailed", "rowData"),
         )
         def kontroll_detail_click(click, rowData):
-            return rowData[click["rowIndex"]]["observasjon_id"]
+            if click:
+                return rowData[click["rowIndex"]]["observasjon_id"]
