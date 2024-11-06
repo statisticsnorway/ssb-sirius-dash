@@ -30,18 +30,51 @@ and/or steps to reproduce the issue.
 
 Request features on the [Issue Tracker].
 
-## Our design thinking
+## Our design and making a new module
 
 ### The user should modify data to fit the requirements of your module
 
-In order to keep the code easier to work with, describe how the required data should look instead of creating functionality to handle different formats.
+In order to keep the code easier to work with, describe how the required data should look instead of creating functionality to handle different formats. If a user wants to use your module, they need to do the legwork to make their data fit (within reason).
 
-### Dynamic states
+### Variabelvelger (variable picker)
+
+If you need to add an alternative to the Variabelvelger, have it added into the package. In order to keep the modules cross-compatible and standardized, we do not want users to add their own custom fields.
+
+#### Dynamic states
+
+In order to use the Variabelvelger in modules you can use dynamic states to include fields in callbacks.
+
+Your component should include all variabelvelger fields that can be used as a State() in your module in the way depicted below.
+
+Firstly include the supported Variabelvelger options for your module:
+
+    states_options = [
+        {
+            "aar": ("var-aar", "value"),
+            "termin": ("var-termin", "value"),
+            "nace": ("var-nace", "value"),
+            "nspekfelt": ("var-nspekfelt", "value"),
+        }
+    ]
+
+Secondly include this in the callback method in your module class.
+
+    dynamic_states = [
+        State(states_dict[key][0], states_dict[key][1])
+        for key in selected_state_keys
+    ]
+
+Third add *dynamic_states in the callback to make the values included in the callback.
+
+    @callback(
+        callback_components_here,
+        *dynamic_states,
+    )
 
 
 ### The class structure
 
-Each module is written as a class containing a layout and callbacks:
+Each module is written as a class containing its layout and callbacks:
 
     class Module:
         def __init__(self, database):
@@ -80,7 +113,7 @@ Each module is written as a class containing a layout and callbacks:
                     return not is_open
                 return is_open
 
-### Pointers
+### Deliberate design choices
 
 #### Include the layout as a method in the class
 
@@ -108,12 +141,8 @@ An example of a use-case for this is a function to get/transform data to adhere 
 
 #### All in one (AiO) components
 
-As our goal is to make a library of easily reusable, customizable and expandable modules/views we have decided to avoid using AiO when possible. As they require a bit more complicated syntax it requires more effort to understand and contribute, which we want to avoid.
+As our goal is to make a library of easily reusable, customizable and expandable modules/views we have decided to avoid using AiO when possible. They require more complicated syntax and it requires more effort to understand and contribute, which we want to avoid.
 
-## How to make your own tab
-
-
-## How to make your own module/modal
 
 
 
