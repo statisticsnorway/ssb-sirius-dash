@@ -15,7 +15,7 @@ var_name = "felt"
 periode_var = "aar"
 
 conn.execute(
-    f"CREATE TABLE registrering ({registrering_id} STRING, {ident_var} STRING, {var_name} STRING)"
+    f"CREATE TABLE registrering ({registrering_id} STRING, {ident_var} STRING, periode STRING)"
 )
 
 conn.execute(
@@ -106,6 +106,54 @@ conn.executemany("INSERT INTO enhetsinfo VALUES (?,?,?,?,?)", tuples)
 # -
 
 conn.query("SELECT * FROM enhetsinfo")
+
+conn.query(
+    f"""
+    SELECT
+    r.{registrering_id} AS registrering,
+    r.{ident_var} AS enhet,
+    r.{periode} AS periode,
+    i.value AS individ_value,
+    e.kilde AS enhetsinfo_kilde,
+    e.opplysning AS enhetsinfo_opplysning,
+    e.verdi AS enhetsinfo_verdi,
+    e.{periode_var} AS periode
+FROM
+    registrering r
+JOIN
+    individdata i ON r.{registrering_id} = i.{registrering_id} AND r.{var_name} = i.{var_name}
+JOIN
+    enhetsinfo e ON r.{ident_var} = e.{ident_var}
+WHERE
+    e.{periode_var} = '2023';
+
+"""
+)
+
+conn.query(
+    f"""
+    SELECT
+    r.{registrering_id} AS registrering,
+    r.{ident_var} AS enhet,
+    r.{periode_var} AS periode,
+    i.{var_name} AS variabel,
+    i.value AS value
+    FROM
+    registrering r
+    JOIN individdata i on r.{registrering_id} = i.{registrering_id}
+"""
+)
+
+
+class QueryHandlerThingy:
+    valid_databases = ["duckdb"]
+
+    def __init__(database):
+        if database not in valid_databases:
+            raise ValueError("Du må velge en støttet database")
+        elif database == "duckdb":
+            print("Test")
+
 
 port = 8069
 service_prefix = os.getenv("JUPYTERHUB_SERVICE_PREFIX", "/")
