@@ -52,7 +52,7 @@ To learn more, see the [Contributor Guide].
 
 ## License
 
-Distributed under the terms of the [MIT license][license],
+Distributed under the terms of the [GNU license][license],
 _SSB Sirius Dash_ is free and open source software.
 
 ## Issues
