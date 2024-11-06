@@ -30,20 +30,20 @@ and/or steps to reproduce the issue.
 
 Request features on the [Issue Tracker].
 
-## General suggestions
-### The user should modify data to fit the requirements of your modal/tab
+## Our design thinking
+
+### The user should modify data to fit the requirements of your module
+
 In order to keep the code easier to work with, describe how the required data should look instead of creating functionality to handle different formats.
 
-## How to make your own tab
-
-
-## How to make your own module/modal
+### Dynamic states
 
 
 ### The class structure
+
 Each module is written as a class containing a layout and callbacks:
 
-    class SSB_SIRIUS_Module:
+    class Module:
         def __init__(self, database):
             self.database = database
             self.callbacks()
@@ -80,10 +80,22 @@ Each module is written as a class containing a layout and callbacks:
                     return not is_open
                 return is_open
 
-#### Use @callback
-In order for this to work you need to use @callback and not @app.callback. This is to make the callback code more modular and work with this way of importing it.
+### Pointers
 
-#### Allowing customized functions
+#### Include the layout as a method in the class
+
+Our reason for having the layout returned from a method instead of an attribute of the class is that having it as a method makes it possible to pass parameters. While it is possible to modify an attribute in the __init__ we consider it more readable if layout-specific parameters can be passed to the layout directly, making it clear what it is affecting.
+
+While not all modules will need parameters to its layout, it will be confusing for users if some layouts are attributes and some are returned from methods.
+
+#### Use @callback
+
+In order for this to work you need to use @callback and not @app.callback. This is to make the callback code more modular and simplifying imports.
+
+More information: https://community.plotly.com/t/dash-2-0-prerelease-candidate-available/55861#from-dash-import-callback-clientside_callback-5
+
+#### User defined functions
+
 If you need the user to define a function for some use case in your module you can include user-created functions in the class by adding a parameter to the __init__:
 
     class Module:
@@ -95,7 +107,16 @@ If you need the user to define a function for some use case in your module you c
 An example of a use-case for this is a function to get/transform data to adhere to a specific format.
 
 #### All in one (AiO) components
+
 As our goal is to make a library of easily reusable, customizable and expandable modules/views we have decided to avoid using AiO when possible. As they require a bit more complicated syntax it requires more effort to understand and contribute, which we want to avoid.
+
+## How to make your own tab
+
+
+## How to make your own module/modal
+
+
+
 
 ## How to set up your development environment
 

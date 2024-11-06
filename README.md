@@ -25,9 +25,14 @@
 [black]: https://github.com/psf/black
 [poetry]: https://python-poetry.org/
 
-## Features
+## Getting started
+Vennligst se [komme i gang]
 
-- TODO
+## Features
+- Dashboard for editing data, includes modules for among other things:
+    - Controls for the data
+    - Visualizations to find outliers
+    - Seeing micro-level information about observations
 
 ## Requirements
 
@@ -73,5 +78,6 @@ This project was generated from [Statistics Norway]'s [SSB PyPI Template].
 <!-- github-only -->
 
 [license]: https://github.com/statisticsnorway/ssb-sirius-dash/blob/main/LICENSE
+[komme i gang]: https://github.com/statisticsnorway/ssb-sirius-dash/blob/main/KOMME_I_GANG.md
 [contributor guide]: https://github.com/statisticsnorway/ssb-sirius-dash/blob/main/CONTRIBUTING.md
 [reference guide]: https://statisticsnorway.github.io/ssb-sirius-dash/reference.html
