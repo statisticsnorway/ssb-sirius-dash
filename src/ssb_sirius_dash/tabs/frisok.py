@@ -14,7 +14,7 @@ class FrisøkTab:
         self.database = database
         self.callbacks()
         self.label = "🔍 Frisøk"
-        
+
 
     def layout(self):
         layout = html.Div(
