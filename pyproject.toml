@@ -26,7 +26,7 @@ dash-ag-grid = "^31.2.0"
 dash-bootstrap-templates = "^1.2.4"
 duckdb = "^1.0.0"
 pyarrow = "^17.0.0"
-dapla-toolbelt = "^2.0.8"
+dapla-toolbelt = ">=2.0.8, <4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pygments = ">=2.10.0"

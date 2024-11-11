@@ -12,7 +12,9 @@ from dash.dependencies import State
 class FrisøkTab:
     def __init__(self, database):
         self.database = database
+        self.callbacks()
         self.label = "🔍 Frisøk"
+
 
     def layout(self):
         layout = html.Div(
