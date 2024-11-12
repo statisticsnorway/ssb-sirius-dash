@@ -32,6 +32,10 @@ Request features on the [Issue Tracker].
 
 ## Our design and making a new module
 
+### Should your module be a tab or a modal?
+
+Generally, in this framework, tabs are for micro-level information while modals are more macro oriented. This is not a rule, but it is often more intuitive this way.
+
 ### The user should modify data to fit the requirements of your module
 
 In order to keep the code easier to work with, describe how the required data should look instead of creating functionality to handle different formats. If a user wants to use your module, they need to do the legwork to make their data fit (within reason).
