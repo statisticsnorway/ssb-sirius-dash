@@ -1,3 +1,6 @@
 import ssb_sirius_dash
 
-ssb_sirius_dash.main_layout(modal_list=[], tab_list=[], variable_list=[])
+
+def test_main_layout():
+    result = ssb_sirius_dash.main_layout(modal_list=[], tab_list=[], variable_list=[])
+    assert result is not None
