@@ -25,8 +25,11 @@
 [black]: https://github.com/psf/black
 [poetry]: https://python-poetry.org/
 
-## Getting started
-Vennligst se [komme i gang]
+## Vennligst se [komme i gang] for brukerveiledning
+
+The getting started guide is in norwegian and intended for Statistics Norway internal use.
+
+More technical and in-depth information can be found in the [Contributor Guide].
 
 ## Features
 - Dashboard for editing data, includes modules for among other things:
