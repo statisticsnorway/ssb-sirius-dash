@@ -21,17 +21,17 @@ Her finner du en kort forklaring av hva som menes med visse ord i veiledningen.
 
 ## Rammeverkets deler
 
-Rammeverket baserer seg på at man plukker ut moduler man ønsker å bruke og at variabelvelgeren knytter disse sammen.
+Rammeverket baserer seg på at man plukker ut moduler man ønsker å bruke og at variabelvelgeren knytter disse sammen. Mer om hvordan du setter opp rammeverket kommer senere, men her blir du forklart hvordan de ulike delene henger sammen.
 
-Som bruker kan du gjøre endringer på
+Som bruker kan du gjøre endringer i variabelvelgeren, modalene og tabs. Det er disse tre bitene som utgjør grensesnittet.
 
-![rammeverkets deler](komme_i_gang_rammeverk_deler.drawio.svg "Illustrasjon av hvordan rammeverket er satt sammen")
+![rammeverkets deler](Rammeverkets deler.drawio.svg "Illustrasjon av hvordan rammeverket er satt sammen")
 
-En modul er enten i form av en modal eller en tab.
+Variabelvelgeren fungerer som et felles punkt for informasjon som skal deles mellom ulike modaler og tabs i appen. Hvis du for eksempel sjekker et skjermbilde hvor det vises en enhet som du vil se på i et annet skjermbilde, så kan du i noen moduler klikke på enheten for å få enheten sin id overført til variabelvelgeren. Variabelvelgeren vil da formidle at det er den enheten vi vil se på til de andre modulene i appen slik at alle viser den samme enheten. På samme måte, hvis du vet at det er én spesifikk enhet du skal se på kan du skrive den direkte inn i variabelvelgeren.
 
 ### Variabelvelger
 
-Dette er limet som holder applikasjonen sammen og gjør at de ulike komponentene kan dele informasjon. Den skal kunne brukes av andre moduler for å koordinere visninger mellom moduler og gjøre at du kan endre f.eks. næringskoden i variabelvelgeren, og alle skjermbilder vil vise den næringskoden.
+Dette er limet som holder applikasjonen sammen og gjør at de ulike komponentene kan dele informasjon. Den skal brukes av andre moduler for å koordinere visninger mellom moduler og gjøre at du kan endre f.eks. næringskoden i variabelvelgeren, og alle skjermbilder vil vise informasjon om enheter med den næringskoden.
 
 Variabelvelgeren skal gi inputs til andre skjermbilder og fungere som et søkefelt, den skal __ikke__ brukes for å vise informasjon om enheten man er inne på.
 
