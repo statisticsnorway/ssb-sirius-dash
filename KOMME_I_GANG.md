@@ -41,11 +41,10 @@ For å sikre standardisering og gjenbruk ønsker vi ikke at hver enkelt bruker s
 
 Modaler er funksjonalitet som finnes med knapper i venstre marg. De åpner nye skjermbilder og har spesifikke bruksområder.
 
-Et eksempel er kontroll
-
 De settes opp i appen slik:
 ```
 kontroll_modal = Kontroller.layout()
+modals = [kontroll_modal] # Sett inn flere modaler her
 ```
 
 ### Tabs
