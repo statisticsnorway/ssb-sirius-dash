@@ -48,7 +48,7 @@ class VoFForetakTab:
     def register_table(self):
         fs = FileClient.get_gcs_file_system()
         fil_ssb_foretak = (
-            "ssb-vof-data-delt-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
+            "ssb-vof-data-delt-oracle-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
         )
         ssb_foretak = pq.read_table(fil_ssb_foretak, columns=VOF_COLUMNS, filesystem=fs)
         dsbbase = duckdb.connect()
