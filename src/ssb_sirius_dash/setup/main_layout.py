@@ -1,8 +1,17 @@
 import dash_bootstrap_components as dbc
 from dash import html
+from .functions import sidebar_button
 
 
 def main_layout(modal_list, tab_list, variable_list):
+    varvelger_toggle = [
+        html.Div(
+            [
+                sidebar_button("🧐", "vis/skjul variabelvelger", "sidebar-varvelger-button")
+            ]
+        )
+    ]
+    modal_list = varvelger_toggle + modal_list
     selected_tab_list = [dbc.Tab(tab.layout(), label=tab.label) for tab in tab_list]
     layout = dbc.Container(
         [
@@ -33,10 +42,16 @@ def main_layout(modal_list, tab_list, variable_list):
                     ),
                     html.Div(
                         children=[
-                            dbc.Row(children=variable_list),
-                            dbc.Tabs(
-                                selected_tab_list,
+                            html.Div(
+                                dbc.Row(children=variable_list),
+                                style={"display": "none"},
+                                id="main-varvelger",
                             ),
+                            html.Div(
+                                dbc.Tabs(
+                                    selected_tab_list,
+                                ),
+                            )
                         ],
                     ),
                 ],
