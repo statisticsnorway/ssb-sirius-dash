@@ -7,7 +7,7 @@ def main_layout(modal_list, tab_list, variable_list):
     varvelger_toggle = [
         html.Div(
             [
-                sidebar_button("🧐", "vis/skjul variabelvelger", "sidebar-varvelger-button")
+                sidebar_button("🛆", "vis/skjul variabelvelger", "sidebar-varvelger-button")
             ]
         )
     ]
