@@ -7,7 +7,6 @@ from typing import Callable
 from typing import Optional
 
 # from typing import Self
-
 import dapla as dp
 import pandas as pd
 
@@ -254,7 +253,7 @@ class Kvalitetsrapport:
         return cls.from_dict(json_data)
 
     @classmethod
-    def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]):
+    def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]) -> "Kvalitetsrapport":
         """Initierer en Kvalitetsrapport fra et dict objekt.
 
         Returns:
