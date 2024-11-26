@@ -48,7 +48,7 @@ class HBMethodModule:
     References:
     ----------
     More information about the HB method:
-    https://github.com/statisticsnorway/ssb-kostra/blob/main/R/Hb.R
+    https://rdrr.io/github/statisticsnorway/Kostra/man/Hb.html
     """
 
     def _init__(
