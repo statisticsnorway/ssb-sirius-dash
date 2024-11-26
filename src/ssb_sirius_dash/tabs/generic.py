@@ -23,16 +23,86 @@ states_options = [
 
 
 class EditingTable:
+    """A component for editing database tables using a Dash AgGrid table.
+
+    This class provides a layout and functionality to:
+    - Select a database table from a dropdown menu.
+    - Load data into an editable Dash AgGrid table.
+    - Update database values based on user edits in the table.
+
+    Attributes:
+    ----------
+    label : str
+        The label for the tab or component.
+    database : object
+        Database connection or interface for querying and updating data.
+    tables : list of str
+        List of available table names for selection.
+    var_input : str
+        Variable input key for identifying records in the database.
+    states : list of str
+        Keys representing dynamic states to filter data.
+    get_data : callable
+        Function to fetch data from the database.
+    update_table : callable
+        Function to update database records based on edits in the table.
+    dropdown_options : list of dict
+        List of options for the dropdown menu, derived from `tables`.
+
+    Methods:
+    -------
+    layout()
+        Generates the layout for the table editing component.
+    callbacks()
+        Registers the Dash callbacks for loading and updating table data.
+    """
+
     def __init__(
         self,
-        label,
-        database,
-        tables,
-        var_input,
-        states,
-        get_data_func,
-        update_table_func,
-    ):
+        label: str,
+        database: object,
+        tables: list,
+        var_input: str,
+        states: list,
+        get_data_func: callable,
+        update_table_func: callable,
+    ) -> None:
+        """Initialize the EditingTable component.
+
+        Parameters
+        ----------
+        label : str
+            Label for the tab or component.
+        database : object
+            Database connection or interface used for querying and updating data.
+        tables : list of str
+            List of available table names for selection.
+        var_input : str
+            Variable input key used to identify records (e.g., "orgb", "orgf").
+        states : list of str
+            Keys representing dynamic states to filter data (e.g., "aar", "termin").
+        get_data_func : callable
+            Function for retrieving data from the database.
+        update_table_func : callable
+            Function for updating data in the database.
+
+        Attributes:
+        ----------
+        label : str
+            The label for the component.
+        database : object
+            Database connection or interface.
+        dropdown_options : list of dict
+            Options for the dropdown menu, created from `tables`.
+        selected_ident : dash.dependencies.Input
+            Input dependency for the selected variable.
+        states : list of str
+            List of dynamic states for filtering data.
+        get_data : callable
+            Function to fetch data from the database.
+        update_table : callable
+            Function to update data in the database.
+        """
         dropdown_options = [{"label": table, "value": table} for table in tables]
 
         self.selected_ident = input_options[var_input]
@@ -44,7 +114,17 @@ class EditingTable:
         self.callbacks()
         self.label = label
 
-    def layout(self):
+    def layout(self) -> html.Div:
+        """Generate the layout for the EditingTable component.
+
+        Returns:
+        -------
+        dash.html.Div
+            A Div element containing:
+            - A dropdown menu to select a database table.
+            - An editable Dash AgGrid table for displaying and modifying data.
+            - A status message for updates.
+        """
         layout = html.Div(
             style={"height": "100vh", "display": "flex", "flexDirection": "column"},
             children=[
@@ -69,7 +149,15 @@ class EditingTable:
         )
         return layout
 
-    def callbacks(self):
+    def callbacks(self) -> None:
+        """Register Dash callbacks for the EditingTable component.
+
+        Notes:
+        -----
+        - The `load_ag_grid` callback loads data into the table based on the selected table
+          and filter states.
+        - The `update_table` callback updates database values when a cell value is changed.
+        """
         states_dict = states_options[0]
         dynamic_states = [
             State(states_dict[key][0], states_dict[key][1]) for key in self.states
@@ -82,7 +170,31 @@ class EditingTable:
             self.selected_ident,
             *dynamic_states,
         )
-        def load_ag_grid(tabell, ident, *dynamic_states):
+        def load_ag_grid(tabell: str, ident: str, *dynamic_states: list) -> tuple:
+            """Load data into the Dash AgGrid table.
+
+            Parameters
+            ----------
+            tabell : str
+                Name of the selected database table.
+            ident : str
+                Identifier for filtering records (e.g., "var-bedrift").
+            dynamic_states : list
+                Dynamic state parameters for filtering data.
+
+            Returns:
+            -------
+            tuple
+                A tuple containing:
+                - rowData (list of dict): Records to display in the table.
+                - columnDefs (list of dict): Column definitions for the table.
+
+            Notes:
+            -----
+            - Columns are dynamically generated based on the table's schema.
+            - The "row_id" column is hidden by default but used for updates.
+            - Adds checkbox selection to the first column for bulk actions.
+            """
             states_values = dynamic_states[: len(self.states)]
             state_params = {
                 key: value for key, value in zip(self.states, states_values)
@@ -115,7 +227,33 @@ class EditingTable:
             State("tab-tabelleditering-dd1", "value"),
             *dynamic_states,
         )
-        def update_table(edited, tabell, *dynamic_states):
+        def update_table(edited: list, tabell: str, *dynamic_states: list) -> str:
+            """Update the database based on edits made in the AgGrid table.
+
+            Parameters
+            ----------
+            edited : list of dict
+                Information about the edited cell, including:
+                - colId: The column name of the edited cell.
+                - oldValue: The previous value of the cell.
+                - value: The new value of the cell.
+                - data: The row data, including the "row_id".
+            tabell : str
+                The name of the table being edited.
+            dynamic_states : list
+                Dynamic state parameters for filtering data.
+
+            Returns:
+            -------
+            str
+                A status message indicating the success or failure of the update.
+
+            Notes:
+            -----
+            - The function calls `update_table` to apply the change to the database.
+            - If the update succeeds, a confirmation message is returned.
+            - If the update fails, an error message is displayed.
+            """
             states_values = dynamic_states[: len(self.states)]
             state_params = {
                 key: value for key, value in zip(self.states, states_values)
@@ -135,5 +273,5 @@ class EditingTable:
                     self.database, variable, new_value, row_id, tabell, *args
                 )
                 return f"{variable} updatert fra {old_value} til {new_value}"
-            except:
+            except Exception:
                 return "Error"
