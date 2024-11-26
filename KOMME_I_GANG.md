@@ -57,7 +57,7 @@ Tabs er faner i skjermbildet som viser mer enhet-spesifikk informasjon
 
 ## Sette opp rammeverket
 
-### Hvis du bruker jupyter
+### Ekstra steg hvis du bruker jupyter
 
 For å få appen til å fungere i jupyter trenger du å inkludere dette i starten
 ```
