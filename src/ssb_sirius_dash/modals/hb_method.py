@@ -30,9 +30,43 @@ ident_options = [
 
 
 class HBMethodModule:
-    def __init__(
+    """Module for detecting outliers using the Hidiroglou-Berthelot (HB) method in a Dash application.
+
+    The module applies the HB method to identify potential outliers in time-series data by comparing
+    values in the current period (t) with revised values from the previous period (t-1). It includes
+    methods for preprocessing data, visualizing results, and managing interactions in a Dash app.
+
+    Attributes:
+    ----------
+    database : object
+        Database connection or interface for fetching data.
+    hb_get_data : callable
+        Function for retrieving data based on selected parameters.
+
+    References:
+    ----------
+    More information about the HB method:
+    https://github.com/statisticsnorway/ssb-kostra/blob/main/R/Hb.R
+    """
+
+    def _init__(
         self, database, hb_get_data_func, selected_state_keys, selected_ident, variable
     ):
+        """Initialize the HBMethodModule.
+
+        Parameters
+        ----------
+        database : object
+            Database connection or interface to fetch relevant data.
+        hb_get_data_func : callable
+            Function to fetch data for processing using the HB method.
+        selected_state_keys : list of str
+            Keys representing selected states for filtering data.
+        selected_ident : str
+            Identifier used for grouping or unique identification in the data.
+        variable : str
+            Name of the value variable to analyze using the HB method.
+        """
         self.database = database
         self.hb_get_data = hb_get_data_func
         self.callbacks(selected_state_keys, selected_ident, variable)
@@ -40,6 +74,28 @@ class HBMethodModule:
     def make_hb_data(
         self, data_df: pd.DataFrame, p_c: int, p_u: float, p_a: float, ident, variable
     ) -> pd.DataFrame:
+        """Process data using the HB method for outlier detection.
+
+        Parameters
+        ----------
+        data_df : pandas.DataFrame
+            Input data containing variables for analysis.
+        p_c : int
+            Confidence interval control parameter.
+        p_u : float
+            Parameter for adjusting the variable's level.
+        p_a : float
+            Parameter for small differences between quartiles and the median.
+        ident : str
+            Identifier field name in the dataset.
+        variable : str
+            Name of the value variable for analysis.
+
+        Returns:
+        -------
+        pandas.DataFrame
+            Processed data with outlier results, sorted by "maxX".
+        """
         hb_result = hb_method(
             data=data_df,
             p_c=p_c,
@@ -53,6 +109,20 @@ class HBMethodModule:
         return hb_result.sort_values(by=["maxX"])
 
     def make_hb_figure(self, data, variable):
+        """Create a plotly figure for visualizing HB method results.
+
+        Parameters
+        ----------
+        data : pandas.DataFrame
+            Processed data from the HB method, including outlier and limit values.
+        variable : str
+            Name of the value variable for the method.
+
+        Returns:
+        -------
+        plotly.graph_objs.Figure
+            Plotly figure with scatter plots for observations and limits.
+        """
         x = data["maxX"]
         y = data["ratio"]
         z = data["upperLimit"]
@@ -87,6 +157,13 @@ class HBMethodModule:
         return fig
 
     def layout(self):
+        """Generate the layout for the HB method Dash component.
+
+        Returns:
+        -------
+        dash.html.Div
+            Div containing the modal and interactive elements for the HB method.
+        """
         infoboks = html.Div(
             [
                 dbc.Modal(
@@ -188,6 +265,30 @@ class HBMethodModule:
         initial_value,
         tooltip_text,
     ):
+        """Build an input field with a tooltip for user parameter inputs.
+
+        Parameters
+        ----------
+        label : str
+            Text label for the input field.
+        id_name : str
+            Unique ID for the input field.
+        default_value : float or int
+            Default value for the input.
+        min_value : float or int
+            Minimum allowable value.
+        max_value : float or int
+            Maximum allowable value.
+        initial_value : float or int
+            Initial value to display.
+        tooltip_text : str
+            Text description displayed in the tooltip.
+
+        Returns:
+        -------
+        dash_bootstrap_components.Col
+            Dash Bootstrap column containing the input field and tooltip.
+        """
         return dbc.Col(
             dbc.Stack(
                 [
@@ -218,6 +319,22 @@ class HBMethodModule:
         )
 
     def callbacks(self, selected_state_keys, selected_ident, variable):
+        """Register callbacks for the HB method Dash app components.
+
+        Parameters
+        ----------
+        selected_state_keys : list of str
+            List of state keys for dynamic state configuration.
+        selected_ident : str
+            Identifier used for grouping or filtering data.
+        variable : str
+            Name of the value variable for HB method analysis.
+
+        Notes:
+        -----
+        This method registers Dash callbacks for handling user interactions, including
+        running the HB method, toggling the modal, and passing results to variabelvelger.
+        """
         states_dict = states_options[0]
         dynamic_states = [
             State(states_dict[key][0], states_dict[key][1])
@@ -237,6 +354,31 @@ class HBMethodModule:
             *dynamic_states,
         )
         def use_hb(n_click, pC, pU, pA, *dynamic_states):
+            """Execute the HB method and update the visualization.
+
+            Parameters
+            ----------
+            n_click : int
+                Number of clicks on the "Run HB Model" button.
+            pC : int
+                Confidence interval parameter.
+            pU : float
+                Parameter for variable level adjustment.
+            pA : float
+                Parameter for small differences between quartiles and the median.
+            *dynamic_states : list
+                Additional state parameters for data filtering.
+
+            Returns:
+            -------
+            plotly.graph_objs.Figure
+                Updated figure visualizing HB method results.
+
+            Raises:
+            ------
+            PreventUpdate
+                If no button click is detected.
+            """
             states_values = dynamic_states[: len(selected_state_keys)]
             state_params = {
                 key: value for key, value in zip(selected_state_keys, states_values)
@@ -265,6 +407,20 @@ class HBMethodModule:
             State("hb-modal", "is_open"),
         )
         def sqlmodal_toggle(n, is_open):
+            """Toggle the state of the modal window.
+
+            Parameters
+            ----------
+            n : int
+                Number of clicks on the toggle button.
+            is_open : bool
+                Current state of the modal (open/closed).
+
+            Returns:
+            -------
+            bool
+                New state of the modal (open/closed).
+            """
             if n:
                 return not is_open
             return is_open
@@ -275,6 +431,18 @@ class HBMethodModule:
             prevent_initial_call=True,
         )
         def hb_to_main_table(clickdata):
+            """Pass selected observation identifier to variabelvelger.
+
+            Parameters
+            ----------
+            clickdata : dict
+                Data from the clicked point in the HB visualization.
+
+            Returns:
+            -------
+            str
+                Identifier of the selected observation.
+            """
             if clickdata:
                 ident = clickdata["points"][0]["hovertext"]
                 return ident
