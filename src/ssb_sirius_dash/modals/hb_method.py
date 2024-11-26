@@ -1,3 +1,5 @@
+from typing import Callable
+
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.graph_objects as go
@@ -50,7 +52,12 @@ class HBMethodModule:
     """
 
     def _init__(
-        self, database, hb_get_data_func, selected_state_keys, selected_ident, variable
+        self,
+        database: object,
+        hb_get_data_func: Callable,
+        selected_state_keys: list,
+        selected_ident: list,
+        variable: str,
     ):
         """Initialize the HBMethodModule.
 
@@ -72,7 +79,13 @@ class HBMethodModule:
         self.callbacks(selected_state_keys, selected_ident, variable)
 
     def make_hb_data(
-        self, data_df: pd.DataFrame, p_c: int, p_u: float, p_a: float, ident, variable
+        self,
+        data_df: pd.DataFrame,
+        p_c: int,
+        p_u: float,
+        p_a: float,
+        ident: str,
+        variable: str,
     ) -> pd.DataFrame:
         """Process data using the HB method for outlier detection.
 
@@ -108,7 +121,7 @@ class HBMethodModule:
 
         return hb_result.sort_values(by=["maxX"])
 
-    def make_hb_figure(self, data, variable):
+    def make_hb_figure(self, data: pd.DataFrame, variable: str) -> go.Figure:
         """Create a plotly figure for visualizing HB method results.
 
         Parameters
@@ -156,7 +169,7 @@ class HBMethodModule:
 
         return fig
 
-    def layout(self):
+    def layout(self) -> html.Div:
         """Generate the layout for the HB method Dash component.
 
         Returns:
@@ -257,14 +270,14 @@ class HBMethodModule:
 
     def _build_input_field(
         self,
-        label,
-        id_name,
-        default_value,
-        min_value,
-        max_value,
-        initial_value,
-        tooltip_text,
-    ):
+        label: str,
+        id_name: str,
+        default_value: int | float,
+        min_value: int | float,
+        max_value: int | float,
+        initial_value: int | float,
+        tooltip_text: str,
+    ) -> dbc.Col:
         """Build an input field with a tooltip for user parameter inputs.
 
         Parameters
@@ -318,7 +331,9 @@ class HBMethodModule:
             )
         )
 
-    def callbacks(self, selected_state_keys, selected_ident, variable):
+    def callbacks(
+        self, selected_state_keys: list, selected_ident: list, variable: str
+    ) -> None:
         """Register callbacks for the HB method Dash app components.
 
         Parameters
@@ -353,7 +368,7 @@ class HBMethodModule:
             State("hb_pA", "value"),
             *dynamic_states,
         )
-        def use_hb(n_click, pC, pU, pA, *dynamic_states):
+        def use_hb(n_click: int, pC: int, pU: float, pA: float, *dynamic_states: list):
             """Execute the HB method and update the visualization.
 
             Parameters
@@ -406,7 +421,7 @@ class HBMethodModule:
             Input("sidebar-hb-button", "n_clicks"),
             State("hb-modal", "is_open"),
         )
-        def sqlmodal_toggle(n, is_open):
+        def sqlmodal_toggle(n: int, is_open: bool):
             """Toggle the state of the modal window.
 
             Parameters
@@ -430,7 +445,7 @@ class HBMethodModule:
             Input("hb_figure", "clickData"),
             prevent_initial_call=True,
         )
-        def hb_to_main_table(clickdata):
+        def hb_to_main_table(clickdata: dict):
             """Pass selected observation identifier to variabelvelger.
 
             Parameters
