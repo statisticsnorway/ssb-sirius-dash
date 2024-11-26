@@ -3,7 +3,10 @@ import json
 from enum import Enum
 from functools import wraps
 from typing import Any
+from typing import Callable
 from typing import Optional
+
+# from typing import Self
 
 import dapla as dp
 import pandas as pd
@@ -39,7 +42,8 @@ class Feilrapport:
         context_id: str,
         error_description: Optional[str] = None,
         important_variables: Optional[list[str]] = None,
-    ):
+    ) -> None:
+        """Strukturerer en feilrapport for feilen som ble oppdaget."""
         self.sub_control_id = sub_control_id
         self.result_type = result_type
         self.context_id = context_id
@@ -65,15 +69,12 @@ def kontroll(
     result_type: Kontrolltype,
     error_description: str,
     id_column: str,
-    filter_for_relevant_data=None,
+    filter_for_relevant_data: Callable | None = None,
     important_variables: list | None = None,
-):
-    """Assumes all data given to the function is data that should be checked
+) -> Callable:
+    """Assumes all data given to the function is data that should be checked."""
 
-    Note:
-    """
-
-    def decorator(control_function):
+    def decorator(control_function: Callable) -> Callable:
         @wraps(control_function)
         def wrapper(data: pd.DataFrame):
             data = data.copy()
@@ -133,8 +134,10 @@ def kontroll(
     return decorator
 
 
-def automatisk_oppretting(id_column: str, correction_description: str):
-    def decorator(correction_function):
+def automatisk_oppretting(id_column: str, correction_description: str) -> Callable:
+    """Work in progress."""  # TODO
+
+    def decorator(correction_function: Callable) -> Callable:
         @wraps(correction_function)
         def wrapper(data: pd.DataFrame):
             data = data.copy()
@@ -195,8 +198,9 @@ class Kvalitetsrapport:
         quality_control_datetime: datetime,
         quality_control_results: list[Kontrolltype],
         quality_control_errors: list[Feilrapport],
-        quality_control_documentation=None,
-    ):
+        quality_control_documentation: dict[str:str] | None = None,
+    ) -> None:
+        """Bygger opp kvalitetsrapport basert på eksisterende verdier i error_list, corrections_list og kontroll_dokumentasjon."""
         self.statistics_name = statistics_name
         self.quality_control_id = quality_control_id
         self.data_location = data_location
@@ -231,12 +235,18 @@ class Kvalitetsrapport:
             ),
         }
 
-    def save_report(self, path: str):
+    def save_report(self, path: str) -> None:
+        """Lagrer rapporten til definert filsti i bøtte."""
         with dp.FileClient.gcs_open(path, "w") as outfile:
             json.dump(self.to_dict(), outfile)
 
     @classmethod
-    def from_json(cls, path: str):
+    def from_json(cls, path: str) -> dict:
+        """Initierer en Kvalitetsrapport fra en lagret json fil.
+
+        Returns:
+            Kvalitetsrapport.
+        """
         import json
 
         with dp.FileClient.gcs_open(path, "r") as outfile:
@@ -245,6 +255,11 @@ class Kvalitetsrapport:
 
     @classmethod
     def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]):
+        """Initierer en Kvalitetsrapport fra et dict objekt.
+
+        Returns:
+            Kvalitetsrapport.
+        """
         statistics_name = kvalitetsrapport_dict["statistikknavn"]
         quality_control_id = kvalitetsrapport_dict["quality_control_id"]
         data_location = kvalitetsrapport_dict["data_plassering"]
@@ -283,12 +298,12 @@ class Kvalitetsrapport:
 
 
 def lag_kvalitetsrapport(
-    statistics_name,
-    data_location,
-    data_period,
-    also_return_control_docs=False,
-):
-    """ """
+    statistics_name: str,
+    data_location: str,
+    data_period: str,
+    also_return_control_docs: bool = False,
+) -> Kvalitetsrapport:
+    """Oppretter kvalitetsrapport som kan lagres basert på verdier samlet i error_list, corrections_list og kontroll_dokumentasjon."""
     assert statistics_name is not None, "Må sette statistikknavn (statistics_name)"
     assert data_location is not None, "Mangler filsti til datasett (data_location)"
     assert (
@@ -324,7 +339,8 @@ def lag_kvalitetsrapport(
         return report
 
 
-def lag_kontroll_dokumentasjon(kvalitetsrapport):
+def lag_kontroll_dokumentasjon(kvalitetsrapport: Kvalitetsrapport) -> pd.DataFrame:
+    """Oppretter kontrolldokumentasjon."""
     if isinstance(kvalitetsrapport, dict):
         kontrolldokumentasjon = pd.DataFrame(
             kvalitetsrapport["kontrolldokumentasjon"]
@@ -338,7 +354,8 @@ def lag_kontroll_dokumentasjon(kvalitetsrapport):
     return kontrolldokumentasjon
 
 
-def eimerdb_template(kontrolldokumentasjon):
+def eimerdb_template(kontrolldokumentasjon: pd.DataFrame) -> list:
+    """Lager en template for eimerdb kontroll-tabell."""
     kontroller = []
     for i in kontrolldokumentasjon.to_dict()["kontrolldokumentasjon"]:
         kontroller.append(

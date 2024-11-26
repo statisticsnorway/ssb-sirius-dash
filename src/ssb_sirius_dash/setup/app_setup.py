@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import Dash
+from dash import Dash, Input, Output, State
 from dash_bootstrap_templates import load_figure_template
 
 theme_map = {
@@ -26,4 +26,17 @@ def app_setup(port, service_prefix, domain, stylesheet):
         requests_pathname_prefix=f"{service_prefix}proxy/{port}/",
         external_stylesheets=[theme_map[stylesheet], dbc_css],
     )
+    @app.callback(
+        Output("main-varvelger", "style"),
+        Input("sidebar-varvelger-button", "n_clicks"),
+        State("main-varvelger", "style"),
+    )
+    def toggle_varvelger(n_clicks, style):
+        if n_clicks > 0:
+            if style == {"display": "none"}:
+                style = {}
+            else:
+                style = {"display": "none"}
+            return style
+
     return app
