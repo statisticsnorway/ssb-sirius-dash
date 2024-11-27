@@ -13,14 +13,50 @@ delete the .rst file afterwards.
 
 ```{eval-rst}
 ssb\_sirius\_dash package
-=============================================================================
+=========================
 
+Subpackages
+-----------
 
-ssb\_sirius\_dash.functions module
------------------------------------------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: ssb_sirius_dash.functions
+   ssb_sirius_dash.control
+   ssb_sirius_dash.modals
+   ssb_sirius_dash.setup
+   ssb_sirius_dash.tabs
+
+Submodules
+----------
+
+ssb\_sirius\_dash.hb\_method\_aio module
+----------------------------------------
+
+.. automodule:: ssb_sirius_dash.hb_method_aio
    :members:
    :undoc-members:
    :show-inheritance:
-```
+
+ssb\_sirius\_dash.kostra\_r\_wrapper module
+-------------------------------------------
+
+.. automodule:: ssb_sirius_dash.kostra_r_wrapper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ssb\_sirius\_dash.sunburst\_aio module
+--------------------------------------
+
+.. automodule:: ssb_sirius_dash.sunburst_aio
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: ssb_sirius_dash
+   :members:
+   :undoc-members:
+   :show-inheritance:
