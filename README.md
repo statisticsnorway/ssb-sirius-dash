@@ -25,9 +25,17 @@
 [black]: https://github.com/psf/black
 [poetry]: https://python-poetry.org/
 
-## Features
+## Vennligst se [komme i gang] for brukerveiledning
 
-- TODO
+The getting started guide is in norwegian and intended for Statistics Norway internal use.
+
+More technical and in-depth information can be found in the [Contributor Guide].
+
+## Features
+- Dashboard for editing data, includes modules for among other things:
+    - Controls for the data
+    - Visualizations to find outliers
+    - Seeing micro-level information about observations
 
 ## Requirements
 
@@ -52,7 +60,7 @@ To learn more, see the [Contributor Guide].
 
 ## License
 
-Distributed under the terms of the [MIT license][license],
+Distributed under the terms of the [GNU license][license],
 _SSB Sirius Dash_ is free and open source software.
 
 ## Issues
@@ -73,5 +81,6 @@ This project was generated from [Statistics Norway]'s [SSB PyPI Template].
 <!-- github-only -->
 
 [license]: https://github.com/statisticsnorway/ssb-sirius-dash/blob/main/LICENSE
+[komme i gang]: https://github.com/statisticsnorway/ssb-sirius-dash/blob/main/KOMME_I_GANG.md
 [contributor guide]: https://github.com/statisticsnorway/ssb-sirius-dash/blob/main/CONTRIBUTING.md
 [reference guide]: https://statisticsnorway.github.io/ssb-sirius-dash/reference.html

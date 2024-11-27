@@ -6,8 +6,10 @@ import os
 # Path to the src folder
 src_dir = os.path.dirname(__file__)
 
-# Traverse the modules in the ssb-sirius-dash directory
-for root, dirs, files in os.walk(src_dir):
+__all__ = []
+
+# Traverse the modules in the ssb_sirius_dash directory
+for root, _dirs, files in os.walk(src_dir):
     for file in files:
         if file.endswith(".py") and not file.startswith("_"):
             module_name = os.path.splitext(file)[0]
@@ -23,3 +25,4 @@ for root, dirs, files in os.walk(src_dir):
             for attr_name in dir(module):
                 if not attr_name.startswith("_"):
                     globals()[attr_name] = getattr(module, attr_name)
+                    __all__.append(attr_name)  # Add to exports list

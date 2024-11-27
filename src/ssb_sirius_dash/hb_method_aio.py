@@ -1,6 +1,5 @@
 import uuid
 from typing import Any
-from typing import Optional
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -230,7 +229,7 @@ class HbMethodAIO(html.Div):  # type: ignore
         default_p_a: float = 0.05,
         default_filter_op: str = "<",
         default_filter_value: int = 100_000,
-        aio_id: Optional[str] = None,
+        aio_id: str | None = None,
     ) -> None:
         """Creates a new HbMethodAIO component.
 

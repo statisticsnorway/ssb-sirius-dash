@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -9,6 +11,7 @@ from dash import State
 from dash import callback
 from dash import dcc
 from dash import html
+from dash.development.base_component import Component
 from dash.exceptions import PreventUpdate
 
 from ..control.framework import Kvalitetsrapport
@@ -16,16 +19,25 @@ from .modal_functions import sidebar_button
 
 
 class KvalitetsindikatorerModule:
-    """indicators: list
-    List of indicators to include.
+    """Class for å sette opp visningen for valgte kvalitetsindikatorer.
+
+    Attributes:
+    ----------
+    indicators : list
+        Liste over kvalitetsindikatorer. F.eks. indicators = [KvalitetsindikatorEditeringsandel(), KvalitetsindikatorEffektaveditering()]
+
+    Notes:
+    -----
+    Alle indikatorene antar et langt format på dataene med minimum ident | variabel | verdi som kolonner.
     """
 
-    def __init__(self, indicators):
-
+    def __init__(self, indicators: list) -> None:
+        """Setter opp modulen for kvalitetsindikatorer med alle valgte indikatorer."""
         self.indicators = indicators
         self.callbacks()
 
-    def layout(self):
+    def layout(self) -> Component:
+        """Lager layouten til kvalitetsindikator modalen."""
         return html.Div(
             [
                 dbc.Modal(
@@ -54,32 +66,52 @@ class KvalitetsindikatorerModule:
             ]
         )
 
-    def callbacks(self):
+    def callbacks(self) -> None:
+        """Brukes for å gjøre at modalen kan åpnes."""
+
         @callback(
             Output("kvalitetsindikatorer-modal", "is_open"),
             Input("sidebar-kvalitetsindikatorer-button", "n_clicks"),
             State("kvalitetsindikatorer-modal", "is_open"),
         )
-        def kvalitetsindikatorermodal_toggle(n, is_open):
+        def kvalitetsindikatorermodal_toggle(n: int, is_open: bool) -> bool:
+            """Åpner og lukker modalen."""
             if n:
                 return not is_open
             return is_open
 
 
 class KvalitetsindikatorEditeringsandel:
-    """ """
+    """Kvalitetsindikator for editeringsandel.
+
+    Attributes:
+    ----------
+    get_current_data_func: Callable
+        Funksjon som henter nåværende data.
+    get_change_data_func: Callable
+        Funksjon som henter rader med endringer
+    periode:
+        Gjeldende periode
+    var_name: str
+        Navnet på kolonnen i datasettet som sier hvilken variabel verdien tilhører.
+    ident_var: str
+        Variabelnavn på identifikasjonsvariabelen. F.eks. orgf
+    grouping_vars: list[str]
+        Variabler som datasettet kan grupperes etter. F.eks. nace eller kommune
+    key_vars: list[str]
+        Viktige variabler som kvalitetsindikatoren
+    """
 
     def __init__(
         self,
-        get_current_data_func,
-        get_change_data_func,
-        periode,
-        var_name,
-        ident_var,
-        grouping_vars=None,
-        key_vars=None,
-    ):
-        self.periode = periode
+        get_current_data_func: Callable,
+        get_change_data_func: Callable,
+        var_name: str,
+        ident_var: str,
+        grouping_vars: list[str] | None = None,
+        key_vars: list[str] | None = None,
+    ) -> None:
+        """Setter opp visningen for editeringsandel i kvalitetsindikator modalen."""
         self.ident_var = ident_var
         self.var_name = var_name
         self.grouping_vars = grouping_vars if grouping_vars else []
@@ -101,7 +133,7 @@ class KvalitetsindikatorEditeringsandel:
                                     figure=go.Figure(
                                         go.Indicator(
                                             mode="number+delta",
-                                            value=self.editeringsandel(self.periode),
+                                            value=self.editeringsandel(),
                                             number={"prefix": ""},
                                             # delta={"position": "bottom", "reference": self.editeringsandel(self.periode-1)}, # TODO
                                             domain={"x": [0, 1], "y": [0, 1]},
@@ -153,12 +185,14 @@ class KvalitetsindikatorEditeringsandel:
             ]
         )
 
-    def editeringsandel(self, periode):
+    def editeringsandel(self) -> float:
+        """Metode for å beregne editeringsandel."""
         total = pd.DataFrame(self.get_current_data().agg({self.ident_var: "nunique"}))
         changes = pd.DataFrame(self.get_change_data().agg({self.ident_var: "nunique"}))
         return (changes / total * 100).iloc[0][0]
 
-    def editeringsandel_details(self, group, periode):
+    def editeringsandel_details(self, group: list[str] | str) -> pd.DataFrame:
+        """Metode for å beregne editeringsandel for ulike deler av utvalget."""
         if isinstance(group, str):
             group = [group]
         total = (
@@ -175,16 +209,18 @@ class KvalitetsindikatorEditeringsandel:
         )
         c = pd.merge(total, changes, on=group, how="left").fillna(0)
         c["editeringsandel"] = c["edited_units"] / c["units"] * 100
-        print(c)
         return c.reset_index()
 
-    def callbacks(self):
+    def callbacks(self) -> None:
+        """Setter opp callbacks for å åpne detaljvisningen og for å velge gruppering man vil ha detaljer for."""
+
         @callback(
             Output("editeringsandel-modal", "is_open"),
             Input("kvalitet-editeringsandel-button-details", "n_clicks"),
             State("editeringsandel-modal", "is_open"),
         )
-        def kvalitetediteringsandel_modaltoggle(n, is_open):
+        def kvalitetediteringsandel_modaltoggle(n: int, is_open: bool) -> bool:
+            """Åpner og lukker detalj-visningen for editeringsandel."""
             if n:
                 return not is_open
             return is_open
@@ -193,7 +229,8 @@ class KvalitetsindikatorEditeringsandel:
             Output("kvalitet-editeringsandel-details", "children"),
             Input("kvalitet-editeringsandel-dropdown", "value"),
         )
-        def editeringsandel_detailed(grouping_var):
+        def editeringsandel_detailed(grouping_var: str) -> Component:
+            """Kjører beregning av detaljert indikator for valgt gruppering."""
             if grouping_var:
                 detail_data = self.editeringsandel_details(grouping_var, self.periode)
                 return dcc.Graph(
@@ -209,14 +246,25 @@ class KvalitetsindikatorEditeringsandel:
 
 
 class KvalitetsindikatorKontrollutslagsandel:
+    """Indikator for å vise andel av mulige utslag for en kontroll som slår ut.
+
+    Kontrolldokumentasjon skal være et datasett med kolonnene vist nedenfor.
+    kontroll_id | Enheter kontrollert | Kontrollutslag
+
+    Attributes:
+    ----------
+    kontrolldokumentasjon: Kvalitetsrapport | None
+        Kvalitetsrapport som skal brukes for beregning.
+    kvalitetsrapport_path: str | None
+        Filsti til lagret kvalitetsrapport i json.format på Dapla.
+    """
+
     def __init__(
         self,
-        kontrolldokumentasjon=None,
-        kvalitetsrapport_path=None,
-    ):
-        """Kontrolldokumentasjon skal være et datasett med kolonnene:
-        kontroll_id | Enheter kontrollert | Kontrollutslag
-        """
+        kontrolldokumentasjon: Kvalitetsrapport | None = None,
+        kvalitetsrapport_path: str | None = None,
+    ) -> None:
+        """Setter opp visningen for kontrollutslagsandel i kvalitetsindikator modalen."""
         if kvalitetsrapport_path and kontrolldokumentasjon:
             raise ValueError(
                 "Remove either kontrolldokumentasjon or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kontrolldokumentasjon and kvalitetsrapport_path is defined. If both are defined, it will not work."
@@ -324,7 +372,8 @@ class KvalitetsindikatorKontrollutslagsandel:
             ]
         )
 
-    def kontrollutslag(self):
+    def kontrollutslag(self) -> tuple[float, pd.DataFrame]:
+        """Beregner andelen kontrollutslag basert på kontrolldokumentasjonen."""
         total = (
             self.kontrolldokumentasjon["Kontrollutslag"].sum()
             / self.kontrolldokumentasjon["Enheter kontrollert"].sum()
@@ -337,30 +386,50 @@ class KvalitetsindikatorKontrollutslagsandel:
 
         return total, self.kontrolldokumentasjon
 
-    def callbacks(self):
+    def callbacks(self) -> None:
+        """Funksjon som brukes for å lage callback for åpning og lukking av detaljert visning."""
+
         @callback(
             Output("kontrollutslagsandel-modal", "is_open"),
             Input("kvalitet-kontrollutslagsandel-button-details", "n_clicks"),
             State("kontrollutslagsandel-modal", "is_open"),
         )
-        def kvalitetkontrollutslagsandel_modaltoggle(n, is_open):
+        def kvalitetkontrollutslagsandel_modaltoggle(n: int, is_open: bool) -> bool:
+            """Åpner eller lukker modalen med detaljer."""
             if n:
                 return not is_open
             return is_open
 
 
 class KvalitetsindikatorEffektaveditering:
-    """ """
+    """Indikator for å vise effekten av editering som er gjort.
+
+    Attributes:
+    ----------
+    get_current_data_func: Callable
+        Funksjon for å hente nåværende oppdatert data
+    get_original_data_func: Callable
+        Funksjon for å hente originalt mottatt data
+    periode: str | int  # TODO sjekk dette
+        Perioden det gjelder
+    ident_var: str
+        Variabelnavn på identifikasjonsvariabelen. F.eks. orgf
+    key_vars: list[str]
+        Liste over de viktigste variablene for indikatoren
+    grouping_vars: list[str]
+        Liste over grupperingsvariabler for stratum.
+    """
 
     def __init__(
         self,
-        get_current_data_func,
-        get_original_data_func,
-        periode,
-        ident_var,
-        key_vars,
-        grouping_vars,
-    ):
+        get_current_data_func: Callable,
+        get_original_data_func: Callable,
+        periode: str | int,  # TODO sjekk dette
+        ident_var: str,
+        key_vars: list[str],
+        grouping_vars: list[str],
+    ) -> None:
+        """Setter opp visningen for effekt av editering i kvalitetsindikator modalen."""
         self.get_current_data = get_current_data_func
         self.get_original_data = get_original_data_func
         self.periode = periode
@@ -439,7 +508,10 @@ class KvalitetsindikatorEffektaveditering:
             ]
         )
 
-    def get_comparison_data(self, periode, grouping=None):
+    def get_comparison_data(
+        self, periode: str | int, grouping: list[str] | None = None
+    ) -> pd.DataFrame:
+        """Bruker innsendte funksjoner for å beregne effekten av editeringer som er gjort."""
         if grouping is None:
             grouping = []
         elif isinstance(grouping, str):
@@ -470,13 +542,16 @@ class KvalitetsindikatorEffektaveditering:
 
         return merged
 
-    def callbacks(self):
+    def callbacks(self) -> None:
+        """Funksjon som brukes for å lage callback for åpning og lukking av detaljert visning."""
+
         @callback(
             Output("effekt-modal", "is_open"),
             Input("kvalitet-effekt-button-details", "n_clicks"),
             State("effekt-modal", "is_open"),
         )
-        def kvaliteteffekt_modaltoggle(n, is_open):
+        def kvaliteteffekt_modaltoggle(n: int, is_open: bool) -> bool:
+            """Åpner og lukker modalen som viser detaljer for indikatoren."""
             if n:
                 return not is_open
             return is_open
@@ -485,7 +560,8 @@ class KvalitetsindikatorEffektaveditering:
             Output("kvalitet-effekt-details", "children"),
             Input("kvalitet-effekt-dropdown", "value"),
         )
-        def kvalitet_effekt_detailed(grouping_var):
+        def kvalitet_effekt_detailed(grouping_var: str | None) -> Component:
+            """Funksjon som beregner indikatoren per gruppe i gruppe-inndelingen som er valgt."""
             if grouping_var:
                 detail_data = self.get_comparison_data(self.periode, grouping_var)
                 return dcc.Graph(
@@ -501,9 +577,27 @@ class KvalitetsindikatorEffektaveditering:
 
 
 class KvalitetsindikatorTreffsikkerhet:
+    """Indikator for å vise treffsikkerheten til kontroller man kjører.
+
+    Attributes:
+    ----------
+    get_edits_list_func: Callable
+        Funksjon som henter liste over endringer som er gjort i dataene.
+        Den skal returnere en liste med tuples som beskriver endrede felter. Dette brukes for å sjekke mot kontrollutslagene for å se hvor disse identifikasjon og variabel kombinasjonene dukker opp og se om kontrollutslaget sannsynligvis førte til en editering.
+        Eks: [(orgnr_1, variabel_1), (orgnr_1, variabel_2), (orgnr_2, variabel_1)]
+    kvalitetsrapport: Kvalitetsrapport | None
+        Kvalitetsrapport som skal brukes for beregning.
+    kvalitetsrapport_path: str | None
+        Filsti til lagret kvalitetsrapport i json.format på Dapla.
+    """
+
     def __init__(
-        self, get_edits_list_func, kvalitetsrapport=None, kvalitetsrapport_path=None
-    ):
+        self,
+        get_edits_list_func: Callable,
+        kvalitetsrapport: Kvalitetsrapport | None = None,
+        kvalitetsrapport_path: str | None = None,
+    ) -> None:
+        """Setter opp visningen for effekt av editering i kvalitetsindikator modalen."""
         if kvalitetsrapport_path and kvalitetsrapport:
             raise ValueError(
                 "Remove either kvalitetsrapport or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kvalitetsrapport and kvalitetsrapport_path is defined. If both are defined, it will not work."
@@ -586,7 +680,8 @@ class KvalitetsindikatorTreffsikkerhet:
 
         self.callbacks()
 
-    def beregn_treffsikkerhet(self):
+    def beregn_treffsikkerhet(self) -> dict:
+        """Beregner treffsikkerhet indikatoren basert på kvalitetsrapport."""
         if isinstance(self.kvalitetsrapport, Kvalitetsrapport):
             kvalitetsrapport = self.kvalitetsrapport.to_dict()
         else:
@@ -616,13 +711,16 @@ class KvalitetsindikatorTreffsikkerhet:
         ) * 100
         return treffsikkerhet
 
-    def callbacks(self):
+    def callbacks(self) -> None:
+        """Funksjon som brukes for å lage callback for åpning og lukking av detaljert visning."""
+
         @callback(
             Output("treffsikkerhet-modal", "is_open"),
             Input("kvalitet-treffsikkerhet-button-details", "n_clicks"),
             State("treffsikkerhet-modal", "is_open"),
         )
-        def kvalitettreffsikkerhet_modaltoggle(n, is_open):
+        def kvalitettreffsikkerhet_modaltoggle(n: int, is_open: bool) -> bool:
+            """Åpner og lukker detaljert visning."""
             if n:
                 return not is_open
             return is_open
