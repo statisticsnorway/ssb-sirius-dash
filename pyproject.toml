@@ -81,7 +81,10 @@ module = [
     "dash_bootstrap_components.*",
     "dash.*",
     "plotly.*",
-    "rpy2.*"
+    "rpy2.*",
+    "mpmath.*",
+    "dash_ag_grid.*",
+    "dash_bootstrap_templates.*",
 ]
 ignore_missing_imports = true
 
