@@ -1,5 +1,3 @@
-import datetime
-
 import dash_bootstrap_components as dbc
 from dash import Input
 from dash import Output
@@ -11,7 +9,22 @@ from .modal_functions import sidebar_button
 
 
 class AlertHandler:
-    """Handler class to keep track of alerts the app."""
+    """Handler class to keep track of alerts the app.
+
+    In order to add an alert to this list:
+    add the below to your callback:
+    Output("error_log", "children",allow_duplicates=True),
+    State("error_log", "children")
+
+    Add this in the callback function:
+    new_alert = dbc.Alert(
+        f"{datetime.datetime.now()} - your_error_message",
+        color=, # use one of "info", "warning", "danger" as the argument for color.
+        dismissable=True,
+    )
+    return [*existing_errors, new_alert]
+
+    """
 
     def __init__(self) -> None:
         """Initialize the AlertHandler class and set up the callbacks."""
@@ -33,12 +46,7 @@ class AlertHandler:
                         dbc.ModalBody(
                             [
                                 dbc.Row("Feilmeldinger"),
-                                dbc.Row(
-                                    dbc.Button(
-                                        "Add Alert - Demo", id="add-alert-button"
-                                    )
-                                ),  # For demo purposes
-                                dbc.Row(html.Div(id="feilmeldinger_logg", children=[])),
+                                dbc.Row(html.Div(id="error_log", children=[])),
                             ]
                         ),
                     ],
@@ -76,34 +84,3 @@ class AlertHandler:
             if n:
                 return not is_open
             return is_open
-
-        @callback(  # For demo purposes
-            Output("feilmeldinger_logg", "children"),
-            Input("add-alert-button", "n_clicks"),
-            State("feilmeldinger_logg", "children"),
-        )
-        def add_alert(
-            n_clicks: int | None, existing_errors: list[html.Div]
-        ) -> list[html.Div]:
-            """Add a new alert to the error log when the button is clicked.
-
-            Parameters
-            ----------
-            n_clicks : int or None
-                Number of clicks on the add-alert button. None if never clicked.
-            existing_errors : list of html.Div
-                Existing list of alerts in the error log.
-
-            Returns:
-            -------
-            list of html.Div
-                Updated list of alerts including the new alert if the button was clicked.
-            """
-            if n_clicks:
-                new_alert = dbc.Alert(
-                    f"{datetime.datetime.now()} - Advarsel - Add alert trykket på",
-                    color="primary",
-                    dismissable=True,
-                )
-                return [*existing_errors, new_alert]
-            return existing_errors
