@@ -197,7 +197,8 @@ class EditingTable:
             """
             states_values = dynamic_states[: len(self.states)]
             state_params = {
-                key: value for key, value in zip(self.states, states_values)
+                key: value
+                for key, value in zip(self.states, states_values, strict=False)
             }
 
             args = []
@@ -256,7 +257,8 @@ class EditingTable:
             """
             states_values = dynamic_states[: len(self.states)]
             state_params = {
-                key: value for key, value in zip(self.states, states_values)
+                key: value
+                for key, value in zip(self.states, states_values, strict=False)
             }
 
             args = []

@@ -1,6 +1,5 @@
 import logging
 import timeit
-from typing import Optional
 
 import pandas as pd
 from rpy2.robjects import conversion
@@ -12,7 +11,7 @@ from rpy2.robjects.packages import importr
 logger = logging.getLogger(__name__)
 
 # Global variable to store the R package Kostra
-_kostra_r: Optional[InstalledSTPackage] = None
+_kostra_r: InstalledSTPackage | None = None
 
 
 def _get_kostra_r() -> InstalledSTPackage:

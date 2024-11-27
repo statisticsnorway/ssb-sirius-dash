@@ -1,10 +1,9 @@
 import datetime
 import json
+from collections.abc import Callable
 from enum import Enum
 from functools import wraps
 from typing import Any
-from typing import Callable
-from typing import Optional
 
 import dapla as dp
 import pandas as pd
@@ -45,8 +44,8 @@ class Feilrapport:
         sub_control_id: str,
         result_type: Kontrolltype,
         context_id: str,
-        error_description: Optional[str] = None,
-        important_variables: Optional[list[str]] = None,
+        error_description: str | None = None,
+        important_variables: list[str] | None = None,
     ) -> None:
         """Initialize the error report."""
         self.sub_control_id = sub_control_id
