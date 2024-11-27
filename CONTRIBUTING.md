@@ -153,7 +153,7 @@ As our goal is to make a library of easily reusable, customizable and expandable
 
 ## How to set up your development environment
 
-You need Python 3.9+ and the following tools:
+You need Python 3.10+ and the following tools:
 
 - [Poetry]
 - [Nox]
