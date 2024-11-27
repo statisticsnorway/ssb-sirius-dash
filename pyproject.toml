@@ -15,7 +15,7 @@ classifiers = ["Development Status :: 1 - Planning"]
 Changelog = "https://github.com/statisticsnorway/ssb-sirius-dash/releases"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = "^3.10"
 click = ">=8.0.1"
 dash = "^2.15.0"
 dash-bootstrap-components = "^1.5.0"
@@ -95,7 +95,7 @@ disallow_untyped_decorators = false
 force-exclude = true  # Apply excludes to pre-commit
 show-fixes = true
 src = ["src", "tests"]
-target-version = "py39"  # Minimum Python version supported
+target-version = "py310"  # Minimum Python version supported
 include = ["*.py", "*.pyi", "**/pyproject.toml", "*.ipynb"]
 extend-exclude = [
     "__pycache__",
@@ -121,8 +121,8 @@ select = [
     "RUF",  # the ruff developer's own rules
 ]
 ignore = [
-    "ANN101", # Supress missing-type-self.
-    "ANN102", # Supress missing-type-cls.
+    "ANN101",
+    "ANN102",
     "ANN202", # Don't requiere return type annotation for private functions.
     "ANN401", # Allow type annotation with type Any.
     "D100",   # Supress undocumented-public-module. Only doc of public api required.

@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc

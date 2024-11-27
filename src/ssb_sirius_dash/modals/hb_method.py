@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -396,7 +396,8 @@ class HBMethodModule:
             """
             states_values = dynamic_states[: len(selected_state_keys)]
             state_params = {
-                key: value for key, value in zip(selected_state_keys, states_values)
+                key: value
+                for key, value in zip(selected_state_keys, states_values, strict=False)
             }
 
             args = []
