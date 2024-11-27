@@ -15,7 +15,27 @@ variable_options = {
 }
 
 
-def skjermcard(text, component_id, input_type, value=None):
+def skjermcard(
+    text: str, component_id: str, input_type: str, value: str | None = None
+) -> dbc.Col:
+    """Generate a Dash Bootstrap card with an input field.
+
+    Parameters
+    ----------
+    text : str
+        The title text to display on the card.
+    component_id : str
+        The ID to assign to the input field within the card.
+    input_type : str
+        The type of the input field (e.g., "text", "number").
+    value : str, optional
+        The default value for the input field. Defaults to an empty string.
+
+    Returns:
+    -------
+    dash_bootstrap_components.Col
+        A column containing the card with an input field.
+    """
     if value is None:
         value = ""
     card = dbc.Col(
@@ -41,7 +61,25 @@ def skjermcard(text, component_id, input_type, value=None):
     return card
 
 
-def generate_skjermcards(selected_keys, default_values=None):
+def generate_skjermcards(
+    selected_keys: list, default_values: dict | None = None
+) -> list:
+    """Generate a list of Dash Bootstrap cards based on selected variable keys.
+
+    Parameters
+    ----------
+    selected_keys : list of str
+        Keys representing variables to include as cards. Each key corresponds
+        to an entry in the `variable_options` dictionary.
+    default_values : dict, optional
+        A dictionary containing default values for the cards, where the keys
+        are variable names, and the values are the default input values. Defaults to an empty dictionary.
+
+    Returns:
+    -------
+    list of dash_bootstrap_components.Col
+        A list of cards, each represented as a Dash Bootstrap column.
+    """
     if default_values is None:
         default_values = {}
     cards_list = []

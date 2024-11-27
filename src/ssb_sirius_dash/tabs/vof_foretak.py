@@ -25,12 +25,63 @@ VOF_COLUMNS = [
 
 
 class VoFForetakTab:
-    def __init__(self):
+    """Tab for displaying and managing information from VoF.
+
+    This component:
+    - Displays detailed information about selected foretak using cards.
+    - Provides a table for associated business data.
+    - Interacts with a DuckDB in-memory database to fetch data.
+
+    Attributes:
+    ----------
+    database : duckdb.DuckDBPyConnection
+        In-memory database connection for querying VoF foretak data.
+    label : str
+        Label for the tab, displayed as "🗃️ VoF Foretak".
+
+    Methods:
+    -------
+    generate_card(title, component_id, var_type)
+        Generates a Dash Bootstrap card for displaying information.
+    register_table()
+        Registers the VoF foretak data as a table in DuckDB.
+    layout()
+        Generates the layout for the VoF Foretak tab.
+    callbacks()
+        Registers Dash callbacks for handling user interactions.
+    """
+
+    def __init__(self) -> None:
+        """Initialize the VoFForetakTab component.
+
+        Attributes:
+        ----------
+        database : duckdb.DuckDBPyConnection
+            In-memory database connection for querying VoF foretak data.
+        label : str
+            The label for the tab, displayed as "🗃️ VoF Foretak".
+        """
         self.database = self.register_table()
         self.callbacks()
         self.label = "🗃️ VoF Foretak"
 
-    def generate_card(self, title, component_id, var_type):
+    def generate_card(self, title: str, component_id: str, var_type: str) -> dbc.Card:
+        """Generate a Dash Bootstrap card for displaying data.
+
+        Parameters
+        ----------
+        title : str
+            Title displayed in the card header.
+        component_id : str
+            ID assigned to the input component inside the card.
+        var_type : str
+            Input type for the component (e.g., "text").
+
+        Returns:
+        -------
+        dash_bootstrap_components.Card
+            A styled card containing an input field.
+        """
         card = dbc.Card(
             [
                 dbc.CardHeader(title),
@@ -45,17 +96,30 @@ class VoFForetakTab:
         )
         return card
 
-    def register_table(self):
+    def register_table(self) -> duckdb.DuckDBPyConnection:
+        """Register the VoF foretak data as a DuckDB table.
+
+        Returns:
+        -------
+        duckdb.DuckDBPyConnection
+            A connection to an in-memory DuckDB instance with the VoF foretak data registered.
+        """
         fs = FileClient.get_gcs_file_system()
-        fil_ssb_foretak = (
-            "ssb-vof-data-delt-oracle-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
-        )
+        fil_ssb_foretak = "ssb-vof-data-delt-oracle-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
         ssb_foretak = pq.read_table(fil_ssb_foretak, columns=VOF_COLUMNS, filesystem=fs)
         dsbbase = duckdb.connect()
         dsbbase.register("ssb_foretak", ssb_foretak)
         return dsbbase
 
-    def layout(self):
+    def layout(self) -> html.Div:
+        """Generate the layout for the VoF Foretak tab.
+
+        Returns:
+        -------
+        dash.html.Div
+            A Div element containing:
+            - Cards displaying detailed information about foretak.
+        """
         layout = html.Div(
             style={"height": "100%", "display": "flex", "flexDirection": "column"},
             children=[
@@ -169,7 +233,14 @@ class VoFForetakTab:
         )
         return layout
 
-    def callbacks(self):
+    def callbacks(self) -> None:
+        """Register Dash callbacks for the VoF Foretak tab.
+
+        Notes:
+        -----
+        - The `vof_data` callback fetches and updates data in the cards based on the selected foretak.
+        """
+
         @callback(
             Output("tab-vof_foretak-orgnrcard", "value"),
             Output("tab-vof_foretak-navncard", "value"),
@@ -184,9 +255,28 @@ class VoFForetakTab:
             Output("tab-vof_foretak-undersektorcard", "value"),
             Output("tab-vof_foretak-typecard", "value"),
             Input("var-foretak", "value"),
-            State("var-aar", "value"),
+            State("var-aar", "value"),  # Is not used in this iteration
         )
-        def vof_data(orgf, aar):
+        def vof_data(orgf: str, aar: int) -> tuple:
+            """Fetch VoF Foretak data based on the selected organization number.
+
+            Parameters
+            ----------
+            orgf : str
+                The organization number of the selected foretak.
+            aar : int
+                The year for filtering data (if applicable).
+
+            Returns:
+            -------
+            tuple
+                A tuple containing information about the foretak
+
+            Notes:
+            -----
+            - If `orgf` is None, no data is returned.
+            - The callback queries the DuckDB database for the selected organization number.
+            """
             if orgf is not None:
                 df = self.database.execute(
                     f"SELECT * FROM ssb_foretak WHERE orgnr = '{orgf}'",

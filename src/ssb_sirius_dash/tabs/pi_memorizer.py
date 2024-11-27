@@ -1,9 +1,10 @@
-import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
-from dash import dcc, html, callback, callback_context
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
-
+from dash import callback
+from dash import callback_context
+from dash import html
+from dash.dependencies import Input
+from dash.dependencies import Output
+from dash.dependencies import State
 from mpmath import mp
 
 mp.dps = 1000
@@ -12,19 +13,56 @@ pi = str(mp.pi)
 
 
 class PimemorizerTab:
+    """A tab for testing and improving memory of the digits of π (Pi).
+
+    This component provides:
+    - A text box to display the digits entered so far.
+    - A numeric keypad to input digits.
+    - A scoring system to track the current and high scores.
+
+    Attributes:
+    ----------
+    label : str
+        The label for the tab, set to "𝝅 Pi memorizer".
+
+    Methods:
+    -------
+    layout()
+        Generates the layout for the Pi memorizer tab.
+    callbacks()
+        Registers the Dash callbacks for handling user interactions.
+    """
+
     def __init__(
         self,
-    ):
+    ) -> None:
+        """Initialize the PimemorizerTab component.
+
+        Attributes:
+        ----------
+        label : str
+            The label for the tab, displayed as "𝝅 Pi memorizer".
+        """
         self.label = "𝝅 Pi memorizer"
         self.callbacks()
 
-    def layout(self):
+    def layout(self) -> html.Div:
+        """Generate the layout for the Pi memorizer tab.
+
+        Returns:
+        -------
+        dash.html.Div
+            A Div element containing:
+            - A text area to display the user's current input sequence.
+            - A numeric keypad for entering digits.
+            - Score and high score displays to track progress.
+        """
         layout = html.Div(
             style={"display": "grid", "grid-template-columns": "10% 70% 10% 10%"},
             children=[
                 html.Div(),
-                    html.Div(
-                        [
+                html.Div(
+                    [
                         html.Div(
                             style={"margin-bottom": "20px"},
                             children=[
@@ -33,26 +71,100 @@ class PimemorizerTab:
                                     size="xxl",
                                     value="3.",
                                 ),
-                            ]
+                            ],
                         ),
-
                         html.Div(
-                            style={"display": "grid", "grid-template-columns": "repeat(3, 1fr)", "gap": "10px", "justify-content": "center"},
+                            style={
+                                "display": "grid",
+                                "grid-template-columns": "repeat(3, 1fr)",
+                                "gap": "10px",
+                                "justify-content": "center",
+                            },
                             children=[
-                                dbc.Button("1", id="pi-button1", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("2", id="pi-button2", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("3", id="pi-button3", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("4", id="pi-button4", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("5", id="pi-button5", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("6", id="pi-button6", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("7", id="pi-button7", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("8", id="pi-button8", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("9", id="pi-button9", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("", id="pi-button-empty1", color="secondary", disabled=True, style={"font-size": "20px", "padding": "20px", "grid-column": "span 1"}),
-                                dbc.Button("0", id="pi-button0", color="primary", style={"font-size": "20px", "padding": "20px"}),
-                                dbc.Button("", id="pi-button-empty2", color="secondary", disabled=True, style={"font-size": "20px", "padding": "20px", "grid-column": "span 1"}),
-                            ]
-                        )
+                                dbc.Button(
+                                    "1",
+                                    id="pi-button1",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "2",
+                                    id="pi-button2",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "3",
+                                    id="pi-button3",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "4",
+                                    id="pi-button4",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "5",
+                                    id="pi-button5",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "6",
+                                    id="pi-button6",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "7",
+                                    id="pi-button7",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "8",
+                                    id="pi-button8",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "9",
+                                    id="pi-button9",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "",
+                                    id="pi-button-empty1",
+                                    color="secondary",
+                                    disabled=True,
+                                    style={
+                                        "font-size": "20px",
+                                        "padding": "20px",
+                                        "grid-column": "span 1",
+                                    },
+                                ),
+                                dbc.Button(
+                                    "0",
+                                    id="pi-button0",
+                                    color="primary",
+                                    style={"font-size": "20px", "padding": "20px"},
+                                ),
+                                dbc.Button(
+                                    "",
+                                    id="pi-button-empty2",
+                                    color="secondary",
+                                    disabled=True,
+                                    style={
+                                        "font-size": "20px",
+                                        "padding": "20px",
+                                        "grid-column": "span 1",
+                                    },
+                                ),
+                            ],
+                        ),
                     ]
                 ),
                 html.Div(
@@ -67,7 +179,9 @@ class PimemorizerTab:
                                             "grid-template-columns": "100%",
                                         },
                                         children=[
-                                            dbc.Input(value=0, id="score", type="number"),
+                                            dbc.Input(
+                                                value=0, id="score", type="number"
+                                            ),
                                         ],
                                     ),
                                 ],
@@ -85,22 +199,32 @@ class PimemorizerTab:
                                             "grid-template-columns": "100%",
                                         },
                                         children=[
-                                            dbc.Input(value=0, id="highscore", type="number"),
+                                            dbc.Input(
+                                                value=0, id="highscore", type="number"
+                                            ),
                                         ],
                                     ),
                                 ],
                                 style={"max-height": "100%"},
                             ),
                             style={"max-height": "100%"},
-                        )
+                        ),
                     ]
                 ),
                 html.Div(),
-            ]
+            ],
         )
         return layout
 
-    def callbacks(self):
+    def callbacks(self) -> None:
+        """Register Dash callbacks for the Pi memorizer tab.
+
+        Notes:
+        -----
+        - The `update_input` callback handles the interaction between the numeric keypad
+          and the current sequence, score, and high score.
+        """
+
         @callback(
             Output("text-box", "value"),
             Output("score", "value"),
@@ -119,7 +243,47 @@ class PimemorizerTab:
             State("highscore", "value"),
             State("text-box", "value"),
         )
-        def update_input(btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, current_score, high_score, current_value):
+        def update_input(
+            btn0: int,
+            btn1: int,
+            btn2: int,
+            btn3: int,
+            btn4: int,
+            btn5: int,
+            btn6: int,
+            btn7: int,
+            btn8: int,
+            btn9: int,
+            current_score: int,
+            high_score: int,
+            current_value: str,
+        ) -> tuple:
+            """Update the input sequence, score, and high score based on user interaction.
+
+            Parameters
+            ----------
+            btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9 : int
+                Number of clicks for each numeric button (0-9).
+            current_score : int
+                The current score of the user.
+            high_score : int
+                The user's highest score so far.
+            current_value : str
+                The current sequence of digits entered by the user.
+
+            Returns:
+            -------
+            tuple
+                A tuple containing:
+                - text-box (str): Updated sequence of digits.
+                - score (int): Updated current score.
+                - highscore (int): Updated high score.
+
+            Notes:
+            -----
+            - If the user enters a correct digit sequence, the score increases.
+            - If the sequence is incorrect, the score resets and the high score updates if necessary.
+            """
             current_value = current_value or ""
             current_score = current_score or 0
 
@@ -133,7 +297,7 @@ class PimemorizerTab:
                 number = button_id[-1]
                 new_string = current_value + number
 
-            if new_string == pi[:int(current_score)+3]:
+            if new_string == pi[: int(current_score) + 3]:
                 new_score = current_score + 1
                 return new_string, new_score, high_score
             else:
