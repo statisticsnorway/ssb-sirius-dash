@@ -81,6 +81,25 @@ class AlertHandler:
         """Define and register the Dash callbacks for the alert modal and alerts."""
 
         @callback(
+            Output("sidebar-feilmeldinger-button", "children"),
+            Input("feilmeldinger_logg", "children"),
+        )
+        def feilmelding_update_button_label(feilmeldinger: list) -> str:
+            """Updates label on the button for opening error logs with the current amount of errors.
+
+            Parameters
+            ----------
+            feilmeldinger : list
+                List of existing errors
+
+            Returns:
+            -------
+            str
+                New label with the amount of errors.
+            """
+            return f"Feilmeldinger: {len(feilmeldinger)}"
+
+        @callback(
             Output("feilmeldinger-modal", "is_open"),
             Input("sidebar-feilmeldinger-button", "n_clicks"),
             State("feilmeldinger-modal", "is_open"),
