@@ -5,7 +5,7 @@ from dash import State
 from dash import callback
 from dash import html
 
-from .modal_functions import sidebar_button
+from ..modals.modal_functions import sidebar_button
 
 
 class AlertHandler:
@@ -46,21 +46,24 @@ class AlertHandler:
                         dbc.ModalBody(
                             [
                                 dbc.Row(
-                                    dbc.Button(
-                                        "Vis alle beskjeder",
-                                        id="error_log_button_show_all",
-                                    ),
-                                    dbc.Button(
-                                        "Vis kun info", id="error_log_button_show_info"
-                                    ),
-                                    dbc.Button(
-                                        "Vis kun advarsler",
-                                        id="error_log_button_show_warning",
-                                    ),
-                                    dbc.Button(
-                                        "Vis kun feil",
-                                        id="error_log_button_show_danger",
-                                    ),
+                                    children=[
+                                        dbc.Button(
+                                            "Vis alle beskjeder",
+                                            id="error_log_button_show_all",
+                                        ),
+                                        dbc.Button(
+                                            "Vis kun info",
+                                            id="error_log_button_show_info",
+                                        ),
+                                        dbc.Button(
+                                            "Vis kun advarsler",
+                                            id="error_log_button_show_warning",
+                                        ),
+                                        dbc.Button(
+                                            "Vis kun feil",
+                                            id="error_log_button_show_danger",
+                                        ),
+                                    ]
                                 ),
                                 dbc.Row(html.Div(id="error_log")),
                             ]
