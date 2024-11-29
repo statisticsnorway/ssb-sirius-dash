@@ -1,28 +1,19 @@
 """SSB Sirius Dash."""
 
-import importlib
+# Import all Python files in the root of ssb_sirius_dash
+import glob
 import os
 
-# Path to the src folder
-src_dir = os.path.dirname(__file__)
+# Automatically import all .py files in the current directory (excluding __init__.py)
+modules = glob.glob(os.path.join(os.path.dirname(__file__), "*.py"))
+__all__ = [
+    os.path.basename(f)[:-3]
+    for f in modules
+    if os.path.isfile(f) and not f.endswith("__init__.py")
+]
 
-__all__ = []
-
-# Traverse the modules in the ssb_sirius_dash directory
-for root, _dirs, files in os.walk(src_dir):
-    for file in files:
-        if file.endswith(".py") and not file.startswith("_"):
-            module_name = os.path.splitext(file)[0]
-            module_path = os.path.relpath(os.path.join(root, file), src_dir)
-            module_path = module_path.replace(os.sep, ".").replace(".py", "")
-
-            # Import the module dynamically
-            module = importlib.import_module(
-                f".{module_path}", package="ssb_sirius_dash"
-            )
-
-            # Get all attributes that don't start with "_"
-            for attr_name in dir(module):
-                if not attr_name.startswith("_"):
-                    globals()[attr_name] = getattr(module, attr_name)
-                    __all__.append(attr_name)  # Add to exports list
+# Import submodules explicitly for clarity
+from . import control
+from . import modals
+from . import setup
+from . import tabs
