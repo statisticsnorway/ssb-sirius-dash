@@ -1,11 +1,15 @@
 """Tabs for use in the application."""
 
-import glob
+import importlib
 import os
+import pkgutil
 
-modules = glob.glob(os.path.join(os.path.dirname(__file__), "*.py"))
-__all__ = [
-    os.path.basename(f)[:-3]
-    for f in modules
-    if os.path.isfile(f) and not f.endswith("__init__.py")
-]
+current_dir = os.path.dirname(__file__)
+__all__ = []
+
+for _, module_name, _ in pkgutil.iter_modules([current_dir]):
+    module = importlib.import_module(f".{module_name}", package=__name__)
+    for attr_name in dir(module):
+        if not attr_name.startswith("_"):
+            globals()[attr_name] = getattr(module, attr_name)
+            __all__.append(attr_name)
