@@ -51,14 +51,14 @@ class HBMethodModule:
     https://rdrr.io/github/statisticsnorway/Kostra/man/Hb.html
     """
 
-    def _init__(
+    def __init__(
         self,
         database: object,
         hb_get_data_func: Callable,
         selected_state_keys: list,
         selected_ident: list,
         variable: str,
-    ):
+    ) -> None:
         """Initialize the HBMethodModule.
 
         Parameters

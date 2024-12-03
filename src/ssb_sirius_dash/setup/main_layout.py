@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import html
 
+from .alert_handler import AlertHandler
 from .functions import sidebar_button
 
 
@@ -21,6 +22,10 @@ def main_layout(modal_list: list, tab_list: list, variable_list: list) -> dbc.Co
     dash_bootstrap_components.Container
     A Dash Container component representing the app's main layout.
     """
+    alerthandler = AlertHandler()
+    alerthandler_layout = alerthandler.layout()
+    modal_list = [alerthandler_layout, *modal_list]
+
     varvelger_toggle = [
         html.Div(
             [

@@ -1,4 +1,7 @@
+import datetime
+
 import dash_ag_grid as dag
+import dash_bootstrap_components as dbc
 from dash import callback
 from dash import dcc
 from dash import html
@@ -221,12 +224,14 @@ class EditingTable:
             return df.to_dict("records"), columns
 
         @callback(
-            Output("tab-tabelleditering-status1", "children"),
+            Output("error_log", "children", allow_duplicates=True),
             Input("tab-tabelleditering-table1", "cellValueChanged"),
             State("tab-tabelleditering-dd1", "value"),
-            *dynamic_states,
+            State("error_log", "children") * dynamic_states,
         )
-        def update_table(edited: list, tabell: str, *dynamic_states: list) -> str:
+        def update_table(
+            edited: list, tabell: str, error_log: list, *dynamic_states: list
+        ) -> dbc.Alert:
             """Update the database based on edits made in the AgGrid table.
 
             Parameters
@@ -271,6 +276,19 @@ class EditingTable:
                 self.update_table(
                     self.database, variable, new_value, row_id, tabell, *args
                 )
-                return f"{variable} updatert fra {old_value} til {new_value}"
+
+                new_alert = dbc.Alert(
+                    f"{datetime.datetime.now()} - {variable} updatert fra {old_value} til {new_value}",
+                    color="info",
+                    dismissable=True,
+                )
+
+                return [new_alert, *error_log]
+
             except Exception:
-                return "Error"
+                new_alert = dbc.Alert(
+                    f"{datetime.datetime.now()} - Oppdatering av {variable} fra {old_value} til {new_value} feilet!",
+                    color="danger",
+                    dismissable=True,
+                )
+                return [new_alert, *error_log]
