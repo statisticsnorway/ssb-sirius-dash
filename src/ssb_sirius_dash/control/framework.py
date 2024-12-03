@@ -26,7 +26,7 @@ class Feilrapport:
     """A class to detail errors found during quality control checks.
 
     Attributes:
-    ----------
+    -----------
     sub_control_id : str
         Identifier for the sub control check.
     result_type : Kontrolltype
@@ -58,9 +58,8 @@ class Feilrapport:
         """Converts the quality control result into a dictionary format.
 
         Returns:
-        -------
-        dict[str, Any]
-            A dictionary representing the quality control result.
+        --------
+        A dictionary representing the quality control result.
         """
         return {
             "kontrollnavn": self.sub_control_id,
@@ -94,12 +93,12 @@ def kontroll(
         List of variables deemed important for the control check.
 
     Returns:
-    -------
+    --------
     Callable
         A decorated function that processes the dataset and logs errors.
 
     Notes:
-    -----
+    ------
     Assumes all data given to the function is data that should be checked.
     """
 
@@ -167,7 +166,7 @@ class Kvalitetsrapport:
     """A class representing the result of a quality control check.
 
     Attributes:
-    ----------
+    -----------
     statistics_name : str
         The name of the statistics being checked.
     quality_control_id : str
@@ -211,9 +210,8 @@ class Kvalitetsrapport:
         """Converts the quality control report into a dictionary format.
 
         Returns:
-        -------
-        dict[str, Any]
-            A dictionary representing the quality control report.
+        --------
+        A dictionary representing the quality control report.
         """
         return {
             "statistikknavn": self.statistics_name,
@@ -255,7 +253,7 @@ class Kvalitetsrapport:
             Path to the JSON file.
 
         Returns:
-        -------
+        --------
         Kvalitetsrapport
             An instance of the quality control report.
         """
@@ -275,7 +273,7 @@ class Kvalitetsrapport:
             A dictionary representing the quality control report.
 
         Returns:
-        -------
+        --------
         Kvalitetsrapport
             An instance of the quality control report.
         """
@@ -336,7 +334,7 @@ def lag_kvalitetsrapport(
         Whether to return control documentation as part of the result.
 
     Returns:
-    -------
+    --------
     Union[Kvalitetsrapport, tuple[Kvalitetsrapport, pd.DataFrame]]
         The quality control report or a tuple containing the report and control documentation.
     """
@@ -384,7 +382,7 @@ def lag_kontroll_dokumentasjon(kvalitetsrapport: Kvalitetsrapport) -> pd.DataFra
         The quality control report or its dictionary representation.
 
     Returns:
-    -------
+    --------
     pd.DataFrame
         A DataFrame containing control documentation.
     """
@@ -410,7 +408,7 @@ def eimerdb_template(kontrolldokumentasjon: pd.DataFrame) -> list:
         The control documentation as a DataFrame.
 
     Returns:
-    -------
+    --------
     list[list[Any]]
         A list of lists representing the template for the control table.
     """

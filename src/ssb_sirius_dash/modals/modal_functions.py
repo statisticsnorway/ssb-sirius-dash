@@ -22,7 +22,7 @@ def sidebar_button(
         Additional styling applied to the button. Defaults to an empty dictionary.
 
     Returns:
-    -------
+    --------
     dash.html.Div
         A Div containing the styled button.
     """

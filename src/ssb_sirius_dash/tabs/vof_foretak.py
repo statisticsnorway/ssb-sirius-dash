@@ -33,14 +33,14 @@ class VoFForetakTab:
     - Interacts with a DuckDB in-memory database to fetch data.
 
     Attributes:
-    ----------
+    -----------
     database : duckdb.DuckDBPyConnection
         In-memory database connection for querying VoF foretak data.
     label : str
         Label for the tab, displayed as "🗃️ VoF Foretak".
 
     Methods:
-    -------
+    --------
     generate_card(title, component_id, var_type)
         Generates a Dash Bootstrap card for displaying information.
     register_table()
@@ -55,7 +55,7 @@ class VoFForetakTab:
         """Initialize the VoFForetakTab component.
 
         Attributes:
-        ----------
+        -----------
         database : duckdb.DuckDBPyConnection
             In-memory database connection for querying VoF foretak data.
         label : str
@@ -78,7 +78,7 @@ class VoFForetakTab:
             Input type for the component (e.g., "text").
 
         Returns:
-        -------
+        --------
         dash_bootstrap_components.Card
             A styled card containing an input field.
         """
@@ -100,9 +100,8 @@ class VoFForetakTab:
         """Register the VoF foretak data as a DuckDB table.
 
         Returns:
-        -------
-        duckdb.DuckDBPyConnection
-            A connection to an in-memory DuckDB instance with the VoF foretak data registered.
+        --------
+        A connection to an in-memory DuckDB instance with the VoF foretak data registered.
         """
         fs = FileClient.get_gcs_file_system()
         fil_ssb_foretak = "ssb-vof-data-delt-oracle-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
@@ -115,10 +114,9 @@ class VoFForetakTab:
         """Generate the layout for the VoF Foretak tab.
 
         Returns:
-        -------
-        dash.html.Div
-            A Div element containing:
-            - Cards displaying detailed information about foretak.
+        --------
+        A Div element containing:
+        - Cards displaying detailed information about foretak.
         """
         layout = html.Div(
             style={"height": "100%", "display": "flex", "flexDirection": "column"},
@@ -237,7 +235,7 @@ class VoFForetakTab:
         """Register Dash callbacks for the VoF Foretak tab.
 
         Notes:
-        -----
+        ------
         - The `vof_data` callback fetches and updates data in the cards based on the selected foretak.
         """
 
@@ -268,12 +266,12 @@ class VoFForetakTab:
                 The year for filtering data (if applicable).
 
             Returns:
-            -------
+            --------
             tuple
                 A tuple containing information about the foretak
 
             Notes:
-            -----
+            ------
             - If `orgf` is None, no data is returned.
             - The callback queries the DuckDB database for the selected organization number.
             """

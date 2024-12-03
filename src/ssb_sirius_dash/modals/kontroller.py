@@ -25,7 +25,7 @@ class Kontroller:
     """Class for å inkludere et skjermbilde som viser oversikt over kontroller som er gjort på dataene og kontrollutslag.
 
     Attributes:
-    ----------
+    -----------
     ident : str
         Variabelnavn på identifikasjonsvariabelen. F.eks. orgf
     kontroll_dokumentasjon_path : str

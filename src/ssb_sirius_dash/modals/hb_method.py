@@ -39,14 +39,14 @@ class HBMethodModule:
     methods for preprocessing data, visualizing results, and managing interactions in a Dash app.
 
     Attributes:
-    ----------
+    -----------
     database : object
         Database connection or interface for fetching data.
     hb_get_data : callable
         Function for retrieving data based on selected parameters.
 
     References:
-    ----------
+    -----------
     More information about the HB method:
     https://rdrr.io/github/statisticsnorway/Kostra/man/Hb.html
     """
@@ -105,9 +105,8 @@ class HBMethodModule:
             Name of the value variable for analysis.
 
         Returns:
-        -------
-        pandas.DataFrame
-            Processed data with outlier results, sorted by "maxX".
+        --------
+        Processed data with outlier results, sorted by "maxX".
         """
         hb_result = hb_method(
             data=data_df,
@@ -132,9 +131,8 @@ class HBMethodModule:
             Name of the value variable for the method.
 
         Returns:
-        -------
-        plotly.graph_objs.Figure
-            Plotly figure with scatter plots for observations and limits.
+        --------
+        Plotly figure with scatter plots for observations and limits.
         """
         x = data["maxX"]
         y = data["ratio"]
@@ -173,9 +171,8 @@ class HBMethodModule:
         """Generate the layout for the HB method Dash component.
 
         Returns:
-        -------
-        dash.html.Div
-            Div containing the modal and interactive elements for the HB method.
+        --------
+        Div containing the modal and interactive elements for the HB method.
         """
         infoboks = html.Div(
             [
@@ -298,9 +295,8 @@ class HBMethodModule:
             Text description displayed in the tooltip.
 
         Returns:
-        -------
-        dash_bootstrap_components.Col
-            Dash Bootstrap column containing the input field and tooltip.
+        --------
+        Dash Bootstrap column containing the input field and tooltip.
         """
         return dbc.Col(
             dbc.Stack(
@@ -346,7 +342,7 @@ class HBMethodModule:
             Name of the value variable for HB method analysis.
 
         Notes:
-        -----
+        ------
         This method registers Dash callbacks for handling user interactions, including
         running the HB method, toggling the modal, and passing results to variabelvelger.
         """
@@ -368,7 +364,9 @@ class HBMethodModule:
             State("hb_pA", "value"),
             *dynamic_states,
         )
-        def use_hb(n_click: int, pC: int, pU: float, pA: float, *dynamic_states: list):
+        def use_hb(
+            n_click: int, pC: int, pU: float, pA: float, *dynamic_states: list
+        ) -> go.Figure:
             """Execute the HB method and update the visualization.
 
             Parameters
@@ -385,9 +383,8 @@ class HBMethodModule:
                 Additional state parameters for data filtering.
 
             Returns:
-            -------
-            plotly.graph_objs.Figure
-                Updated figure visualizing HB method results.
+            --------
+            Updated figure visualizing HB method results.
 
             Raises:
             ------
@@ -422,7 +419,7 @@ class HBMethodModule:
             Input("sidebar-hb-button", "n_clicks"),
             State("hb-modal", "is_open"),
         )
-        def sqlmodal_toggle(n: int, is_open: bool):
+        def sqlmodal_toggle(n: int, is_open: bool) -> bool:
             """Toggle the state of the modal window.
 
             Parameters
@@ -433,9 +430,8 @@ class HBMethodModule:
                 Current state of the modal (open/closed).
 
             Returns:
-            -------
-            bool
-                New state of the modal (open/closed).
+            --------
+            New state of the modal (open/closed).
             """
             if n:
                 return not is_open
@@ -446,7 +442,7 @@ class HBMethodModule:
             Input("hb_figure", "clickData"),
             prevent_initial_call=True,
         )
-        def hb_to_main_table(clickdata: dict):
+        def hb_to_main_table(clickdata: dict) -> str:
             """Pass selected observation identifier to variabelvelger.
 
             Parameters
@@ -455,9 +451,8 @@ class HBMethodModule:
                 Data from the clicked point in the HB visualization.
 
             Returns:
-            -------
-            str
-                Identifier of the selected observation.
+            --------
+            Identifier of the selected observation.
             """
             if clickdata:
                 ident = clickdata["points"][0]["hovertext"]

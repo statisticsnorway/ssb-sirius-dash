@@ -18,14 +18,14 @@ class FrisøkTab:
     - Display the query results in an editable Dash AgGrid table.
 
     Attributes:
-    ----------
+    -----------
     database : object
         Database connection or interface for executing SQL queries.
     label : str
         Label for the tab, displayed in the application.
 
     Methods:
-    -------
+    --------
     layout()
         Generates the layout for the tab.
     callbacks()
@@ -41,7 +41,7 @@ class FrisøkTab:
             Database connection or interface used for executing SQL queries.
 
         Attributes:
-        ----------
+        -----------
         database : object
             The provided database connection or interface.
         label : str
@@ -55,10 +55,9 @@ class FrisøkTab:
         """Generate the layout for the FrisøkTab.
 
         Returns:
-        -------
-        dash.html.Div
-            A Div element containing the text area for SQL queries, input for partitions,
-            a button to run the query, and a Dash AgGrid table for displaying results.
+        --------
+        A Div element containing the text area for SQL queries, input for partitions,
+        a button to run the query, and a Dash AgGrid table for displaying results.
         """
         layout = html.Div(
             [
@@ -95,7 +94,7 @@ class FrisøkTab:
         """Register the Dash callbacks for the FrisøkTab.
 
         Notes:
-        -----
+        ------
         - This method registers a callback for executing the SQL query when the "kjør" button is clicked.
         - The results are displayed in the AgGrid table, with appropriate column definitions.
         """
@@ -121,14 +120,13 @@ class FrisøkTab:
                 Can be None if no filters are provided.
 
             Returns:
-            -------
-            tuple
-                A tuple containing:
-                - rowData (list of dict): Records to display in the table.
-                - columnDefs (list of dict): Column definitions for the table.
+            --------
+            A tuple containing:
+            - rowData (list of dict): Records to display in the table.
+            - columnDefs (list of dict): Column definitions for the table.
 
             Notes:
-            -----
+            ------
             - Column definitions hide the "row_id" column by default, if present.
             """
             if n_clicks > 0:

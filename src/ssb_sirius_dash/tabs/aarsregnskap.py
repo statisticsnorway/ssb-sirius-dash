@@ -13,7 +13,7 @@ class AarsregnskapTab:
     """Tab for displaying annual financial statements (Årsregnskap).
 
     Attributes:
-    ----------
+    -----------
     label : str
         Label for the tab, displayed as "🧾 Årsregnskap".
     """
@@ -24,7 +24,7 @@ class AarsregnskapTab:
         """Initialize the AarsregnskapTab component.
 
         Attributes:
-        ----------
+        -----------
         label : str
             Label for the tab, displayed as "🧾 Årsregnskap".
         """
@@ -35,10 +35,9 @@ class AarsregnskapTab:
         """Generate the layout for the Årsregnskap tab.
 
         Returns:
-        -------
-        dash.html.Div
-            A Div element containing input fields for year and organization number
-            and an iframe to display the PDF content.
+        --------
+        A Div element containing input fields for year and organization number
+        and an iframe to display the PDF content.
         """
         layout = html.Div(
             style={"height": "100%", "display": "flex", "flexDirection": "column"},
@@ -94,9 +93,8 @@ class AarsregnskapTab:
                 The selected year.
 
             Returns:
-            -------
-            int
-                The updated year value.
+            --------
+            The updated year value.
             """
             return aar
 
@@ -113,7 +111,7 @@ class AarsregnskapTab:
                 The selected organization number.
 
             Returns:
-            -------
+            --------
             str
                 The updated organization number value.
             """
@@ -135,7 +133,7 @@ class AarsregnskapTab:
                 The organization number input value.
 
             Returns:
-            -------
+            --------
             str
                 A data URI for the PDF file, encoded in base64.
 
