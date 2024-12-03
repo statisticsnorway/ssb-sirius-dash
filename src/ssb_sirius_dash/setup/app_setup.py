@@ -44,7 +44,7 @@ def app_setup(port: int, service_prefix: str, domain: str, stylesheet: str) -> D
     Examples:
     ---------
     >>> app = app_setup(port=8050, service_prefix="/", domain="localhost", stylesheet="slate")
-    >>> app.run_server()
+    >>> app.run_server() # doctest: +SKIP
     """
     template = theme_map[stylesheet]
     load_figure_template([template])
