@@ -13,8 +13,9 @@ class AlertHandler:
 
     In order to add an alert to this list:
     add the below to your callback:
-    Output("error_log", "children",allow_duplicates=True),
-    State("error_log", "children")
+    Output("error_log", "children", allow_duplicate=True),
+    State("error_log", "children"),
+    prevent_initial_call=True
 
     Add this in the callback function:
     new_alert = dbc.Alert(
