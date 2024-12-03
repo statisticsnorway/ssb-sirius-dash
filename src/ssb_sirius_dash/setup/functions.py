@@ -19,7 +19,7 @@ def skjermcard(
         The default value for the input field. Defaults to an empty string.
 
     Returns:
-    -------
+    --------
     dash_bootstrap_components.Col
         A column containing the card with an input field.
     """
@@ -65,7 +65,7 @@ def sidebar_button(
         Additional styling applied to the button. Defaults to an empty dictionary.
 
     Returns:
-    -------
+    --------
     dash.html.Div
         A Div containing the styled button.
     """
@@ -103,7 +103,7 @@ def card_display(text: str, component_id: str) -> dbc.Card:
         The ID assigned to the text span inside the card.
 
     Returns:
-    -------
+    --------
     dash_bootstrap_components.Card
         A card containing the text content.
     """
@@ -135,7 +135,7 @@ def card_navigate(icon: str, text: str, component_id: str) -> dbc.Card:
         The ID assigned to the button component.
 
     Returns:
-    -------
+    --------
     dash_bootstrap_components.Card
         A card containing the button for navigation.
     """

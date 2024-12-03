@@ -21,12 +21,12 @@ class PimemorizerTab:
     - A scoring system to track the current and high scores.
 
     Attributes:
-    ----------
+    -----------
     label : str
         The label for the tab, set to "𝝅 Pi memorizer".
 
     Methods:
-    -------
+    --------
     layout()
         Generates the layout for the Pi memorizer tab.
     callbacks()
@@ -39,7 +39,7 @@ class PimemorizerTab:
         """Initialize the PimemorizerTab component.
 
         Attributes:
-        ----------
+        -----------
         label : str
             The label for the tab, displayed as "𝝅 Pi memorizer".
         """
@@ -50,12 +50,11 @@ class PimemorizerTab:
         """Generate the layout for the Pi memorizer tab.
 
         Returns:
-        -------
-        dash.html.Div
-            A Div element containing:
-            - A text area to display the user's current input sequence.
-            - A numeric keypad for entering digits.
-            - Score and high score displays to track progress.
+        --------
+        A Div element containing:
+        - A text area to display the user's current input sequence.
+        - A numeric keypad for entering digits.
+        - Score and high score displays to track progress.
         """
         layout = html.Div(
             style={"display": "grid", "grid-template-columns": "10% 70% 10% 10%"},
@@ -220,7 +219,7 @@ class PimemorizerTab:
         """Register Dash callbacks for the Pi memorizer tab.
 
         Notes:
-        -----
+        ------
         - The `update_input` callback handles the interaction between the numeric keypad
           and the current sequence, score, and high score.
         """
@@ -272,7 +271,7 @@ class PimemorizerTab:
                 The current sequence of digits entered by the user.
 
             Returns:
-            -------
+            --------
             tuple
                 A tuple containing:
                 - text-box (str): Updated sequence of digits.
@@ -280,7 +279,7 @@ class PimemorizerTab:
                 - highscore (int): Updated high score.
 
             Notes:
-            -----
+            ------
             - If the user enters a correct digit sequence, the score increases.
             - If the sequence is incorrect, the score resets and the high score updates if necessary.
             """

@@ -22,12 +22,12 @@ class KvalitetsindikatorerModule:
     """Class for å sette opp visningen for valgte kvalitetsindikatorer.
 
     Attributes:
-    ----------
+    -----------
     indicators : list
         Liste over kvalitetsindikatorer. F.eks. indicators = [KvalitetsindikatorEditeringsandel(), KvalitetsindikatorEffektaveditering()]
 
     Notes:
-    -----
+    ------
     Alle indikatorene antar et langt format på dataene med minimum ident | variabel | verdi som kolonner.
     """
 
@@ -85,7 +85,7 @@ class KvalitetsindikatorEditeringsandel:
     """Kvalitetsindikator for editeringsandel.
 
     Attributes:
-    ----------
+    -----------
     get_current_data_func: Callable
         Funksjon som henter nåværende data.
     get_change_data_func: Callable
@@ -252,7 +252,7 @@ class KvalitetsindikatorKontrollutslagsandel:
     kontroll_id | Enheter kontrollert | Kontrollutslag
 
     Attributes:
-    ----------
+    -----------
     kontrolldokumentasjon: Kvalitetsrapport | None
         Kvalitetsrapport som skal brukes for beregning.
     kvalitetsrapport_path: str | None
@@ -405,7 +405,7 @@ class KvalitetsindikatorEffektaveditering:
     """Indikator for å vise effekten av editering som er gjort.
 
     Attributes:
-    ----------
+    -----------
     get_current_data_func: Callable
         Funksjon for å hente nåværende oppdatert data
     get_original_data_func: Callable
@@ -580,7 +580,7 @@ class KvalitetsindikatorTreffsikkerhet:
     """Indikator for å vise treffsikkerheten til kontroller man kjører.
 
     Attributes:
-    ----------
+    -----------
     get_edits_list_func: Callable
         Funksjon som henter liste over endringer som er gjort i dataene.
         Den skal returnere en liste med tuples som beskriver endrede felter. Dette brukes for å sjekke mot kontrollutslagene for å se hvor disse identifikasjon og variabel kombinasjonene dukker opp og se om kontrollutslaget sannsynligvis førte til en editering.

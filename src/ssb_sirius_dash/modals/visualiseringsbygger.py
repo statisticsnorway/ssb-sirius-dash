@@ -16,7 +16,7 @@ class VisualiseringsbyggerModule:
     """A module for creating and visualizing data queries and graphs interactively.
 
     Attributes:
-    ----------
+    -----------
     database : object
         Database connection or interface for executing queries.
     """
@@ -36,9 +36,8 @@ class VisualiseringsbyggerModule:
         """Generate the layout for the Visualiseringsbygger module.
 
         Returns:
-        -------
-        dash.html.Div
-            A Div element containing components for querying data and visualizing graphs.
+        --------
+        A Div element containing components for querying data and visualizing graphs.
         """
         layout = html.Div(
             [
@@ -177,7 +176,7 @@ class VisualiseringsbyggerModule:
         """Register Dash callbacks for the Visualiseringsbygger module.
 
         Notes:
-        -----
+        ------
         - `sqlmodal_toggle` toggles the visibility of the query modal.
         - `sql_query` executes the SQL query and updates the table and dropdown options.
         - `update_graph` generates graphs based on selected columns and graph type.
@@ -199,9 +198,8 @@ class VisualiseringsbyggerModule:
                 The current visibility state of the modal.
 
             Returns:
-            -------
-            bool
-                The new visibility state of the modal.
+            --------
+            The new visibility state of the modal.
             """
             if n:
                 return not is_open
@@ -227,12 +225,11 @@ class VisualiseringsbyggerModule:
                 The SQL query string entered in the text area.
 
             Returns:
-            -------
-            tuple
-                A tuple containing:
-                - rowData (list of dict): The table data.
-                - columnDefs (list of dict): The column definitions for the table.
-                - x, y, hover options (list of dict): Dropdown options for graph axes and hover data.
+            --------
+            A tuple containing:
+            - rowData (list of dict): The table data.
+            - columnDefs (list of dict): The column definitions for the table.
+            - x, y, hover options (list of dict): Dropdown options for graph axes and hover data.
             """
             if n_clicks > 0:
                 df = self.database.query(f"""{value}""")
@@ -275,9 +272,8 @@ class VisualiseringsbyggerModule:
                 The column definitions for the table.
 
             Returns:
-            -------
-            dict
-                A Plotly figure dictionary.
+            --------
+            A Plotly figure dictionary.
             """
             if x_axis and y_axis:
                 if isinstance(x_axis, list) and len(x_axis) == 1:

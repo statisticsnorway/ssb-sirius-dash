@@ -18,7 +18,7 @@ def main_layout(modal_list: list, tab_list: list, variable_list: list) -> dbc.Co
         List of variable selection components to be included in the main layout.
 
     Returns:
-    -------
+    --------
     dash_bootstrap_components.Container
     A Dash Container component representing the app's main layout.
     """

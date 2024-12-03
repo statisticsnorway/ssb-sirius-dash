@@ -34,7 +34,7 @@ class EditingTable:
     - Update database values based on user edits in the table.
 
     Attributes:
-    ----------
+    -----------
     label : str
         The label for the tab or component.
     database : object
@@ -53,7 +53,7 @@ class EditingTable:
         List of options for the dropdown menu, derived from `tables`.
 
     Methods:
-    -------
+    --------
     layout()
         Generates the layout for the table editing component.
     callbacks()
@@ -90,7 +90,7 @@ class EditingTable:
             Function for updating data in the database.
 
         Attributes:
-        ----------
+        -----------
         label : str
             The label for the component.
         database : object
@@ -121,12 +121,11 @@ class EditingTable:
         """Generate the layout for the EditingTable component.
 
         Returns:
-        -------
-        dash.html.Div
-            A Div element containing:
-            - A dropdown menu to select a database table.
-            - An editable Dash AgGrid table for displaying and modifying data.
-            - A status message for updates.
+        --------
+        A Div element containing:
+        - A dropdown menu to select a database table.
+        - An editable Dash AgGrid table for displaying and modifying data.
+        - A status message for updates.
         """
         layout = html.Div(
             style={"height": "100vh", "display": "flex", "flexDirection": "column"},
@@ -156,7 +155,7 @@ class EditingTable:
         """Register Dash callbacks for the EditingTable component.
 
         Notes:
-        -----
+        ------
         - The `load_ag_grid` callback loads data into the table based on the selected table
           and filter states.
         - The `update_table` callback updates database values when a cell value is changed.
@@ -186,14 +185,13 @@ class EditingTable:
                 Dynamic state parameters for filtering data.
 
             Returns:
-            -------
-            tuple
-                A tuple containing:
-                - rowData (list of dict): Records to display in the table.
-                - columnDefs (list of dict): Column definitions for the table.
+            --------
+            A tuple containing:
+            - rowData (list of dict): Records to display in the table.
+            - columnDefs (list of dict): Column definitions for the table.
 
             Notes:
-            -----
+            ------
             - Columns are dynamically generated based on the table's schema.
             - The "row_id" column is hidden by default but used for updates.
             - Adds checkbox selection to the first column for bulk actions.
@@ -250,12 +248,11 @@ class EditingTable:
                 Dynamic state parameters for filtering data.
 
             Returns:
-            -------
-            str
-                A status message indicating the success or failure of the update.
+            --------
+            A status message indicating the success or failure of the update.
 
             Notes:
-            -----
+            ------
             - The function calls `update_table` to apply the change to the database.
             - If the update succeeds, a confirmation message is returned.
             - If the update fails, an error message is displayed.

@@ -32,7 +32,7 @@ def skjermcard(
         The default value for the input field. Defaults to an empty string.
 
     Returns:
-    -------
+    --------
     dash_bootstrap_components.Col
         A column containing the card with an input field.
     """
@@ -76,7 +76,7 @@ def generate_skjermcards(
         are variable names, and the values are the default input values. Defaults to an empty dictionary.
 
     Returns:
-    -------
+    --------
     list of dash_bootstrap_components.Col
         A list of cards, each represented as a Dash Bootstrap column.
     """

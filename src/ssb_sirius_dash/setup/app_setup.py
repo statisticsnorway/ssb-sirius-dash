@@ -31,20 +31,20 @@ def app_setup(port: int, service_prefix: str, domain: str, stylesheet: str) -> D
         The name of the Bootstrap theme to apply to the app. Must be a key in `theme_map`.
 
     Returns:
-    -------
+    --------
     Dash
         Configured Dash application instance.
 
     Notes:
-    -----
+    ------
     - The function maps the `stylesheet` parameter to a Bootstrap theme using `theme_map`.
     - A callback is registered within the app to toggle the visibility of an element
       with the ID `main-varvelger` based on the number of clicks on `sidebar-varvelger-button`.
 
     Examples:
-    --------
+    ---------
     >>> app = app_setup(port=8050, service_prefix="/", domain="localhost", stylesheet="slate")
-    >>> app.run_server()
+    >>> app.run_server() # doctest: +SKIP
     """
     template = theme_map[stylesheet]
     load_figure_template([template])
@@ -75,7 +75,7 @@ def app_setup(port: int, service_prefix: str, domain: str, stylesheet: str) -> D
             Current style dictionary for the `main-varvelger` component.
 
         Returns:
-        -------
+        --------
         dict
             Updated style dictionary for `main-varvelger`.
         """
