@@ -58,7 +58,7 @@ class HBMethodModule:
         selected_state_keys: list,
         selected_ident: list,
         variable: str,
-    ):
+    ) -> None:
         """Initialize the HBMethodModule.
 
         Parameters
