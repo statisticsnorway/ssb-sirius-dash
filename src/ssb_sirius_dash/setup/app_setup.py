@@ -79,7 +79,7 @@ def app_setup(port: int, service_prefix: str, domain: str, stylesheet: str) -> D
         dict
             Updated style dictionary for `main-varvelger`.
         """
-        if n_clicks > 0:
+        if n_clicks:
             if style == {"display": "none"}:
                 style = {}
             else:
