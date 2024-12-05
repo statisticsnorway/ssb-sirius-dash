@@ -129,7 +129,7 @@ class FrisøkTab:
             ------
             - Column definitions hide the "row_id" column by default, if present.
             """
-            if n_clicks > 0:
+            if n_clicks:
                 if partisjoner is not None:
                     partisjoner = ast.literal_eval(partisjoner)
                 df = self.database.query(query, partition_select=partisjoner)
