@@ -233,6 +233,7 @@ class EditingTable:
             State("tab-tabelleditering-dd1", "value"),
             State("error_log", "children"),
             *dynamic_states,
+            prevent_initial_call=True,
         )
         def update_table(
             edited: list, tabell: str, error_log: list, *dynamic_states: list
