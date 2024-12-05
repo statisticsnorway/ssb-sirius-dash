@@ -231,7 +231,8 @@ class EditingTable:
             Output("error_log", "children", allow_duplicate=True),
             Input("tab-tabelleditering-table1", "cellValueChanged"),
             State("tab-tabelleditering-dd1", "value"),
-            State("error_log", "children") * dynamic_states,
+            State("error_log", "children"),
+            *dynamic_states,
         )
         def update_table(
             edited: list, tabell: str, error_log: list, *dynamic_states: list
