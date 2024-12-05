@@ -8,6 +8,7 @@ from dash import html
 from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
+from dash.exceptions import PreventUpdate
 
 input_options = {
     "orgb": Input("var-bedrift", "value"),
@@ -257,6 +258,8 @@ class EditingTable:
             - If the update succeeds, a confirmation message is returned.
             - If the update fails, an error message is displayed.
             """
+            if not edited:
+                raise PreventUpdate
             states_values = dynamic_states[: len(self.states)]
             state_params = {
                 key: value
