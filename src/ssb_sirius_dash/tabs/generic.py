@@ -8,6 +8,7 @@ from dash import html
 from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
+from dash.exceptions import PreventUpdate
 
 input_options = {
     "orgb": Input("var-bedrift", "value"),
@@ -196,38 +197,43 @@ class EditingTable:
             - The "row_id" column is hidden by default but used for updates.
             - Adds checkbox selection to the first column for bulk actions.
             """
-            states_values = dynamic_states[: len(self.states)]
-            state_params = {
-                key: value
-                for key, value in zip(self.states, states_values, strict=False)
-            }
-
-            args = []
-            for key in self.states:
-                var = state_params.get(key)
-                if var is not None:
-                    args.append(var)
-            if "nace" in state_params and state_params["nace"] is not None:
-                n = len(state_params["nace"])
-                args.append(n)
-            df = self.get_data(self.database, ident, tabell, *args)
-            columns = [
-                {
-                    "headerName": col,
-                    "field": col,
-                    "hide": True if col == "row_id" else False,
+            try:
+                states_values = dynamic_states[: len(self.states)]
+                state_params = {
+                    key: value
+                    for key, value in zip(self.states, states_values, strict=False)
                 }
-                for col in df.columns
-            ]
-            columns[0]["checkboxSelection"] = True
-            columns[0]["headerCheckboxSelection"] = True
-            return df.to_dict("records"), columns
+
+                args = []
+                for key in self.states:
+                    var = state_params.get(key)
+                    if var is not None:
+                        args.append(var)
+                if "nace" in state_params and state_params["nace"] is not None:
+                    n = len(state_params["nace"])
+                    args.append(n)
+                df = self.get_data(self.database, ident, tabell, *args)
+                columns = [
+                    {
+                        "headerName": col,
+                        "field": col,
+                        "hide": True if col == "row_id" else False,
+                    }
+                    for col in df.columns
+                ]
+                columns[0]["checkboxSelection"] = True
+                columns[0]["headerCheckboxSelection"] = True
+                return df.to_dict("records"), columns
+            except Exception as e:
+                raise e
 
         @callback(
-            Output("error_log", "children", allow_duplicates=True),
+            Output("error_log", "children", allow_duplicate=True),
             Input("tab-tabelleditering-table1", "cellValueChanged"),
             State("tab-tabelleditering-dd1", "value"),
-            State("error_log", "children") * dynamic_states,
+            State("error_log", "children"),
+            *dynamic_states,
+            prevent_initial_call=True,
         )
         def update_table(
             edited: list, tabell: str, error_log: list, *dynamic_states: list
@@ -257,6 +263,8 @@ class EditingTable:
             - If the update succeeds, a confirmation message is returned.
             - If the update fails, an error message is displayed.
             """
+            if not edited:
+                raise PreventUpdate
             states_values = dynamic_states[: len(self.states)]
             state_params = {
                 key: value

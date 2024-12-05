@@ -48,25 +48,38 @@ class AlertHandler:
                             [
                                 dbc.Row(
                                     children=[
-                                        dbc.Button(
-                                            "Vis alle beskjeder",
-                                            id="error_log_button_show_all",
+                                        dbc.Col(
+                                            dbc.Button(
+                                                "Vis alle beskjeder",
+                                                id="error_log_button_show_all",
+                                            ),
+                                            width="auto",  # Adjust width as needed
                                         ),
-                                        dbc.Button(
-                                            "Vis kun info",
-                                            id="error_log_button_show_info",
+                                        dbc.Col(
+                                            dbc.Button(
+                                                "Vis kun info",
+                                                id="error_log_button_show_info",
+                                            ),
+                                            width="auto",
                                         ),
-                                        dbc.Button(
-                                            "Vis kun advarsler",
-                                            id="error_log_button_show_warning",
+                                        dbc.Col(
+                                            dbc.Button(
+                                                "Vis kun advarsler",
+                                                id="error_log_button_show_warning",
+                                            ),
+                                            width="auto",
                                         ),
-                                        dbc.Button(
-                                            "Vis kun feil",
-                                            id="error_log_button_show_danger",
+                                        dbc.Col(
+                                            dbc.Button(
+                                                "Vis kun feil",
+                                                id="error_log_button_show_danger",
+                                            ),
+                                            width="auto",
                                         ),
-                                    ]
+                                    ],
+                                    className="mb-3",
                                 ),
-                                dbc.Row(html.Div(id="error_log")),
+                                dbc.Row(html.Div(id="error_log"), className="g-3"),
                             ]
                         ),
                     ],
@@ -83,7 +96,7 @@ class AlertHandler:
 
         @callback(
             Output("sidebar-feilmeldinger-button", "children"),
-            Input("feilmeldinger_logg", "children"),
+            Input("error_log", "children"),
         )
         def feilmelding_update_button_label(feilmeldinger: list) -> str:
             """Updates label on the button for opening error logs with the current amount of errors.
@@ -125,14 +138,14 @@ class AlertHandler:
             return is_open
 
         @callback(
-            Output("feilmeldinger_logg", "children"),
+            Output("error_log", "children"),
             [
                 Input("error_log_button_show_all", "n_clicks"),
                 Input("error_log_button_show_info", "n_clicks"),
                 Input("error_log_button_show_warning", "n_clicks"),
                 Input("error_log_button_show_danger", "n_clicks"),
             ],
-            State("feilmeldinger_logg", "children"),
+            State("error_log", "children"),
         )
         def filter_alerts(
             show_all: int | None,

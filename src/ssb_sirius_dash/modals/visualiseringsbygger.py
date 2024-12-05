@@ -231,7 +231,7 @@ class VisualiseringsbyggerModule:
             - columnDefs (list of dict): The column definitions for the table.
             - x, y, hover options (list of dict): Dropdown options for graph axes and hover data.
             """
-            if n_clicks > 0:
+            if n_clicks:
                 df = self.database.query(f"""{value}""")
                 options = [{"label": col, "value": col} for col in df.columns]
                 columns = [{"headerName": col, "field": col} for col in df.columns]
