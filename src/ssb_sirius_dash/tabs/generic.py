@@ -20,6 +20,7 @@ input_options = {
 states_options = [
     {
         "aar": ("var-aar", "value"),
+        "maaned": {"var-maaned", "value"},
         "termin": ("var-termin", "value"),
         "nace": ("var-nace", "value"),
     }

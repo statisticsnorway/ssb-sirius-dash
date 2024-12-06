@@ -4,6 +4,7 @@ from dash import html
 variable_options = {
     "aar": {"title": "År", "id": "var-aar", "type": "number"},
     "termin": {"title": "Termin", "id": "var-termin", "type": "number"},
+    "maaned": {"title": "Måned", "id": "var-maaned", "type": "number"},
     "nace": {"title": "Nace", "id": "var-nace", "type": "text"},
     "oppgavegiver": {"title": "Oppgavegiver", "id": "var-oppgavegiver", "type": "text"},
     "foretak": {"title": "Foretak", "id": "var-foretak", "type": "text"},
