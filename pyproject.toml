@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ssb-sirius-dash"
-version = "0.2.0a16"
+version = "0.2.0a17"
 description = "SSB Sirius Dash"
 authors = ["Stian Elisenberg <seg@ssb.no>"]
 license = "GPL-2.0-or-later"
