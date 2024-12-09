@@ -36,77 +36,36 @@ class EditingTable:
     - Update database values based on user edits in the table.
 
     Attributes:
-    -----------
-    label : str
-        The label for the tab or component.
-    database : object
-        Database connection or interface for querying and updating data.
-    tables : list of str
-        List of available table names for selection.
-    var_input : str
-        Variable input key for identifying records in the database.
-    states : list of str
-        Keys representing dynamic states to filter data.
-    get_data : callable
-        Function to fetch data from the database.
-    update_table : callable
-        Function to update database records based on edits in the table.
-    dropdown_options : list of dict
-        List of options for the dropdown menu, derived from `tables`.
-
-    Methods:
-    --------
-    layout()
-        Generates the layout for the table editing component.
-    callbacks()
-        Registers the Dash callbacks for loading and updating table data.
+        label (str): The label for the tab or component.
+        database (object): Database connection or interface for querying and updating data.
+        tables (list[str]): List of available table names for selection.
+        var_input (str): Variable input key for identifying records in the database.
+        states (list[str]): Keys representing dynamic states to filter data.
+        get_data (callable): Function to fetch data from the database.
+        update_table (callable): Function to update database records based on edits in the table.
+        dropdown_options (list[dict]): List of options for the dropdown menu, derived from `tables`.
     """
 
     def __init__(
         self,
         label: str,
         database: object,
-        tables: list,
+        tables: list[str],
         var_input: str,
-        states: list,
+        states: list[str],
         get_data_func: callable,
         update_table_func: callable,
     ) -> None:
         """Initialize the EditingTable component.
 
-        Parameters
-        ----------
-        label : str
-            Label for the tab or component.
-        database : object
-            Database connection or interface used for querying and updating data.
-        tables : list of str
-            List of available table names for selection.
-        var_input : str
-            Variable input key used to identify records (e.g., "orgb", "orgf").
-        states : list of str
-            Keys representing dynamic states to filter data (e.g., "aar", "termin").
-        get_data_func : callable
-            Function for retrieving data from the database.
-        update_table_func : callable
-            Function for updating data in the database.
-
-        Attributes:
-        -----------
-        label : str
-            The label for the component.
-        database : object
-            Database connection or interface.
-        dropdown_options : list of dict
-            Options for the dropdown menu, created from `tables`.
-        selected_ident : dash.dependencies.Input
-            Input dependency for the selected variable.
-        states : list of str
-            List of dynamic states for filtering data.
-        get_data : callable
-            Function to fetch data from the database.
-        update_table : callable
-            Function to update data in the database.
+        Args:
+            label (str): Label for the tab or component.
+            database (object): Database connection or interface for querying and updating data.
+            tables (list[str]): List of available table names for selection.
+            var_input (str): Variable input key used to identify records (e.g., "orgb", "orgf").
+            states (list[str]): Keys representing dynamic states to filter data (e.g., "aar", "termin").
+            get_data_func (callable): Function for retrieving data from the database.
+            update_table_func (callable): Function for updating data in the database.
         """
         dropdown_options = [{"label": table, "value": table} for table in tables]
 
@@ -123,11 +82,10 @@ class EditingTable:
         """Generate the layout for the EditingTable component.
 
         Returns:
-        --------
-        A Div element containing:
-        - A dropdown menu to select a database table.
-        - An editable Dash AgGrid table for displaying and modifying data.
-        - A status message for updates.
+            html.Div: A Div element containing:
+                - A dropdown menu to select a database table.
+                - An editable Dash AgGrid table for displaying and modifying data.
+                - A status message for updates.
         """
         layout = html.Div(
             style={"height": "100vh", "display": "flex", "flexDirection": "column"},
@@ -157,10 +115,9 @@ class EditingTable:
         """Register Dash callbacks for the EditingTable component.
 
         Notes:
-        ------
-        - The `load_ag_grid` callback loads data into the table based on the selected table
-          and filter states.
-        - The `update_table` callback updates database values when a cell value is changed.
+            - The `load_ag_grid` callback loads data into the table based on the selected table
+              and filter states.
+            - The `update_table` callback updates database values when a cell value is changed.
         """
         states_dict = states_options[0]
         dynamic_states = [
@@ -177,26 +134,23 @@ class EditingTable:
         def load_ag_grid(tabell: str, ident: str, *dynamic_states: list) -> tuple:
             """Load data into the Dash AgGrid table.
 
-            Parameters
-            ----------
-            tabell : str
-                Name of the selected database table.
-            ident : str
-                Identifier for filtering records (e.g., "var-bedrift").
-            dynamic_states : list
-                Dynamic state parameters for filtering data.
+            Args:
+                tabell (str): Name of the selected database table.
+                ident (str): Identifier for filtering records (e.g., "var-bedrift").
+                dynamic_states (list): Dynamic state parameters for filtering data.
 
             Returns:
-            --------
-            A tuple containing:
-            - rowData (list of dict): Records to display in the table.
-            - columnDefs (list of dict): Column definitions for the table.
+                tuple: Contains:
+                    - rowData (list[dict]): Records to display in the table.
+                    - columnDefs (list[dict]): Column definitions for the table.
+
+            Raises:
+                Exception: If the loading fails, it raises an exception to help troubleshooting.
 
             Notes:
-            ------
-            - Columns are dynamically generated based on the table's schema.
-            - The "row_id" column is hidden by default but used for updates.
-            - Adds checkbox selection to the first column for bulk actions.
+                - Columns are dynamically generated based on the table's schema.
+                - The "row_id" column is hidden by default but used for updates.
+                - Adds checkbox selection to the first column for bulk actions.
             """
             try:
                 states_values = dynamic_states[: len(self.states)]
@@ -237,32 +191,33 @@ class EditingTable:
             prevent_initial_call=True,
         )
         def update_table(
-            edited: list, tabell: str, error_log: list, *dynamic_states: list
+            edited: list[dict],
+            tabell: str,
+            error_log: list[dbc.Alert],
+            *dynamic_states: list[str],
         ) -> dbc.Alert:
             """Update the database based on edits made in the AgGrid table.
 
-            Parameters
-            ----------
-            edited : list of dict
-                Information about the edited cell, including:
-                - colId: The column name of the edited cell.
-                - oldValue: The previous value of the cell.
-                - value: The new value of the cell.
-                - data: The row data, including the "row_id".
-            tabell : str
-                The name of the table being edited.
-            dynamic_states : list
-                Dynamic state parameters for filtering data.
+            Args:
+                edited (list[dict]): Information about the edited cell, including:
+                    - colId: The column name of the edited cell.
+                    - oldValue: The previous value of the cell.
+                    - value: The new value of the cell.
+                    - data: The row data, including the "row_id".
+                tabell (str): The name of the table being edited.
+                error_log (list of dbc.Alert): List of currently existing alerts in the alert handler module.
+                dynamic_states (list): Dynamic state parameters for filtering data.
 
             Returns:
-            --------
-            A status message indicating the success or failure of the update.
+                dbc.Alert: A status message indicating the success or failure of the update.
+
+            Raises:
+                PreventUpdate: If no edit has taken place, the callback does not run.
 
             Notes:
-            ------
-            - The function calls `update_table` to apply the change to the database.
-            - If the update succeeds, a confirmation message is returned.
-            - If the update fails, an error message is displayed.
+                - Calls `update_table` to apply the change to the database.
+                - If successful, returns a confirmation message.
+                - If failed, returns an error message.
             """
             if not edited:
                 raise PreventUpdate
