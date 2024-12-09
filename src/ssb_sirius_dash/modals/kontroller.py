@@ -6,7 +6,6 @@ from dash import Output
 from dash import State
 from dash import callback
 from dash import html
-from dash.development.base_component import Component
 
 from ..control.framework import Kvalitetsrapport
 from ..control.framework import lag_kontroll_dokumentasjon
@@ -22,14 +21,11 @@ ident_options = [
 
 
 class Kontroller:
-    """Class for å inkludere et skjermbilde som viser oversikt over kontroller som er gjort på dataene og kontrollutslag.
+    """Provides a layout and functionality for a modal that offers an overview of data checks and control results.
 
     Attributes:
-    -----------
-    ident : str
-        Variabelnavn på identifikasjonsvariabelen. F.eks. orgf
-    kontroll_dokumentasjon_path : str
-        Filsti til lagret kvalitetsrapport i json.format på Dapla.
+        ident (str): Name of the identification variable, e.g., 'orgf'.
+        kontroll_dokumentasjon_path (str): Path to the saved quality report in JSON format on Dapla.
     """
 
     def __init__(self, ident: str, kvalitetsrapport_path: str) -> None:
@@ -41,8 +37,12 @@ class Kontroller:
             self.utslagstabell = pd.DataFrame(data["kontrollutslag"])
         self.callbacks()
 
-    def layout(self) -> Component:
-        """Lager layouten til Kontroller modalen."""
+    def layout(self) -> html.Div:
+        """Generates the layout for the Kontroller modal.
+
+        Returns:
+            dash.html.Div: Layout containing the Kontroller modal and interactive components.
+        """
         return html.Div(
             [
                 dbc.Modal(
@@ -96,7 +96,7 @@ class Kontroller:
         )
 
     def callbacks(self) -> None:
-        """Funksjon som brukes av class-en for å sette opp klikkbarhet mellom tabellene og tilbake til hovedvisningen."""
+        """Sets up interactivity for the Kontroller modal, including linking table clicks and navigation back to the main view."""
 
         @callback(
             Output("kontroller-modal", "is_open"),
@@ -104,7 +104,15 @@ class Kontroller:
             State("kontroller-modal", "is_open"),
         )
         def kontrollermodal_toggle(n: int | None, is_open: bool) -> bool:
-            """Åpner og lukker modalen."""
+            """Toggles the open/close state of the Kontroller modal.
+
+            Args:
+                n (int | None): Number of clicks on the sidebar button.
+                is_open (bool): Current state of the modal.
+
+            Returns:
+                bool: Updated state of the modal.
+            """
             if n:
                 return not is_open
             return is_open
@@ -115,7 +123,15 @@ class Kontroller:
             State("kontroll-table-overview", "rowData"),
         )
         def kontroll_main_click(click: dict | None, rowData: dict) -> dict:
-            """Kobler klikk fra tabell med oversikt over kontrollene mot filtrering av kontrollutslagtabellen."""
+            """Links clicks on the control overview table to filter the detailed control results table.
+
+            Args:
+                click (dict | None): Data about the clicked cell in the overview table.
+                rowData (dict): Data from the rows in the overview table.
+
+            Returns:
+                dict: Filter model to apply to the detailed results table.
+            """
             if click:
                 kontroll = rowData[click["rowIndex"]]["kontroll_id"]
                 return {
@@ -132,6 +148,14 @@ class Kontroller:
             State("kontroll-table-detailed", "rowData"),
         )
         def kontroll_detail_click(click: dict | None, rowData: dict) -> str:
-            """Kobler klikk fra kontrollutslagtabell til valgt ident variabel fra variabelvelgeren."""
+            """Links clicks in the detailed control results table to select the identification variable.
+
+            Args:
+                click (dict | None): Data about the clicked cell in the detailed table.
+                rowData (dict): Data from the rows in the detailed table.
+
+            Returns:
+                str: Selected identification variable.
+            """
             if click:
                 return rowData[click["rowIndex"]]["observasjon_id"]
