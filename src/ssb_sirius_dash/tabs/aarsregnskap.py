@@ -13,9 +13,7 @@ class AarsregnskapTab:
     """Tab for displaying annual financial statements (Årsregnskap).
 
     Attributes:
-    -----------
-    label : str
-        Label for the tab, displayed as "🧾 Årsregnskap".
+        label (str): Label for the tab, displayed as "🧾 Årsregnskap".
     """
 
     def __init__(
@@ -24,9 +22,7 @@ class AarsregnskapTab:
         """Initialize the AarsregnskapTab component.
 
         Attributes:
-        -----------
-        label : str
-            Label for the tab, displayed as "🧾 Årsregnskap".
+            label (str): Label for the tab, displayed as "🧾 Årsregnskap".
         """
         self.label = "🧾 Årsregnskap"
         self.callbacks()
@@ -35,9 +31,8 @@ class AarsregnskapTab:
         """Generate the layout for the Årsregnskap tab.
 
         Returns:
-        --------
-        A Div element containing input fields for year and organization number
-        and an iframe to display the PDF content.
+            html.Div: A Div element containing input fields for year and organization number
+                      and an iframe to display the PDF content.
         """
         layout = html.Div(
             style={"height": "100%", "display": "flex", "flexDirection": "column"},
@@ -87,14 +82,11 @@ class AarsregnskapTab:
         def update_aar(aar: int):
             """Update the year input field based on the selected year.
 
-            Parameters
-            ----------
-            aar : int
-                The selected year.
+            Args:
+                aar (int): The selected year.
 
             Returns:
-            --------
-            The updated year value.
+                int: The updated year value.
             """
             return aar
 
@@ -105,15 +97,11 @@ class AarsregnskapTab:
         def update_orgnr(orgnr: str):
             """Update the organization number input field.
 
-            Parameters
-            ----------
-            orgnr : str
-                The selected organization number.
+            Args:
+                orgnr (str): The selected organization number.
 
             Returns:
-            --------
-            str
-                The updated organization number value.
+                str: The updated organization number value.
             """
             return orgnr
 
@@ -125,22 +113,15 @@ class AarsregnskapTab:
         def update_pdf_source(aar: int, orgnr: str):
             """Fetch and encode the PDF source based on the year and organization number.
 
-            Parameters
-            ----------
-            aar : int
-                The year input value.
-            orgnr : str
-                The organization number input value.
+            Args:
+                aar (int): The year input value.
+                orgnr (str): The organization number input value.
 
             Returns:
-            --------
-            str
-                A data URI for the PDF file, encoded in base64.
+                str: A data URI for the PDF file, encoded in base64.
 
             Raises:
-            ------
-            dash.exceptions.PreventUpdate
-                If the year or organization number is not provided.
+                PreventUpdate: If the year or organization number is not provided.
             """
             if not aar or not orgnr:
                 raise PreventUpdate
