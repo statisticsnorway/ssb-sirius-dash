@@ -20,7 +20,7 @@ ident_options = [
 ]
 
 
-class Kontroller:
+class Control:
     """Provides a layout and functionality for a modal that offers an overview of data checks and control results.
 
     Attributes:
@@ -29,7 +29,7 @@ class Kontroller:
     """
 
     def __init__(self, ident: str, kvalitetsrapport_path: str) -> None:
-        """Initialize the Kontroller module.
+        """Initialize the control module.
 
         This method sets up the identification variable, loads the quality report from a JSON file,
         and prepares data tables for control documentation and outputs.
@@ -51,10 +51,10 @@ class Kontroller:
         self.callbacks()
 
     def layout(self) -> html.Div:
-        """Generates the layout for the Kontroller modal.
+        """Generates the layout for the control modal.
 
         Returns:
-            dash.html.Div: Layout containing the Kontroller modal and interactive components.
+            dash.html.Div: Layout containing the control modal and interactive components.
         """
         return html.Div(
             [
@@ -64,7 +64,7 @@ class Kontroller:
                         dbc.ModalBody(
                             [
                                 dag.AgGrid(
-                                    id="kontroll-table-overview",
+                                    id="control-table-overview",
                                     columnDefs=[
                                         {"field": x}
                                         for x in [
@@ -81,7 +81,7 @@ class Kontroller:
                                     ),
                                 ),
                                 dag.AgGrid(
-                                    id="kontroll-table-detailed",
+                                    id="control-table-detailed",
                                     columnDefs=[
                                         {"field": x}
                                         for x in ["observasjon_id", "feilbeskrivelse"]
@@ -100,24 +100,24 @@ class Kontroller:
                             ]
                         ),
                     ],
-                    id="kontroller-modal",
+                    id="control-modal",
                     size="xl",
                     fullscreen="xxl-down",
                 ),
-                sidebar_button("⚠️", "Kontroller", "sidebar-kontroller-button"),
+                sidebar_button("⚠️", "Kontroller", "sidebar-control-button"),
             ]
         )
 
     def callbacks(self) -> None:
-        """Sets up interactivity for the Kontroller modal, including linking table clicks and navigation back to the main view."""
+        """Sets up interactivity for the control modal, including linking table clicks and navigation back to the main view."""
 
         @callback(
-            Output("kontroller-modal", "is_open"),
-            Input("sidebar-kontroller-button", "n_clicks"),
-            State("kontroller-modal", "is_open"),
+            Output("control-modal", "is_open"),
+            Input("sidebar-control-button", "n_clicks"),
+            State("control-modal", "is_open"),
         )
-        def kontrollermodal_toggle(n: int | None, is_open: bool) -> bool:
-            """Toggles the open/close state of the Kontroller modal.
+        def controlmodal_toggle(n: int | None, is_open: bool) -> bool:
+            """Toggles the open/close state of the control modal.
 
             Args:
                 n (int | None): Number of clicks on the sidebar button.
@@ -131,11 +131,11 @@ class Kontroller:
             return is_open
 
         @callback(
-            Output("kontroll-table-detailed", "filterModel"),
-            Input("kontroll-table-overview", "cellClicked"),
-            State("kontroll-table-overview", "rowData"),
+            Output("control-table-detailed", "filterModel"),
+            Input("control-table-overview", "cellClicked"),
+            State("control-table-overview", "rowData"),
         )
-        def kontroll_main_click(click: dict | None, rowdata: dict) -> dict:
+        def control_main_click(click: dict | None, rowdata: dict) -> dict:
             """Links clicks on the control overview table to filter the detailed control results table.
 
             Args:
@@ -157,10 +157,10 @@ class Kontroller:
 
         @callback(
             Output(self.ident[0], self.ident[1]),
-            Input("kontroll-table-detailed", "cellClicked"),
-            State("kontroll-table-detailed", "rowData"),
+            Input("control-table-detailed", "cellClicked"),
+            State("control-table-detailed", "rowData"),
         )
-        def kontroll_detail_click(click: dict | None, rowdata: dict) -> str:
+        def control_detail_click(click: dict | None, rowdata: dict) -> str:
             """Links clicks in the detailed control results table to select the identification variable value.
 
             Args:
