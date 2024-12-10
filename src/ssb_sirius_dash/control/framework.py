@@ -14,7 +14,7 @@ kontroll_dokumentasjon: dict[str, Any] = {}
 
 
 class Kontrolltype(Enum):
-    """Enum class representing the types for quality control checks."""
+    """Enum class representing the types of quality control checks."""
 
     AUTOMATISK_OPPRETTING = 0
     MISSING = 1
@@ -26,17 +26,11 @@ class Feilrapport:
     """A class to detail errors found during quality control checks.
 
     Attributes:
-    -----------
-    sub_control_id : str
-        Identifier for the sub control check.
-    result_type : Kontrolltype
-        The result type of the quality control check.
-    context_id : str
-        Identifier for the context within which the error was detected.
-    error_description : Optional[str]
-        A description of the error, if applicable.
-    important_variables : Optional[list[str]]
-        A list of important variables related to the error.
+        sub_control_id (str): Identifier for the sub control check.
+        result_type (Kontrolltype): The result type of the quality control check.
+        context_id (str): Identifier for the context within which the error was detected.
+        error_description (str, optional): A description of the error, if applicable.
+        important_variables (list[str], optional): A list of important variables related to the error.
     """
 
     def __init__(
@@ -58,8 +52,7 @@ class Feilrapport:
         """Converts the quality control result into a dictionary format.
 
         Returns:
-        --------
-        A dictionary representing the quality control result.
+            dict: A dictionary representing the quality control result.
         """
         return {
             "kontrollnavn": self.sub_control_id,
@@ -79,27 +72,18 @@ def kontroll(
 ) -> Callable:
     """Decorator to define a quality control function.
 
-    Parameters
-    ----------
-    result_type : Kontrolltype
-        The type of quality control being performed.
-    error_description : str
-        Description of the error being checked for.
-    id_column : str
-        The column used to uniquely identify rows in the dataset.
-    filter_for_relevant_data : Callable, optional
-        A function to filter relevant rows from the dataset.
-    important_variables : list[str], optional
-        List of variables deemed important for the control check.
+    Args:
+        result_type (Kontrolltype): The type of quality control being performed.
+        error_description (str): Description of the error being checked for.
+        id_column (str): The column used to uniquely identify rows in the dataset.
+        filter_for_relevant_data (Callable, optional): A function to filter relevant rows from the dataset.
+        important_variables (list[str], optional): List of variables deemed important for the control check.
 
     Returns:
-    --------
-    Callable
-        A decorated function that processes the dataset and logs errors.
+        Callable: A decorated function that processes the dataset and logs errors.
 
     Notes:
-    ------
-    Assumes all data given to the function is data that should be checked.
+        Assumes all data given to the function is data that should be checked.
     """
 
     def decorator(control_function: Callable) -> Callable:
@@ -166,23 +150,14 @@ class Kvalitetsrapport:
     """A class representing the result of a quality control check.
 
     Attributes:
-    -----------
-    statistics_name : str
-        The name of the statistics being checked.
-    quality_control_id : str
-        The unique identifier for the quality control.
-    data_location : list[str]
-        Locations of the data checked.
-    data_period : str
-        The period for which the data was checked.
-    quality_control_datetime : datetime.datetime
-        The datetime when the quality control was performed.
-    quality_control_results : list[Kontrolltype]
-        The results of the quality control.
-    quality_control_errors : list[Feilrapport]
-        Detailed errors found during the quality control.
-    quality_control_documentation : Optional[dict[str, str]]
-        Documentation of the quality control process.
+        statistics_name (str): The name of the statistics being checked.
+        quality_control_id (str): The unique identifier for the quality control.
+        data_location (list[str]): Locations of the data checked.
+        data_period (str): The period for which the data was checked.
+        quality_control_datetime (datetime.datetime): The datetime when the quality control was performed.
+        quality_control_results (list[Kontrolltype]): The results of the quality control.
+        quality_control_errors (list[Feilrapport]): Detailed errors found during the quality control.
+        quality_control_documentation (dict[str, str], optional): Documentation of the quality control process.
     """
 
     def __init__(
@@ -196,7 +171,7 @@ class Kvalitetsrapport:
         quality_control_errors: list[Feilrapport],
         quality_control_documentation: dict[str:str] | None = None,
     ) -> None:
-        """Initialize the quality control report based on current content of error_list, corrections_list and kontroll_dokumentasjon."""
+        """Initialize the quality control report."""
         self.statistics_name = statistics_name
         self.quality_control_id = quality_control_id
         self.data_location = data_location
@@ -210,8 +185,7 @@ class Kvalitetsrapport:
         """Converts the quality control report into a dictionary format.
 
         Returns:
-        --------
-        A dictionary representing the quality control report.
+            dict: A dictionary representing the quality control report.
         """
         return {
             "statistikknavn": self.statistics_name,
@@ -235,27 +209,21 @@ class Kvalitetsrapport:
     def save_report(self, path: str) -> None:
         """Save the quality control report to the specified path.
 
-        Parameters
-        ----------
-        path : str
-            The file path where the report will be saved.
+        Args:
+            path (str): The file path where the report will be saved.
         """
         with dp.FileClient.gcs_open(path, "w") as outfile:
             json.dump(self.to_dict(), outfile)
 
     @classmethod
-    def from_json(cls, path: str) -> dict:
+    def from_json(cls, path: str) -> "Kvalitetsrapport":
         """Initialize a Kvalitetsrapport from a saved JSON file.
 
-        Parameters
-        ----------
-        path : str
-            Path to the JSON file.
+        Args:
+            path (str): Path to the JSON file.
 
         Returns:
-        --------
-        Kvalitetsrapport
-            An instance of the quality control report.
+            Kvalitetsrapport: An instance of the quality control report.
         """
         import json
 
@@ -267,15 +235,11 @@ class Kvalitetsrapport:
     def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]) -> "Kvalitetsrapport":
         """Initialize a Kvalitetsrapport from a dictionary.
 
-        Parameters
-        ----------
-        kvalitetsrapport_dict : dict[str, Any]
-            A dictionary representing the quality control report.
+        Args:
+            kvalitetsrapport_dict (dict[str, Any]): A dictionary representing the quality control report.
 
         Returns:
-        --------
-        Kvalitetsrapport
-            An instance of the quality control report.
+            Kvalitetsrapport: An instance of the quality control report.
         """
         statistics_name = kvalitetsrapport_dict["statistikknavn"]
         quality_control_id = kvalitetsrapport_dict["quality_control_id"]
@@ -319,24 +283,21 @@ def lag_kvalitetsrapport(
     data_location: str,
     data_period: str,
     also_return_control_docs: bool = False,
-) -> Kvalitetsrapport:
+) -> Kvalitetsrapport | tuple[Kvalitetsrapport, pd.DataFrame]:
     """Create a quality control report.
 
-    Parameters
-    ----------
-    statistics_name : str
-        The name of the statistics being checked.
-    data_location : str
-        The location of the data being checked.
-    data_period : str
-        The period for which the data is being checked.
-    also_return_control_docs : bool, optional
-        Whether to return control documentation as part of the result.
+    Args:
+        statistics_name (str): The name of the statistics being checked.
+        data_location (str): The location of the data being checked.
+        data_period (str): The period for which the data is being checked.
+        also_return_control_docs (bool): Whether to return control documentation as part of the result.
 
     Returns:
-    --------
-    Union[Kvalitetsrapport, tuple[Kvalitetsrapport, pd.DataFrame]]
-        The quality control report or a tuple containing the report and control documentation.
+        Kvalitetsrapport | tuple[Kvalitetsrapport, pd.DataFrame]:
+            The quality control report or a tuple containing the report and control documentation.
+
+    Raises:
+        AssertionError: If `statistics_name`, `data_location`, or `data_period` is not provided.
     """
     assert statistics_name is not None, "Må sette statistikknavn (statistics_name)"
     assert data_location is not None, "Mangler filsti til datasett (data_location)"
@@ -373,18 +334,16 @@ def lag_kvalitetsrapport(
         return report
 
 
-def lag_kontroll_dokumentasjon(kvalitetsrapport: Kvalitetsrapport) -> pd.DataFrame:
+def lag_kontroll_dokumentasjon(
+    kvalitetsrapport: Kvalitetsrapport | dict,
+) -> pd.DataFrame:
     """Create control documentation.
 
-    Parameters
-    ----------
-    kvalitetsrapport : Union[Kvalitetsrapport, dict]
-        The quality control report or its dictionary representation.
+    Args:
+        kvalitetsrapport (Kvalitetsrapport | dict): The quality control report or its dictionary representation.
 
     Returns:
-    --------
-    pd.DataFrame
-        A DataFrame containing control documentation.
+        pd.DataFrame: A DataFrame containing control documentation.
     """
     if isinstance(kvalitetsrapport, dict):
         kontrolldokumentasjon = pd.DataFrame(
@@ -399,18 +358,17 @@ def lag_kontroll_dokumentasjon(kvalitetsrapport: Kvalitetsrapport) -> pd.DataFra
     return kontrolldokumentasjon
 
 
-def eimerdb_template(kontrolldokumentasjon: pd.DataFrame) -> list:
+def eimerdb_template(kontrolldokumentasjon: pd.DataFrame) -> list[list[Any]]:
     """Create a template for the EimerDB control table.
 
-    Parameters
-    ----------
-    kontrolldokumentasjon : pd.DataFrame
-        The control documentation as a DataFrame.
+    Args:
+        kontrolldokumentasjon (pd.DataFrame): The control documentation as a DataFrame.
 
     Returns:
-    --------
-    list[list[Any]]
-        A list of lists representing the template for the control table.
+        list[list[Any]]: A list of lists representing the template for the control table.
+
+    Notes:
+        Each entry in the resulting list represents a control, including its period, ID, type, and description.
     """
     kontroller = []
     for i in kontrolldokumentasjon.to_dict()["kontrolldokumentasjon"]:
