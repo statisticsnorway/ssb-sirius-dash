@@ -1,6 +1,6 @@
+import datetime
 from collections.abc import Callable
 from typing import Any
-import datetime
 
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
