@@ -5,22 +5,26 @@ from .alert_handler import AlertHandler
 from .functions import sidebar_button
 
 
-def main_layout(modal_list: list, tab_list: list, variable_list: list) -> dbc.Container:
+def main_layout(
+    modal_list: list[html.Div], tab_list: list[html.Div], variable_list: list[html.Div]
+) -> dbc.Container:
     """Generate the main layout for the Dash application.
 
-    Parameters
-    ----------
-    modal_list : list of dash.html.Div
-        List of modal components to be included in the sidebar.
-    tab_list : list of objects
-        List of tab objects, each containing a `layout` method and a `label` attribute.
-    variable_list : list of dash.html.Div
-        List of variable selection components to be included in the main layout.
+    Args:
+        modal_list (list[html.Div]):
+            List of modal components to be included in the sidebar.
+        tab_list (list[html.Div]):
+            List of tab objects, each containing a `layout` method and a `label` attribute.
+        variable_list (list[html.Div]):
+            List of variable selection components to be included in the main layout.
 
     Returns:
-    --------
-    dash_bootstrap_components.Container
-    A Dash Container component representing the app's main layout.
+        dbc.Container:
+            A Dash Container component representing the app's main layout.
+
+    Notes:
+        - The function includes an alert handler modal and a toggle button for the variable selector.
+        - Each tab in `tab_list` must implement a `layout()` method and have a `label` attribute.
     """
     alerthandler = AlertHandler()
     alerthandler_layout = alerthandler.layout()

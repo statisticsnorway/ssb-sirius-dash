@@ -9,22 +9,16 @@ from ..modals.modal_functions import sidebar_button
 
 
 class AlertHandler:
-    """Handler class to keep track of alerts the app.
+    """Handler class to manage and display alerts within the application.
 
-    In order to add an alert to this list:
-    add the below to your callback:
-    Output("error_log", "children", allow_duplicate=True),
-    State("error_log", "children"),
-    prevent_initial_call=True
+    This class provides functionality to:
+    - Display alerts categorized as "info", "warning", or "danger".
+    - Filter alerts based on their type using buttons.
+    - Maintain a modal interface for viewing alerts.
 
-    Add this in the callback function:
-    new_alert = dbc.Alert(
-        f"{datetime.datetime.now()} - your_error_message",
-        color=, # use one of "info", "warning", "danger" as the argument for color.
-        dismissable=True,
-    )
-    return [*existing_errors, new_alert]
-
+    Methods:
+        layout(): Generates the layout for the alert modal and sidebar button.
+        callbacks(): Defines and registers Dash callbacks for managing alerts.
     """
 
     def __init__(self) -> None:
@@ -35,9 +29,7 @@ class AlertHandler:
         """Generate the layout for the alert modal and sidebar button.
 
         Returns:
-        -------
-        html.Div
-            The layout containing the modal and the sidebar button.
+            html.Div: The layout containing the modal and the sidebar button.
         """
         return html.Div(
             [
@@ -99,17 +91,13 @@ class AlertHandler:
             Input("error_log", "children"),
         )
         def feilmelding_update_button_label(feilmeldinger: list) -> str:
-            """Updates label on the button for opening error logs with the current amount of errors.
+            """Updates the label on the button for opening error logs with the current number of errors.
 
-            Parameters
-            ----------
-            feilmeldinger : list
-                List of existing errors
+            Args:
+                feilmeldinger (list): List of existing errors.
 
             Returns:
-            -------
-            str
-                New label with the amount of errors.
+                str: New label with the count of errors.
             """
             return f"Feilmeldinger: {len(feilmeldinger)}"
 
@@ -121,17 +109,12 @@ class AlertHandler:
         def feilmelding_toggle(n: int | None, is_open: bool) -> bool:
             """Toggle the state of the modal window.
 
-            Parameters
-            ----------
-            n : int or None
-                Number of clicks on the toggle button. None if never clicked.
-            is_open : bool
-                Current state of the modal (open/closed).
+            Args:
+                n (int | None): Number of clicks on the toggle button. None if never clicked.
+                is_open (bool): Current state of the modal (open/closed).
 
             Returns:
-            -------
-            bool
-                New state of the modal (open/closed).
+                bool: New state of the modal (open/closed).
             """
             if n:
                 return not is_open
@@ -156,23 +139,19 @@ class AlertHandler:
         ) -> list[dbc.Alert]:
             """Filter alerts based on the button clicked.
 
-            Parameters
-            ----------
-            show_all : Optional[int]
-                Clicks for "Show All" button.
-            show_info : Optional[int]
-                Clicks for "Show Info" button.
-            show_warning : Optional[int]
-                Clicks for "Show Warning" button.
-            show_danger : Optional[int]
-                Clicks for "Show Danger" button.
-            current_alerts : List[Dict]
-                Current list of alerts.
+            Args:
+                show_all (int | None): Clicks for "Show All" button.
+                show_info (int | None): Clicks for "Show Info" button.
+                show_warning (int | None): Clicks for "Show Warning" button.
+                show_danger (int | None): Clicks for "Show Danger" button.
+                current_alerts (list[dict] | None): Current list of alerts.
 
             Returns:
-            -------
-            List[html.Div]
-                Filtered alerts as a list of Dash components.
+                list[dbc.Alert]: Filtered alerts as a list of Dash components.
+
+            Notes:
+                - If no filters are clicked, all alerts are displayed.
+                - Filters alerts by `level` ("info", "warning", "danger").
             """
             if not current_alerts:
                 return []
