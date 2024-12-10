@@ -11,7 +11,6 @@ from dash import State
 from dash import callback
 from dash import dcc
 from dash import html
-from dash.development.base_component import Component
 from dash.exceptions import PreventUpdate
 
 from ..control.framework import Kvalitetsrapport
@@ -19,25 +18,32 @@ from .modal_functions import sidebar_button
 
 
 class KvalitetsindikatorerModule:
-    """Class for å sette opp visningen for valgte kvalitetsindikatorer.
+    """A module for setting up the view for selected quality indicators.
 
     Attributes:
-    -----------
-    indicators : list
-        Liste over kvalitetsindikatorer. F.eks. indicators = [KvalitetsindikatorEditeringsandel(), KvalitetsindikatorEffektaveditering()]
+        indicators (list): A list of quality indicators.
+            Example: [KvalitetsindikatorEditeringsandel(), KvalitetsindikatorEffektaveditering()]
 
     Notes:
-    ------
-    Alle indikatorene antar et langt format på dataene med minimum ident | variabel | verdi som kolonner.
+        All indicators assume a long format for the data with a minimum of
+        `ident`, `variabel`, and `verdi` as columns.
     """
 
     def __init__(self, indicators: list) -> None:
-        """Setter opp modulen for kvalitetsindikatorer med alle valgte indikatorer."""
+        """Initializes the quality indicator module with all selected indicators.
+
+        Args:
+            indicators (list): A list of quality indicator objects.
+        """
         self.indicators = indicators
         self.callbacks()
 
-    def layout(self) -> Component:
-        """Lager layouten til kvalitetsindikator modalen."""
+    def layout(self) -> html.Div:
+        """Creates the layout for the quality indicator modal.
+
+        Returns:
+            html.Div: A Dash HTML Div element containing the modal and the sidebar button.
+        """
         return html.Div(
             [
                 dbc.Modal(
@@ -67,7 +73,7 @@ class KvalitetsindikatorerModule:
         )
 
     def callbacks(self) -> None:
-        """Brukes for å gjøre at modalen kan åpnes."""
+        """Registers callbacks to enable the modal to be opened and closed."""
 
         @callback(
             Output("kvalitetsindikatorer-modal", "is_open"),
@@ -75,31 +81,31 @@ class KvalitetsindikatorerModule:
             State("kvalitetsindikatorer-modal", "is_open"),
         )
         def kvalitetsindikatorermodal_toggle(n: int, is_open: bool) -> bool:
-            """Åpner og lukker modalen."""
+            """Toggles the modal's open state.
+
+            Args:
+                n (int): Number of times the sidebar button has been clicked.
+                is_open (bool): The current state of the modal (True for open, False for closed).
+
+            Returns:
+                bool: The new state of the modal.
+            """
             if n:
                 return not is_open
             return is_open
 
 
 class KvalitetsindikatorEditeringsandel:
-    """Kvalitetsindikator for editeringsandel.
+    """Quality indicator for editing ratio.
 
     Attributes:
-    -----------
-    get_current_data_func: Callable
-        Funksjon som henter nåværende data.
-    get_change_data_func: Callable
-        Funksjon som henter rader med endringer
-    periode:
-        Gjeldende periode
-    var_name: str
-        Navnet på kolonnen i datasettet som sier hvilken variabel verdien tilhører.
-    ident_var: str
-        Variabelnavn på identifikasjonsvariabelen. F.eks. orgf
-    grouping_vars: list[str]
-        Variabler som datasettet kan grupperes etter. F.eks. nace eller kommune
-    key_vars: list[str]
-        Viktige variabler som kvalitetsindikatoren
+        get_current_data_func (Callable): Function to retrieve current data.
+        get_change_data_func (Callable): Function to retrieve rows with changes.
+        periode: Current period for the data.
+        var_name (str): The name of the column in the dataset indicating the variable.
+        ident_var (str): Name of the identification variable. For example, "orgf".
+        grouping_vars (list[str]): Variables by which the dataset can be grouped, such as "nace" or "kommune".
+        key_vars (list[str]): Key variables relevant to the quality indicator.
     """
 
     def __init__(
@@ -111,7 +117,16 @@ class KvalitetsindikatorEditeringsandel:
         grouping_vars: list[str] | None = None,
         key_vars: list[str] | None = None,
     ) -> None:
-        """Setter opp visningen for editeringsandel i kvalitetsindikator modalen."""
+        """Initializes the editing ratio view for the quality indicator modal.
+
+        Args:
+            get_current_data_func (Callable): Function to retrieve current data.
+            get_change_data_func (Callable): Function to retrieve rows with changes.
+            var_name (str): Name of the variable column in the dataset.
+            ident_var (str): Name of the identification variable.
+            grouping_vars (list[str], optional): Variables for dataset grouping. Defaults to None.
+            key_vars (list[str], optional): Key variables for the indicator. Defaults to None.
+        """
         self.ident_var = ident_var
         self.var_name = var_name
         self.grouping_vars = grouping_vars if grouping_vars else []
@@ -186,13 +201,24 @@ class KvalitetsindikatorEditeringsandel:
         )
 
     def editeringsandel(self) -> float:
-        """Metode for å beregne editeringsandel."""
+        """Calculates the editing ratio.
+
+        Returns:
+            float: The editing ratio as a percentage.
+        """
         total = pd.DataFrame(self.get_current_data().agg({self.ident_var: "nunique"}))
         changes = pd.DataFrame(self.get_change_data().agg({self.ident_var: "nunique"}))
         return (changes / total * 100).iloc[0][0]
 
     def editeringsandel_details(self, group: list[str] | str) -> pd.DataFrame:
-        """Metode for å beregne editeringsandel for ulike deler av utvalget."""
+        """Calculates the editing ratio for different subsets of the dataset.
+
+        Args:
+            group (list[str] | str): Variable(s) by which to group the dataset.
+
+        Returns:
+            pd.DataFrame: A DataFrame with editing ratios for each subset.
+        """
         if isinstance(group, str):
             group = [group]
         total = (
@@ -212,7 +238,7 @@ class KvalitetsindikatorEditeringsandel:
         return c.reset_index()
 
     def callbacks(self) -> None:
-        """Setter opp callbacks for å åpne detaljvisningen og for å velge gruppering man vil ha detaljer for."""
+        """Sets up callbacks for opening the detail view and selecting grouping for details."""
 
         @callback(
             Output("editeringsandel-modal", "is_open"),
@@ -220,7 +246,15 @@ class KvalitetsindikatorEditeringsandel:
             State("editeringsandel-modal", "is_open"),
         )
         def kvalitetediteringsandel_modaltoggle(n: int, is_open: bool) -> bool:
-            """Åpner og lukker detalj-visningen for editeringsandel."""
+            """Toggles the detail view for the editing ratio.
+
+            Args:
+                n (int): Number of times the "Detaljer" button has been clicked.
+                is_open (bool): Current state of the modal.
+
+            Returns:
+                bool: New state of the modal (True for open, False for closed).
+            """
             if n:
                 return not is_open
             return is_open
@@ -229,8 +263,18 @@ class KvalitetsindikatorEditeringsandel:
             Output("kvalitet-editeringsandel-details", "children"),
             Input("kvalitet-editeringsandel-dropdown", "value"),
         )
-        def editeringsandel_detailed(grouping_var: str) -> Component:
-            """Kjører beregning av detaljert indikator for valgt gruppering."""
+        def editeringsandel_detailed(grouping_var: str) -> dcc.Graph:
+            """Calculates detailed editing ratios for the selected grouping.
+
+            Args:
+                grouping_var (str): The grouping variable for detailed calculations.
+
+            Returns:
+                dcc.Graph: A bar chart displaying editing ratios by grouping.
+
+            Raises:
+                PreventUpdate: If no grouping_var the callback doesn't trigger.
+            """
             if grouping_var:
                 detail_data = self.editeringsandel_details(grouping_var, self.periode)
                 return dcc.Graph(
@@ -246,17 +290,14 @@ class KvalitetsindikatorEditeringsandel:
 
 
 class KvalitetsindikatorKontrollutslagsandel:
-    """Indikator for å vise andel av mulige utslag for en kontroll som slår ut.
+    """Indicator for displaying the percentage of possible control outcomes that trigger a flag.
 
-    Kontrolldokumentasjon skal være et datasett med kolonnene vist nedenfor.
-    kontroll_id | Enheter kontrollert | Kontrollutslag
+    The control documentation must be a dataset with the following columns:
+    `kontroll_id`, `Enheter kontrollert`, `Kontrollutslag`.
 
     Attributes:
-    -----------
-    kontrolldokumentasjon: Kvalitetsrapport | None
-        Kvalitetsrapport som skal brukes for beregning.
-    kvalitetsrapport_path: str | None
-        Filsti til lagret kvalitetsrapport i json.format på Dapla.
+        kontrolldokumentasjon (Kvalitetsrapport | None): The quality report used for calculations.
+        kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format on Dapla.
     """
 
     def __init__(
@@ -264,7 +305,16 @@ class KvalitetsindikatorKontrollutslagsandel:
         kontrolldokumentasjon: Kvalitetsrapport | None = None,
         kvalitetsrapport_path: str | None = None,
     ) -> None:
-        """Setter opp visningen for kontrollutslagsandel i kvalitetsindikator modalen."""
+        """Initializes the control outcome ratio view for the quality indicator modal.
+
+        Args:
+            kontrolldokumentasjon (Kvalitetsrapport | None): A quality report for calculation.
+            kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format.
+
+        Raises:
+            ValueError: If both `kontrolldokumentasjon` and `kvalitetsrapport_path` are defined,
+                        or if neither is provided.
+        """
         if kvalitetsrapport_path and kontrolldokumentasjon:
             raise ValueError(
                 "Remove either kontrolldokumentasjon or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kontrolldokumentasjon and kvalitetsrapport_path is defined. If both are defined, it will not work."
@@ -373,7 +423,13 @@ class KvalitetsindikatorKontrollutslagsandel:
         )
 
     def kontrollutslag(self) -> tuple[float, pd.DataFrame]:
-        """Beregner andelen kontrollutslag basert på kontrolldokumentasjonen."""
+        """Calculates the proportion of control outcomes that trigger a flag.
+
+        Returns:
+            tuple[float, pd.DataFrame]:
+                - The total proportion of control outcomes as a float.
+                - A DataFrame with detailed proportions for each control.
+        """
         total = (
             self.kontrolldokumentasjon["Kontrollutslag"].sum()
             / self.kontrolldokumentasjon["Enheter kontrollert"].sum()
@@ -387,7 +443,7 @@ class KvalitetsindikatorKontrollutslagsandel:
         return total, self.kontrolldokumentasjon
 
     def callbacks(self) -> None:
-        """Funksjon som brukes for å lage callback for åpning og lukking av detaljert visning."""
+        """Sets up callbacks for opening and closing the detailed view."""
 
         @callback(
             Output("kontrollutslagsandel-modal", "is_open"),
@@ -395,29 +451,30 @@ class KvalitetsindikatorKontrollutslagsandel:
             State("kontrollutslagsandel-modal", "is_open"),
         )
         def kvalitetkontrollutslagsandel_modaltoggle(n: int, is_open: bool) -> bool:
-            """Åpner eller lukker modalen med detaljer."""
+            """Toggles the modal with control outcome details.
+
+            Args:
+                n (int): Number of clicks on the "Detaljer" button.
+                is_open (bool): Current state of the modal.
+
+            Returns:
+                bool: New state of the modal (True for open, False for closed).
+            """
             if n:
                 return not is_open
             return is_open
 
 
 class KvalitetsindikatorEffektaveditering:
-    """Indikator for å vise effekten av editering som er gjort.
+    """Indicator to display the effect of editing.
 
     Attributes:
-    -----------
-    get_current_data_func: Callable
-        Funksjon for å hente nåværende oppdatert data
-    get_original_data_func: Callable
-        Funksjon for å hente originalt mottatt data
-    periode: str | int  # TODO sjekk dette
-        Perioden det gjelder
-    ident_var: str
-        Variabelnavn på identifikasjonsvariabelen. F.eks. orgf
-    key_vars: list[str]
-        Liste over de viktigste variablene for indikatoren
-    grouping_vars: list[str]
-        Liste over grupperingsvariabler for stratum.
+        get_current_data_func (Callable): Function to fetch the current updated data.
+        get_original_data_func (Callable): Function to fetch the original received data.
+        periode (str | int): The period for the data.
+        ident_var (str): Name of the identification variable, e.g., "orgf".
+        key_vars (list[str]): List of key variables relevant to the indicator.
+        grouping_vars (list[str]): List of grouping variables for stratification.
     """
 
     def __init__(
@@ -429,7 +486,16 @@ class KvalitetsindikatorEffektaveditering:
         key_vars: list[str],
         grouping_vars: list[str],
     ) -> None:
-        """Setter opp visningen for effekt av editering i kvalitetsindikator modalen."""
+        """Initializes the view for the effect of editing in the quality indicator modal.
+
+        Args:
+            get_current_data_func (Callable): Function to fetch the current updated data.
+            get_original_data_func (Callable): Function to fetch the original received data.
+            periode (str | int): The period for the data.
+            ident_var (str): Name of the identification variable.
+            key_vars (list[str]): Key variables for the indicator.
+            grouping_vars (list[str]): Grouping variables for stratification.
+        """
         self.get_current_data = get_current_data_func
         self.get_original_data = get_original_data_func
         self.periode = periode
@@ -511,7 +577,15 @@ class KvalitetsindikatorEffektaveditering:
     def get_comparison_data(
         self, periode: str | int, grouping: list[str] | None = None
     ) -> pd.DataFrame:
-        """Bruker innsendte funksjoner for å beregne effekten av editeringer som er gjort."""
+        """Calculates the effect of editing using the provided functions.
+
+        Args:
+            periode (str | int): The period for the data.
+            grouping (list[str] | None): Variables for grouping. Defaults to None.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the calculated effect of editing.
+        """
         if grouping is None:
             grouping = []
         elif isinstance(grouping, str):
@@ -543,7 +617,7 @@ class KvalitetsindikatorEffektaveditering:
         return merged
 
     def callbacks(self) -> None:
-        """Funksjon som brukes for å lage callback for åpning og lukking av detaljert visning."""
+        """Sets up callbacks for opening and closing the detailed view."""
 
         @callback(
             Output("effekt-modal", "is_open"),
@@ -551,7 +625,15 @@ class KvalitetsindikatorEffektaveditering:
             State("effekt-modal", "is_open"),
         )
         def kvaliteteffekt_modaltoggle(n: int, is_open: bool) -> bool:
-            """Åpner og lukker modalen som viser detaljer for indikatoren."""
+            """Toggles the modal displaying detailed information for the indicator.
+
+            Args:
+                n (int): Number of clicks on the "Detaljer" button.
+                is_open (bool): Current state of the modal.
+
+            Returns:
+                bool: New state of the modal (True for open, False for closed).
+            """
             if n:
                 return not is_open
             return is_open
@@ -560,8 +642,18 @@ class KvalitetsindikatorEffektaveditering:
             Output("kvalitet-effekt-details", "children"),
             Input("kvalitet-effekt-dropdown", "value"),
         )
-        def kvalitet_effekt_detailed(grouping_var: str | None) -> Component:
-            """Funksjon som beregner indikatoren per gruppe i gruppe-inndelingen som er valgt."""
+        def kvalitet_effekt_detailed(grouping_var: str | None) -> dcc.Graph:
+            """Computes the indicator per group for the selected grouping variable.
+
+            Args:
+                grouping_var (str | None): The selected grouping variable.
+
+            Returns:
+                dcc.Graph: A bar chart displaying the effect of editing for each group.
+
+            Raises:
+                PreventUpdate: If no grouping_var the callback doesn't trigger.
+            """
             if grouping_var:
                 detail_data = self.get_comparison_data(self.periode, grouping_var)
                 return dcc.Graph(
@@ -577,18 +669,19 @@ class KvalitetsindikatorEffektaveditering:
 
 
 class KvalitetsindikatorTreffsikkerhet:
-    """Indikator for å vise treffsikkerheten til kontroller man kjører.
+    """Indicator to display the accuracy of the controls being run.
 
     Attributes:
-    -----------
-    get_edits_list_func: Callable
-        Funksjon som henter liste over endringer som er gjort i dataene.
-        Den skal returnere en liste med tuples som beskriver endrede felter. Dette brukes for å sjekke mot kontrollutslagene for å se hvor disse identifikasjon og variabel kombinasjonene dukker opp og se om kontrollutslaget sannsynligvis førte til en editering.
-        Eks: [(orgnr_1, variabel_1), (orgnr_1, variabel_2), (orgnr_2, variabel_1)]
-    kvalitetsrapport: Kvalitetsrapport | None
-        Kvalitetsrapport som skal brukes for beregning.
-    kvalitetsrapport_path: str | None
-        Filsti til lagret kvalitetsrapport i json.format på Dapla.
+        get_edits_list_func (Callable):
+            Function that retrieves a list of changes made to the data.
+            It returns a list of tuples describing the fields changed.
+            Used to check against control outcomes to determine if a control outcome
+            likely resulted in an edit.
+            Example: [(orgnr_1, variabel_1), (orgnr_1, variabel_2), (orgnr_2, variabel_1)].
+        kvalitetsrapport (Kvalitetsrapport | None):
+            The quality report used for calculations.
+        kvalitetsrapport_path (str | None):
+            File path to a saved quality report in JSON format on Dapla.
     """
 
     def __init__(
@@ -597,7 +690,20 @@ class KvalitetsindikatorTreffsikkerhet:
         kvalitetsrapport: Kvalitetsrapport | None = None,
         kvalitetsrapport_path: str | None = None,
     ) -> None:
-        """Setter opp visningen for effekt av editering i kvalitetsindikator modalen."""
+        """Initializes the accuracy indicator view for the quality indicator modal.
+
+        Args:
+            get_edits_list_func (Callable):
+                Function to fetch the list of edits made to the data.
+            kvalitetsrapport (Kvalitetsrapport | None):
+                Quality report for calculations.
+            kvalitetsrapport_path (str | None):
+                File path to a saved quality report in JSON format.
+
+        Raises:
+            ValueError: If both `kvalitetsrapport` and `kvalitetsrapport_path` are defined
+                        or if neither is provided.
+        """
         if kvalitetsrapport_path and kvalitetsrapport:
             raise ValueError(
                 "Remove either kvalitetsrapport or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kvalitetsrapport and kvalitetsrapport_path is defined. If both are defined, it will not work."
@@ -681,7 +787,12 @@ class KvalitetsindikatorTreffsikkerhet:
         self.callbacks()
 
     def beregn_treffsikkerhet(self) -> dict:
-        """Beregner treffsikkerhet indikatoren basert på kvalitetsrapport."""
+        """Calculates the accuracy indicator based on the quality report.
+
+        Returns:
+            dict: A dictionary where keys are control names and values are the accuracy percentage.
+                  Includes a "total" key for overall accuracy.
+        """
         if isinstance(self.kvalitetsrapport, Kvalitetsrapport):
             kvalitetsrapport = self.kvalitetsrapport.to_dict()
         else:
@@ -712,7 +823,7 @@ class KvalitetsindikatorTreffsikkerhet:
         return treffsikkerhet
 
     def callbacks(self) -> None:
-        """Funksjon som brukes for å lage callback for åpning og lukking av detaljert visning."""
+        """Sets up callbacks for opening and closing the detailed view."""
 
         @callback(
             Output("treffsikkerhet-modal", "is_open"),
@@ -720,7 +831,15 @@ class KvalitetsindikatorTreffsikkerhet:
             State("treffsikkerhet-modal", "is_open"),
         )
         def kvalitettreffsikkerhet_modaltoggle(n: int, is_open: bool) -> bool:
-            """Åpner og lukker detaljert visning."""
+            """Toggles the modal displaying detailed accuracy information.
+
+            Args:
+                n (int): Number of clicks on the "Detaljer" button.
+                is_open (bool): Current state of the modal.
+
+            Returns:
+                bool: New state of the modal (True for open, False for closed).
+            """
             if n:
                 return not is_open
             return is_open

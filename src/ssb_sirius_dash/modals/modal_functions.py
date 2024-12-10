@@ -8,23 +8,17 @@ def sidebar_button(
     component_id: str,
     additional_styling: dict[str, str] | None = None,
 ) -> html.Div:
-    """Generate a sidebar button with an icon and label.
+    """Generates a sidebar button with an icon and label.
 
-    Parameters
-    ----------
-    icon : str
-        The icon displayed at the top of the button.
-    text : str
-        The label text displayed below the icon.
-    component_id : str
-        The ID assigned to the button component.
-    additional_styling : dict, optional
-        Additional styling applied to the button. Defaults to an empty dictionary.
+    Args:
+        icon (str): The icon displayed at the top of the button.
+        text (str): The label text displayed below the icon.
+        component_id (str): The ID assigned to the button component.
+        additional_styling (dict[str, str], optional):
+            Additional CSS styling applied to the button. Defaults to None.
 
     Returns:
-    --------
-    dash.html.Div
-        A Div containing the styled button.
+        html.Div: A Div containing the styled button.
     """
     if additional_styling is None:
         additional_styling = {}

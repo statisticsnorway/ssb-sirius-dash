@@ -115,6 +115,7 @@ select = [
     "D",    # documentation
     "E",    # pycodestyle
     "F",    # pyflakes
+    "N",    # Pep8 naming
     "ISC",  # implicit string concatenation
     "I",    # sort imports
     "UP",   # alert you when better syntax is available in your python version

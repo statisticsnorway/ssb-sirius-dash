@@ -16,28 +16,23 @@ class VisualiseringsbyggerModule:
     """A module for creating and visualizing data queries and graphs interactively.
 
     Attributes:
-    -----------
-    database : object
-        Database connection or interface for executing queries.
+        database (object): The database connection or interface for executing queries.
     """
 
     def __init__(self, database: object) -> None:
-        """Initialize the VisualiseringsbyggerModule.
+        """Initializes the VisualiseringsbyggerModule.
 
-        Parameters
-        ----------
-        database : object
-            The database connection or interface used for querying data.
+        Args:
+            database (object): The database connection or interface used for querying data.
         """
         self.database = database
         self.callbacks()
 
     def layout(self) -> html.Div:
-        """Generate the layout for the Visualiseringsbygger module.
+        """Generates the layout for the Visualiseringsbygger module.
 
         Returns:
-        --------
-        A Div element containing components for querying data and visualizing graphs.
+            html.Div: A Div element containing components for querying data and visualizing graphs.
         """
         layout = html.Div(
             [
@@ -173,13 +168,12 @@ class VisualiseringsbyggerModule:
         return layout
 
     def callbacks(self) -> None:
-        """Register Dash callbacks for the Visualiseringsbygger module.
+        """Registers Dash callbacks for the Visualiseringsbygger module.
 
         Notes:
-        ------
-        - `sqlmodal_toggle` toggles the visibility of the query modal.
-        - `sql_query` executes the SQL query and updates the table and dropdown options.
-        - `update_graph` generates graphs based on selected columns and graph type.
+            - `sqlmodal_toggle`: Toggles the visibility of the query modal.
+            - `sql_query`: Executes the SQL query and updates the table and dropdown options.
+            - `update_graph`: Generates graphs based on selected columns and graph type.
         """
 
         @callback(
@@ -188,18 +182,14 @@ class VisualiseringsbyggerModule:
             State("sql-modal", "is_open"),
         )
         def sqlmodal_toggle(n: int, is_open: bool) -> bool:
-            """Toggle the visibility of the SQL query modal.
+            """Toggles the visibility of the SQL query modal.
 
-            Parameters
-            ----------
-            n : int
-                The number of clicks on the sidebar button.
-            is_open : bool
-                The current visibility state of the modal.
+            Args:
+                n (int): The number of clicks on the sidebar button.
+                is_open (bool): The current visibility state of the modal.
 
             Returns:
-            --------
-            The new visibility state of the modal.
+                bool: The new visibility state of the modal.
             """
             if n:
                 return not is_open
@@ -215,21 +205,17 @@ class VisualiseringsbyggerModule:
             State("sqlmodal-textarea", "value"),
         )
         def sql_query(n_clicks: int, value: str) -> tuple:
-            """Execute an SQL query and update table data and dropdown options.
+            """Executes an SQL query and updates table data and dropdown options.
 
-            Parameters
-            ----------
-            n_clicks : int
-                The number of clicks on the query execution button.
-            value : str
-                The SQL query string entered in the text area.
+            Args:
+                n_clicks (int): The number of clicks on the query execution button.
+                value (str): The SQL query string entered in the text area.
 
             Returns:
-            --------
-            A tuple containing:
-            - rowData (list of dict): The table data.
-            - columnDefs (list of dict): The column definitions for the table.
-            - x, y, hover options (list of dict): Dropdown options for graph axes and hover data.
+                tuple: Contains:
+                    - rowData (list[dict]): The table data.
+                    - columnDefs (list[dict]): The column definitions for the table.
+                    - x, y, hover options (list[dict]): Dropdown options for graph axes and hover data.
             """
             if n_clicks:
                 df = self.database.query(f"""{value}""")
@@ -251,29 +237,21 @@ class VisualiseringsbyggerModule:
             y_axis: str | list,
             hover_data: str | list,
             graph_type: str,
-            rowData: list,
-            columnDefs: list,
+            rowdata: list[dict],
+            columndefs: list[dict],
         ) -> dict:
-            """Generate a graph based on the selected columns and graph type.
+            """Generates a graph based on the selected columns and graph type.
 
-            Parameters
-            ----------
-            x_axis : str or list
-                The column(s) selected for the x-axis.
-            y_axis : str or list
-                The column(s) selected for the y-axis.
-            hover_data : str or list, optional
-                The column(s) to display as hover data.
-            graph_type : str
-                The type of graph to generate (e.g., "scatter", "bar").
-            rowData : list of dict
-                The data displayed in the table.
-            columnDefs : list of dict
-                The column definitions for the table.
+            Args:
+                x_axis (str | list): The column(s) selected for the x-axis.
+                y_axis (str | list): The column(s) selected for the y-axis.
+                hover_data (str | list): The column(s) to display as hover data.
+                graph_type (str): The type of graph to generate (e.g., "scatter", "bar").
+                rowdata (list[dict]): The data displayed in the table.
+                columndefs (list[dict]): The column definitions for the table.
 
             Returns:
-            --------
-            A Plotly figure dictionary.
+                dict: A Plotly figure dictionary.
             """
             if x_axis and y_axis:
                 if isinstance(x_axis, list) and len(x_axis) == 1:
@@ -287,8 +265,8 @@ class VisualiseringsbyggerModule:
                     and len(y_axis) > 1
                 ):
                     y_axis = y_axis[0]
-                df = pd.DataFrame(rowData)
-                columns = [col["field"] for col in columnDefs]
+                df = pd.DataFrame(rowdata)
+                columns = [col["field"] for col in columndefs]
                 df.columns = columns
                 df.fillna(0)
                 if graph_type == "scatter":

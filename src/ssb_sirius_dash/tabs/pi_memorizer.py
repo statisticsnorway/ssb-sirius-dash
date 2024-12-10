@@ -21,16 +21,11 @@ class PimemorizerTab:
     - A scoring system to track the current and high scores.
 
     Attributes:
-    -----------
-    label : str
-        The label for the tab, set to "𝝅 Pi memorizer".
+        label (str): The label for the tab, set to "𝝅 Pi memorizer".
 
     Methods:
-    --------
-    layout()
-        Generates the layout for the Pi memorizer tab.
-    callbacks()
-        Registers the Dash callbacks for handling user interactions.
+        layout(): Generates the layout for the Pi memorizer tab.
+        callbacks(): Registers the Dash callbacks for handling user interactions.
     """
 
     def __init__(
@@ -39,9 +34,7 @@ class PimemorizerTab:
         """Initialize the PimemorizerTab component.
 
         Attributes:
-        -----------
-        label : str
-            The label for the tab, displayed as "𝝅 Pi memorizer".
+            label (str): The label for the tab, displayed as "𝝅 Pi memorizer".
         """
         self.label = "𝝅 Pi memorizer"
         self.callbacks()
@@ -50,11 +43,10 @@ class PimemorizerTab:
         """Generate the layout for the Pi memorizer tab.
 
         Returns:
-        --------
-        A Div element containing:
-        - A text area to display the user's current input sequence.
-        - A numeric keypad for entering digits.
-        - Score and high score displays to track progress.
+            html.Div: A Div element containing:
+                - A text area to display the user's current input sequence.
+                - A numeric keypad for entering digits.
+                - Score and high score displays to track progress.
         """
         layout = html.Div(
             style={"display": "grid", "grid-template-columns": "10% 70% 10% 10%"},
@@ -219,9 +211,8 @@ class PimemorizerTab:
         """Register Dash callbacks for the Pi memorizer tab.
 
         Notes:
-        ------
-        - The `update_input` callback handles the interaction between the numeric keypad
-          and the current sequence, score, and high score.
+            - The `update_input` callback handles the interaction between the numeric keypad
+              and the current sequence, score, and high score.
         """
 
         @callback(
@@ -243,45 +234,28 @@ class PimemorizerTab:
             State("text-box", "value"),
         )
         def update_input(
-            btn0: int,
-            btn1: int,
-            btn2: int,
-            btn3: int,
-            btn4: int,
-            btn5: int,
-            btn6: int,
-            btn7: int,
-            btn8: int,
-            btn9: int,
+            *args: dbc.Button,
             current_score: int,
             high_score: int,
             current_value: str,
         ) -> tuple:
             """Update the input sequence, score, and high score based on user interaction.
 
-            Parameters
-            ----------
-            btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9 : int
-                Number of clicks for each numeric button (0-9).
-            current_score : int
-                The current score of the user.
-            high_score : int
-                The user's highest score so far.
-            current_value : str
-                The current sequence of digits entered by the user.
+            Args:
+                *args: Clicks for numeric buttons (0-9).
+                current_score (int): The current score of the user.
+                high_score (int): The user's highest score so far.
+                current_value (str): The current sequence of digits entered by the user.
 
             Returns:
-            --------
-            tuple
-                A tuple containing:
-                - text-box (str): Updated sequence of digits.
-                - score (int): Updated current score.
-                - highscore (int): Updated high score.
+                tuple: Contains:
+                    - text-box (str): Updated sequence of digits.
+                    - score (int): Updated current score.
+                    - highscore (int): Updated high score.
 
             Notes:
-            ------
-            - If the user enters a correct digit sequence, the score increases.
-            - If the sequence is incorrect, the score resets and the high score updates if necessary.
+                - If the user enters a correct digit sequence, the score increases.
+                - If the sequence is incorrect, the score resets and the high score updates if necessary.
             """
             current_value = current_value or ""
             current_score = current_score or 0

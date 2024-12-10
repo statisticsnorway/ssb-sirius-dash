@@ -21,21 +21,14 @@ def skjermcard(
 ) -> dbc.Col:
     """Generate a Dash Bootstrap card with an input field.
 
-    Parameters
-    ----------
-    text : str
-        The title text to display on the card.
-    component_id : str
-        The ID to assign to the input field within the card.
-    input_type : str
-        The type of the input field (e.g., "text", "number").
-    value : str, optional
-        The default value for the input field. Defaults to an empty string.
+    Args:
+        text (str): The title text to display on the card.
+        component_id (str): The ID to assign to the input field within the card.
+        input_type (str): The type of the input field (e.g., "text", "number").
+        value (str, optional): The default value for the input field. Defaults to an empty string.
 
     Returns:
-    --------
-    dash_bootstrap_components.Col
-        A column containing the card with an input field.
+        dbc.Col: A column containing the card with an input field.
     """
     if value is None:
         value = ""
@@ -63,23 +56,23 @@ def skjermcard(
 
 
 def generate_skjermcards(
-    selected_keys: list, default_values: dict | None = None
-) -> list:
+    selected_keys: list[str], default_values: dict[str, (str, float, int)] | None = None
+) -> list[dbc.Col]:
     """Generate a list of Dash Bootstrap cards based on selected variable keys.
 
-    Parameters
-    ----------
-    selected_keys : list of str
-        Keys representing variables to include as cards. Each key corresponds
-        to an entry in the `variable_options` dictionary.
-    default_values : dict, optional
-        A dictionary containing default values for the cards, where the keys
-        are variable names, and the values are the default input values. Defaults to an empty dictionary.
+    Args:
+        selected_keys (list[str]): Keys representing variables to include as cards. Each key corresponds
+                                   to an entry in the `variable_options` dictionary.
+        default_values (dict, optional): A dictionary containing default values for the cards, where the keys
+                                         are variable names, and the values are the default input values.
+                                         Defaults to an empty dictionary.
 
     Returns:
-    --------
-    list of dash_bootstrap_components.Col
-        A list of cards, each represented as a Dash Bootstrap column.
+        list[dbc.Col]: A list of cards, each represented as a Dash Bootstrap column.
+
+    Notes:
+        - The `variable_options` dictionary provides configuration for each card, including its title, ID, and type.
+        - If `selected_keys` includes keys not found in `variable_options`, those keys are ignored.
     """
     if default_values is None:
         default_values = {}
