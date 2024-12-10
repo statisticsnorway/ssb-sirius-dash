@@ -122,18 +122,18 @@ class Kontroller:
             Input("kontroll-table-overview", "cellClicked"),
             State("kontroll-table-overview", "rowData"),
         )
-        def kontroll_main_click(click: dict | None, rowData: dict) -> dict:
+        def kontroll_main_click(click: dict | None, rowdata: dict) -> dict:
             """Links clicks on the control overview table to filter the detailed control results table.
 
             Args:
                 click (dict | None): Data about the clicked cell in the overview table.
-                rowData (dict): Data from the rows in the overview table.
+                rowdata (dict): Data from the rows in the overview table.
 
             Returns:
                 dict: Filter model to apply to the detailed results table.
             """
             if click:
-                kontroll = rowData[click["rowIndex"]]["kontroll_id"]
+                kontroll = rowdata[click["rowIndex"]]["kontroll_id"]
                 return {
                     "kontrollnavn": {
                         "filterType": "text",
@@ -147,15 +147,15 @@ class Kontroller:
             Input("kontroll-table-detailed", "cellClicked"),
             State("kontroll-table-detailed", "rowData"),
         )
-        def kontroll_detail_click(click: dict | None, rowData: dict) -> str:
+        def kontroll_detail_click(click: dict | None, rowdata: dict) -> str:
             """Links clicks in the detailed control results table to select the identification variable.
 
             Args:
                 click (dict | None): Data about the clicked cell in the detailed table.
-                rowData (dict): Data from the rows in the detailed table.
+                rowdata (dict): Data from the rows in the detailed table.
 
             Returns:
                 str: Selected identification variable.
             """
             if click:
-                return rowData[click["rowIndex"]]["observasjon_id"]
+                return rowdata[click["rowIndex"]]["observasjon_id"]

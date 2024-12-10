@@ -237,8 +237,8 @@ class VisualiseringsbyggerModule:
             y_axis: str | list,
             hover_data: str | list,
             graph_type: str,
-            rowData: list[dict],
-            columnDefs: list[dict],
+            rowdata: list[dict],
+            columndefs: list[dict],
         ) -> dict:
             """Generates a graph based on the selected columns and graph type.
 
@@ -247,8 +247,8 @@ class VisualiseringsbyggerModule:
                 y_axis (str | list): The column(s) selected for the y-axis.
                 hover_data (str | list): The column(s) to display as hover data.
                 graph_type (str): The type of graph to generate (e.g., "scatter", "bar").
-                rowData (list[dict]): The data displayed in the table.
-                columnDefs (list[dict]): The column definitions for the table.
+                rowdata (list[dict]): The data displayed in the table.
+                columndefs (list[dict]): The column definitions for the table.
 
             Returns:
                 dict: A Plotly figure dictionary.
@@ -265,8 +265,8 @@ class VisualiseringsbyggerModule:
                     and len(y_axis) > 1
                 ):
                     y_axis = y_axis[0]
-                df = pd.DataFrame(rowData)
-                columns = [col["field"] for col in columnDefs]
+                df = pd.DataFrame(rowdata)
+                columns = [col["field"] for col in columndefs]
                 df.columns = columns
                 df.fillna(0)
                 if graph_type == "scatter":
