@@ -1,3 +1,5 @@
+from collections.abc import Callable
+from typing import Any
 import datetime
 
 import dash_ag_grid as dag
@@ -53,8 +55,8 @@ class EditingTable:
         tables: list[str],
         var_input: str,
         states: list[str],
-        get_data_func: callable,
-        update_table_func: callable,
+        get_data_func: Callable[..., Any],
+        update_table_func: Callable[..., Any],
     ) -> None:
         """Initialize the EditingTable component.
 
@@ -124,7 +126,7 @@ class EditingTable:
             State(states_dict[key][0], states_dict[key][1]) for key in self.states
         ]
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("tab-tabelleditering-table1", "rowData"),
             Output("tab-tabelleditering-table1", "columnDefs"),
             Input("tab-tabelleditering-dd1", "value"),
@@ -182,7 +184,7 @@ class EditingTable:
             except Exception as e:
                 raise e
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("error_log", "children", allow_duplicate=True),
             Input("tab-tabelleditering-table1", "cellValueChanged"),
             State("tab-tabelleditering-dd1", "value"),

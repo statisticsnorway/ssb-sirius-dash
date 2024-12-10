@@ -75,11 +75,11 @@ class AarsregnskapTab:
     def callbacks(self) -> None:
         """Register Dash callbacks for the Årsregnskap tab."""
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("tab-aarsregnskap-input1", "value"),
             Input("var-aar", "value"),
         )
-        def update_aar(aar: int):
+        def update_aar(aar: int) -> int:
             """Update the year input field based on the selected year.
 
             Args:
@@ -90,11 +90,11 @@ class AarsregnskapTab:
             """
             return aar
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("tab-aarsregnskap-input2", "value"),
             Input("var-foretak", "value"),
         )
-        def update_orgnr(orgnr: str):
+        def update_orgnr(orgnr: str) -> str:
             """Update the organization number input field.
 
             Args:
@@ -105,12 +105,12 @@ class AarsregnskapTab:
             """
             return orgnr
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("tab-aarsregnskap-iframe1", "src"),
             Input("tab-aarsregnskap-input1", "value"),
             Input("tab-aarsregnskap-input2", "value"),
         )
-        def update_pdf_source(aar: int, orgnr: str):
+        def update_pdf_source(aar: int, orgnr: str) -> str | None:
             """Fetch and encode the PDF source based on the year and organization number.
 
             Args:

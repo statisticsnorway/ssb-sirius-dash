@@ -219,7 +219,7 @@ class VoFForetakTab:
             - The `vof_data` callback fetches and updates data in the cards based on the selected foretak.
         """
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("tab-vof_foretak-orgnrcard", "value"),
             Output("tab-vof_foretak-navncard", "value"),
             Output("tab-vof_foretak-nacecard", "value"),

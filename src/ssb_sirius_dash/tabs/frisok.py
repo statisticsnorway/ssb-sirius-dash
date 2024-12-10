@@ -9,7 +9,7 @@ from dash.dependencies import Output
 from dash.dependencies import State
 
 
-class FrisøkTab:
+class FrisokTab:
     """Tab for free-text SQL queries and displaying results in an AgGrid table.
 
     This class provides a layout for a tab that allows users to:
@@ -27,7 +27,7 @@ class FrisøkTab:
     """
 
     def __init__(self, database: object) -> None:
-        """Initialize the FrisøkTab with a database connection.
+        """Initialize the FrisokTab with a database connection.
 
         Args:
             database (object): Database connection or interface used for executing SQL queries.
@@ -41,7 +41,7 @@ class FrisøkTab:
         self.label = "🔍 Frisøk"
 
     def layout(self) -> html.Div:
-        """Generate the layout for the FrisøkTab.
+        """Generate the layout for the FrisokTab.
 
         Returns:
             html.Div: A Div element containing the text area for SQL queries,
@@ -80,21 +80,21 @@ class FrisøkTab:
         return layout
 
     def callbacks(self) -> None:
-        """Register the Dash callbacks for the FrisøkTab.
+        """Register the Dash callbacks for the FrisokTab.
 
         Notes:
             - This method registers a callback for executing the SQL query when the "kjør" button is clicked.
             - The results are displayed in the AgGrid table, with appropriate column definitions.
         """
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("tab-frisøk-table1", "rowData"),
             Output("tab-frisøk-table1", "columnDefs"),
             Input("tab-frisøk-button1", "n_clicks"),
             State("tab-frisøk-textarea1", "value"),
             State("tab-frisøk-input1", "value"),
         )
-        def table_frisøk(n_clicks: int, query: str, partisjoner: str) -> tuple:
+        def table_frisok(n_clicks: int, query: str, partisjoner: str) -> tuple:
             """Execute an SQL query and update the table with results.
 
             Args:
