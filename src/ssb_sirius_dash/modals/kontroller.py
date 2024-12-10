@@ -29,7 +29,25 @@ class Kontroller:
     """
 
     def __init__(self, ident: str, kvalitetsrapport_path: str) -> None:
-        """Setter opp modulen med callbacks og nødvendig informasjon fra kvalitetsrapport til å vise kontroller og kontrollutslag."""
+        """
+        Initialize the Kontroller module.
+
+        This method sets up the identification variable, loads the quality report from a JSON file,
+        and prepares data tables for control documentation and outputs.
+
+        Args:
+            ident (str): The key for the identification variable, e.g., 'orgf'.
+            kvalitetsrapport_path (str): Path to the quality report saved as a JSON file on Dapla.
+
+        Attributes Set:
+            ident (str): The resolved name of the identification variable.
+            kontrolltabell (pd.DataFrame): A table documenting the performed controls.
+            utslagstabell (pd.DataFrame): A table detailing the control outputs.
+
+        Raises:
+            FileNotFoundError: If the specified JSON file does not exist.
+            ValueError: If the quality report data is invalid or improperly formatted.
+        """
         self.ident = ident_options[0][ident]
         if kvalitetsrapport_path:
             data = Kvalitetsrapport.from_json(kvalitetsrapport_path).to_dict()
