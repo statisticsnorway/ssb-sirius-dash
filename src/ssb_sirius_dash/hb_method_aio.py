@@ -380,6 +380,7 @@ class HbMethodAIO(html.Div):  # type: ignore
         ],
     )  # type: ignore
     def update_figures_cb(
+        self,
         p_c: str,
         p_u: str,
         p_a: str,
