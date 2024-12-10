@@ -72,9 +72,9 @@ class HBMethodModule:
     def make_hb_data(
         self,
         data_df: pd.DataFrame,
-        p_c: int,
-        p_u: float,
-        p_a: float,
+        pc: int,
+        pu: float,
+        pa: float,
         ident: str,
         variable: str,
     ) -> pd.DataFrame:
@@ -82,9 +82,9 @@ class HBMethodModule:
 
         Args:
             data_df (pandas.DataFrame): Input data containing variables for analysis.
-            p_c (int): Confidence interval control parameter.
-            p_u (float): Parameter for adjusting the variable's level.
-            p_a (float): Parameter for small differences between quartiles and the median.
+            pc (int): Confidence interval control parameter.
+            pu (float): Parameter for adjusting the variable's level.
+            pa (float): Parameter for small differences between quartiles and the median.
             ident (str): Identifier field name in the dataset.
             variable (str): Name of the value variable for analysis.
 
@@ -93,9 +93,9 @@ class HBMethodModule:
         """
         hb_result = hb_method(
             data=data_df,
-            p_c=p_c,
-            p_u=p_u,
-            p_a=p_a,
+            p_c=pc,
+            p_u=pu,
+            p_a=pa,
             id_field_name=ident,
             x_1_field_name=variable,
             x_2_field_name=f"{variable}_1",
@@ -200,7 +200,7 @@ class HBMethodModule:
                                     [
                                         self._build_input_field(
                                             "Skriv inn pC",
-                                            "hb_pC",
+                                            "hb_pc",
                                             20,
                                             0,
                                             None,
@@ -208,8 +208,8 @@ class HBMethodModule:
                                             "Parameter that controls the length of the confidence interval.",
                                         ),
                                         self._build_input_field(
-                                            "Skriv inn pU",
-                                            "hb_pU",
+                                            "Skriv inn pu",
+                                            "hb_pu",
                                             0.5,
                                             0,
                                             1,
@@ -218,7 +218,7 @@ class HBMethodModule:
                                         ),
                                         self._build_input_field(
                                             "Skriv inn pA",
-                                            "hb_pA",
+                                            "hb_pa",
                                             0.05,
                                             0,
                                             1,
@@ -323,21 +323,21 @@ class HBMethodModule:
         @callback(
             Output("hb_figure", "figure"),
             Input("hb_button", "n_clicks"),
-            State("hb_pC", "value"),
-            State("hb_pU", "value"),
-            State("hb_pA", "value"),
+            State("hb_pc", "value"),
+            State("hb_pu", "value"),
+            State("hb_pa", "value"),
             *dynamic_states,
         )
         def use_hb(
-            n_click: int, pC: int, pU: float, pA: float, *dynamic_states: list
+            n_click: int, pc: int, pu: float, pa: float, *dynamic_states: list
         ) -> go.Figure:
             """Executes the HB method and updates the visualization.
 
             Args:
                 n_click (int): Number of clicks on the "Run HB Model" button.
-                pC (int): Confidence interval parameter.
-                pU (float): Parameter for variable level adjustment.
-                pA (float): Parameter for small differences between quartiles and the median.
+                pc (int): Confidence interval parameter.
+                pu (float): Parameter for variable level adjustment.
+                pa (float): Parameter for small differences between quartiles and the median.
                 *dynamic_states (list): Additional state parameters for data filtering.
 
             Returns:
@@ -364,7 +364,7 @@ class HBMethodModule:
 
             if n_click:
                 data = self.hb_get_data(self.database, *args)
-                data = self.make_hb_data(data, pC, pU, pA, selected_ident, variable)
+                data = self.make_hb_data(data, pc, pu, pa, selected_ident, variable)
                 return self.make_hb_figure(data, variable)
             else:
                 raise PreventUpdate
