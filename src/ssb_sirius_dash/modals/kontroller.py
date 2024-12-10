@@ -29,8 +29,7 @@ class Kontroller:
     """
 
     def __init__(self, ident: str, kvalitetsrapport_path: str) -> None:
-        """
-        Initialize the Kontroller module.
+        """Initialize the Kontroller module.
 
         This method sets up the identification variable, loads the quality report from a JSON file,
         and prepares data tables for control documentation and outputs.
@@ -43,10 +42,6 @@ class Kontroller:
             ident (str): The resolved name of the identification variable.
             kontrolltabell (pd.DataFrame): A table documenting the performed controls.
             utslagstabell (pd.DataFrame): A table detailing the control outputs.
-
-        Raises:
-            FileNotFoundError: If the specified JSON file does not exist.
-            ValueError: If the quality report data is invalid or improperly formatted.
         """
         self.ident = ident_options[0][ident]
         if kvalitetsrapport_path:
@@ -166,14 +161,14 @@ class Kontroller:
             State("kontroll-table-detailed", "rowData"),
         )
         def kontroll_detail_click(click: dict | None, rowdata: dict) -> str:
-            """Links clicks in the detailed control results table to select the identification variable.
+            """Links clicks in the detailed control results table to select the identification variable value.
 
             Args:
                 click (dict | None): Data about the clicked cell in the detailed table.
                 rowdata (dict): Data from the rows in the detailed table.
 
             Returns:
-                str: Selected identification variable.
+                str: Selected identification variable value.
             """
             if click:
                 return rowdata[click["rowIndex"]]["observasjon_id"]
