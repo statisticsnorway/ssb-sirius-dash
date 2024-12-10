@@ -75,7 +75,7 @@ class KvalitetsindikatorerModule:
     def callbacks(self) -> None:
         """Registers callbacks to enable the modal to be opened and closed."""
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("kvalitetsindikatorer-modal", "is_open"),
             Input("sidebar-kvalitetsindikatorer-button", "n_clicks"),
             State("kvalitetsindikatorer-modal", "is_open"),
@@ -240,7 +240,7 @@ class KvalitetsindikatorEditeringsandel:
     def callbacks(self) -> None:
         """Sets up callbacks for opening the detail view and selecting grouping for details."""
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("editeringsandel-modal", "is_open"),
             Input("kvalitet-editeringsandel-button-details", "n_clicks"),
             State("editeringsandel-modal", "is_open"),
@@ -259,7 +259,7 @@ class KvalitetsindikatorEditeringsandel:
                 return not is_open
             return is_open
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("kvalitet-editeringsandel-details", "children"),
             Input("kvalitet-editeringsandel-dropdown", "value"),
         )
@@ -445,7 +445,7 @@ class KvalitetsindikatorKontrollutslagsandel:
     def callbacks(self) -> None:
         """Sets up callbacks for opening and closing the detailed view."""
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("kontrollutslagsandel-modal", "is_open"),
             Input("kvalitet-kontrollutslagsandel-button-details", "n_clicks"),
             State("kontrollutslagsandel-modal", "is_open"),
@@ -619,7 +619,7 @@ class KvalitetsindikatorEffektaveditering:
     def callbacks(self) -> None:
         """Sets up callbacks for opening and closing the detailed view."""
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("effekt-modal", "is_open"),
             Input("kvalitet-effekt-button-details", "n_clicks"),
             State("effekt-modal", "is_open"),
@@ -638,7 +638,7 @@ class KvalitetsindikatorEffektaveditering:
                 return not is_open
             return is_open
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("kvalitet-effekt-details", "children"),
             Input("kvalitet-effekt-dropdown", "value"),
         )
@@ -825,7 +825,7 @@ class KvalitetsindikatorTreffsikkerhet:
     def callbacks(self) -> None:
         """Sets up callbacks for opening and closing the detailed view."""
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("treffsikkerhet-modal", "is_open"),
             Input("kvalitet-treffsikkerhet-button-details", "n_clicks"),
             State("treffsikkerhet-modal", "is_open"),
