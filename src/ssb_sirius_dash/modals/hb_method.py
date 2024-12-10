@@ -374,7 +374,7 @@ class HBMethodModule:
             Input("sidebar-hb-button", "n_clicks"),
             State("hb-modal", "is_open"),
         )
-        def sqlmodal_toggle(n: int, is_open: bool) -> bool:
+        def hbmodal_toggle(n: int, is_open: bool) -> bool:
             """Toggles the state of the modal window.
 
             Args:
