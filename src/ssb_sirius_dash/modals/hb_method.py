@@ -152,7 +152,7 @@ class HBMethodModule:
         Returns:
             dash.html.Div: Div containing the modal and interactive elements for the HB method.
         """
-        infoboks = html.Div(
+        infobox = html.Div(
             [
                 dbc.Modal(
                     [
@@ -162,7 +162,7 @@ class HBMethodModule:
                         ),
                         dbc.ModalFooter(
                             html.Button(
-                                "Close", id="close", className="ms-auto", n_clicks=0
+                                "Lukk", id="close", className="ms-auto", n_clicks=0
                             )
                         ),
                     ],
@@ -179,7 +179,7 @@ class HBMethodModule:
                         dbc.ModalHeader(dbc.ModalTitle("HB-metoden")),
                         dbc.ModalBody(
                             [
-                                dbc.Row(infoboks),
+                                dbc.Row(infobox),
                                 dbc.Row(
                                     [
                                         dbc.Col(
