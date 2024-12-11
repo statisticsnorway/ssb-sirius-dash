@@ -215,7 +215,7 @@ class PimemorizerTab:
               and the current sequence, score, and high score.
         """
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("text-box", "value"),
             Output("score", "value"),
             Output("highscore", "value"),
@@ -238,7 +238,7 @@ class PimemorizerTab:
             current_score: int,
             high_score: int,
             current_value: str,
-        ) -> tuple:
+        ) -> tuple[str, int, int]:
             """Update the input sequence, score, and high score based on user interaction.
 
             Args:
@@ -262,7 +262,7 @@ class PimemorizerTab:
 
             ctx = callback_context
             if not ctx.triggered:
-                return current_value, current_score
+                return current_value, current_score, current_score
 
             button_id = ctx.triggered[0]["prop_id"].split(".")[0]
 

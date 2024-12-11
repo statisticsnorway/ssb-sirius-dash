@@ -111,7 +111,7 @@ class Kontroller:
     def callbacks(self) -> None:
         """Sets up interactivity for the Kontroller modal, including linking table clicks and navigation back to the main view."""
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("kontroller-modal", "is_open"),
             Input("sidebar-kontroller-button", "n_clicks"),
             State("kontroller-modal", "is_open"),
@@ -130,7 +130,7 @@ class Kontroller:
                 return not is_open
             return is_open
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("kontroll-table-detailed", "filterModel"),
             Input("kontroll-table-overview", "cellClicked"),
             State("kontroll-table-overview", "rowData"),
@@ -155,7 +155,7 @@ class Kontroller:
                     }
                 }
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output(self.ident[0], self.ident[1]),
             Input("kontroll-table-detailed", "cellClicked"),
             State("kontroll-table-detailed", "rowData"),

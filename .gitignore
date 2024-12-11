@@ -204,3 +204,6 @@ rsconnect/
 
 # ignore poetry in .config
 .poetry/**
+
+# PyCharm
+.idea/
