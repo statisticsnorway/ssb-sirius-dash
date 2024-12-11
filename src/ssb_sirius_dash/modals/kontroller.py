@@ -111,10 +111,11 @@ class Control:
     def callbacks(self) -> None:
         """Sets up interactivity for the control modal, including linking table clicks and navigation back to the main view."""
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("control-modal", "is_open"),
             Input("sidebar-control-button", "n_clicks"),
             State("control-modal", "is_open"),
+
         )
         def controlmodal_toggle(n: int | None, is_open: bool) -> bool:
             """Toggles the open/close state of the control modal.
@@ -130,7 +131,7 @@ class Control:
                 return not is_open
             return is_open
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("control-table-detailed", "filterModel"),
             Input("control-table-overview", "cellClicked"),
             State("control-table-overview", "rowData"),
@@ -155,7 +156,7 @@ class Control:
                     }
                 }
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output(self.ident[0], self.ident[1]),
             Input("control-table-detailed", "cellClicked"),
             State("control-table-detailed", "rowData"),

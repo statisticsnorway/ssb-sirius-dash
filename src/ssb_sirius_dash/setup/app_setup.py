@@ -1,3 +1,5 @@
+from typing import Any
+
 import dash_bootstrap_components as dbc
 from dash import Dash
 from dash import Input
@@ -51,12 +53,12 @@ def app_setup(port: int, service_prefix: str, domain: str, stylesheet: str) -> D
         external_stylesheets=[theme_map[stylesheet], dbc_css],
     )
 
-    @app.callback(
+    @app.callback(  # type: ignore[misc]
         Output("main-varvelger", "style"),
         Input("sidebar-varvelger-button", "n_clicks"),
         State("main-varvelger", "style"),
     )
-    def toggle_varvelger(n_clicks: int, style: dict[str, any]) -> dict[str, any]:
+    def toggle_varvelger(n_clicks: int, style: dict[str, Any]) -> dict[str, Any]:
         """Toggle the visibility of the `main-varvelger` component.
 
         Args:

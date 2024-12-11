@@ -88,7 +88,7 @@ def kontroll(
 
     def decorator(control_function: Callable) -> Callable:
         @wraps(control_function)
-        def wrapper(data: pd.DataFrame):
+        def wrapper(data: pd.DataFrame) -> pd.DataFrame:
             data = data.copy()
             if "utslag" in data.columns:
                 data = data.drop(columns=["utslag"])
@@ -166,10 +166,10 @@ class Kvalitetsrapport:
         quality_control_id: str,
         data_location: list[str],
         data_period: str,
-        quality_control_datetime: datetime,
+        quality_control_datetime: datetime.datetime,
         quality_control_results: list[Kontrolltype],
         quality_control_errors: list[Feilrapport],
-        quality_control_documentation: dict[str:str] | None = None,
+        quality_control_documentation: dict[str, str] | None = None,
     ) -> None:
         """Initialize the quality control report."""
         self.statistics_name = statistics_name
