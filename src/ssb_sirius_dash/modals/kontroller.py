@@ -1,3 +1,5 @@
+import logging
+
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -6,12 +8,16 @@ from dash import Output
 from dash import State
 from dash import callback
 from dash import html
+from dash.exceptions import PreventUpdate
 
 from ..control.framework import Kvalitetsrapport
 from ..control.framework import lag_kontroll_dokumentasjon
 from .modal_functions import sidebar_button
 
 # +
+
+logger = logging.getLogger(__name__)
+
 ident_options = [
     {
         "orgb": ("var-bedrift", "value"),
@@ -144,16 +150,21 @@ class Kontroller:
 
             Returns:
                 dict: Filter model to apply to the detailed results table.
+
+            Raises:
+                PreventUpdate: Stops the callback if click is None.
             """
-            if click:
-                kontroll = rowdata[click["rowIndex"]]["kontroll_id"]
-                return {
-                    "kontrollnavn": {
-                        "filterType": "text",
-                        "type": "contains",
-                        "filter": kontroll,
-                    }
+            if not click:
+                raise PreventUpdate
+
+            kontroll = rowdata[click["rowIndex"]]["kontroll_id"]
+            return {
+                "kontrollnavn": {
+                    "filterType": "text",
+                    "type": "contains",
+                    "filter": kontroll,
                 }
+            }
 
         @callback(  # type: ignore[misc]
             Output(self.ident[0], self.ident[1]),
@@ -169,6 +180,15 @@ class Kontroller:
 
             Returns:
                 str: Selected identification variable value.
+
+            Raises:
+                PreventUpdate: Stops the callback if click is None.
             """
-            if click:
-                return rowdata[click["rowIndex"]]["observasjon_id"]
+            if not click:
+                raise PreventUpdate
+            observation = rowdata[click["rowIndex"]]["observasjon_id"]
+            if not isinstance(observation, str):
+                logger.warning(
+                    f"observation_id should be str, is {type(observation).__name__}"
+                )
+            return str(observation)
