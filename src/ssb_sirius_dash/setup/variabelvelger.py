@@ -17,7 +17,10 @@ variable_options = {
 
 
 def skjermcard(
-    text: str, component_id: str, input_type: str, value: str | None = None
+    text: str,
+    component_id: str,
+    input_type: str,
+    value: str | int | float | None = None,
 ) -> dbc.Col:
     """Generate a Dash Bootstrap card with an input field.
 
@@ -56,7 +59,7 @@ def skjermcard(
 
 
 def generate_skjermcards(
-    selected_keys: list[str], default_values: dict[str, (str, float, int)] | None = None
+    selected_keys: list[str], default_values: dict[str, str | float | int] | None = None
 ) -> list[dbc.Col]:
     """Generate a list of Dash Bootstrap cards based on selected variable keys.
 
@@ -70,6 +73,11 @@ def generate_skjermcards(
     Returns:
         list[dbc.Col]: A list of cards, each represented as a Dash Bootstrap column.
 
+    Raises:
+        KeyError: If any required key ('title', 'id', 'type') is missing in `variable_options` for a selected key.
+        ValueError: If the `value` provided in `default_values` is not of a supported type.
+
+
     Notes:
         - The `variable_options` dictionary provides configuration for each card, including its title, ID, and type.
         - If `selected_keys` includes keys not found in `variable_options`, those keys are ignored.
@@ -78,12 +86,29 @@ def generate_skjermcards(
         default_values = {}
     cards_list = []
     for key in selected_keys:
-        card_config = variable_options.get(key, {})
-        title = card_config.get("title")
-        card_id = card_config.get("id")
-        card_type = card_config.get("type")
-        value = default_values.get(key, None)
+        card_config = variable_options.get(key)
+        if card_config is None:
+            raise KeyError(
+                f"Key '{key}' not found in variable_options. Accepted values are: {variable_options.keys()}"
+            )
 
-        card = skjermcard(title, card_id, card_type, value)
+        title = card_config.get("title")
+        if title is None:
+            raise KeyError(f"Key 'title' is missing in configuration for '{key}'")
+        card_id = card_config.get("id")
+        if card_id is None:
+            raise KeyError(f"Key 'id' is missing in configuration for '{key}'")
+        card_type = card_config.get("type")
+        if card_type is None:
+            raise KeyError(f"Key 'type' is missing in configuration for '{key}'")
+        value = default_values.get(key, None)
+        if value is not None and not isinstance(value, (str | float | int)):
+            raise ValueError(
+                f"Value for '{key}' must be of type str, float or int. Got {type(value).__name__}"
+            )
+
+        card = skjermcard(
+            text=title, component_id=card_id, input_type=card_type, value=value
+        )
         cards_list.append(card)
     return cards_list
