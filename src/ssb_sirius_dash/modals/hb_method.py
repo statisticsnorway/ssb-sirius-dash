@@ -208,7 +208,7 @@ class HBMethodModule:
                                             "Parameter that controls the length of the confidence interval.",
                                         ),
                                         self._build_input_field(
-                                            "Skriv inn pu",
+                                            "Skriv inn pU",
                                             "hb_pu",
                                             0.5,
                                             0,
