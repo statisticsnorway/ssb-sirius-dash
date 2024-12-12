@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Any
 
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
@@ -29,12 +30,20 @@ class KvalitetsindikatorerModule:
         `ident`, `variabel`, and `verdi` as columns.
     """
 
-    def __init__(self, indicators: list) -> None:
+    def __init__(self, indicators: list[Any]) -> None:
         """Initializes the quality indicator module with all selected indicators.
 
         Args:
-            indicators (list): A list of quality indicator objects.
+            indicators (list): A list of quality indicator class objects.
+
+        Raises:
+            TypeError: If provided indicator does not have the attribute 'card'.
         """
+        for indicator in indicators:
+            if not hasattr(indicator, "card"):
+                raise TypeError(
+                    f"Object '{type(indicator)}' has no attribute 'card', which is necessary for the indicator to be rendered in the layout."
+                )
         self.indicators = indicators
         self.callbacks()
 
@@ -110,8 +119,8 @@ class KvalitetsindikatorEditeringsandel:
 
     def __init__(
         self,
-        get_current_data_func: Callable,
-        get_change_data_func: Callable,
+        get_current_data_func: Callable[..., pd.DataFrame],
+        get_change_data_func: Callable[..., pd.DataFrame],
         var_name: str,
         ident_var: str,
         grouping_vars: list[str] | None = None,
@@ -208,7 +217,7 @@ class KvalitetsindikatorEditeringsandel:
         """
         total = pd.DataFrame(self.get_current_data().agg({self.ident_var: "nunique"}))
         changes = pd.DataFrame(self.get_change_data().agg({self.ident_var: "nunique"}))
-        return (changes / total * 100).iloc[0][0]
+        return float((changes / total * 100).iloc[0][0])
 
     def editeringsandel_details(self, group: list[str] | str) -> pd.DataFrame:
         """Calculates the editing ratio for different subsets of the dataset.
@@ -276,7 +285,7 @@ class KvalitetsindikatorEditeringsandel:
                 PreventUpdate: If no grouping_var the callback doesn't trigger.
             """
             if grouping_var:
-                detail_data = self.editeringsandel_details(grouping_var, self.periode)
+                detail_data = self.editeringsandel_details(grouping_var)
                 return dcc.Graph(
                     figure=px.bar(
                         detail_data,
@@ -479,12 +488,12 @@ class KvalitetsindikatorEffektaveditering:
 
     def __init__(
         self,
-        get_current_data_func: Callable,
-        get_original_data_func: Callable,
+        get_current_data_func: Callable[..., pd.DataFrame],
+        get_original_data_func: Callable[..., pd.DataFrame],
         periode: str | int,  # TODO sjekk dette
         ident_var: str,
         key_vars: list[str],
-        grouping_vars: list[str],
+        grouping_vars: str | list[str],
     ) -> None:
         """Initializes the view for the effect of editing in the quality indicator modal.
 
@@ -575,7 +584,7 @@ class KvalitetsindikatorEffektaveditering:
         )
 
     def get_comparison_data(
-        self, periode: str | int, grouping: list[str] | None = None
+        self, periode: str | int, grouping: str | list[str] | None = None
     ) -> pd.DataFrame:
         """Calculates the effect of editing using the provided functions.
 
@@ -686,7 +695,7 @@ class KvalitetsindikatorTreffsikkerhet:
 
     def __init__(
         self,
-        get_edits_list_func: Callable,
+        get_edits_list_func: Callable[..., list[tuple[str, str]]],
         kvalitetsrapport: Kvalitetsrapport | None = None,
         kvalitetsrapport_path: str | None = None,
     ) -> None:
@@ -694,7 +703,7 @@ class KvalitetsindikatorTreffsikkerhet:
 
         Args:
             get_edits_list_func (Callable):
-                Function to fetch the list of edits made to the data.
+                Function to fetch the list of edits made to the data. The list must contain tuples, which contain the identification variable of the observation that has been changed and the variable that was changed.
             kvalitetsrapport (Kvalitetsrapport | None):
                 Quality report for calculations.
             kvalitetsrapport_path (str | None):
@@ -786,7 +795,7 @@ class KvalitetsindikatorTreffsikkerhet:
 
         self.callbacks()
 
-    def beregn_treffsikkerhet(self) -> dict:
+    def beregn_treffsikkerhet(self) -> dict[str, float]:
         """Calculates the accuracy indicator based on the quality report.
 
         Returns:

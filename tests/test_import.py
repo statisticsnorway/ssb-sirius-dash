@@ -4,7 +4,7 @@ from importlib.util import find_spec
 import pytest
 
 
-def test_package_import():
+def test_package_import() -> None:
     spec = find_spec("ssb_sirius_dash")
     assert spec is not None, "ssb_sirius_dash module not found"
 
@@ -14,7 +14,7 @@ def test_package_import():
         pytest.fail(f"Failed to import ssb_sirius_dash: {e}")
 
 
-def test_top_level_access():
+def test_top_level_access() -> None:
     import ssb_sirius_dash
 
     assert hasattr(
@@ -23,7 +23,7 @@ def test_top_level_access():
     assert callable(ssb_sirius_dash.main_layout), "main_layout is not callable"
 
 
-def test_submodule_existence():
+def test_submodule_existence() -> None:
     modules_to_check = [
         "ssb_sirius_dash.modals.hb_method",
         "ssb_sirius_dash.setup.main_layout",
@@ -45,7 +45,7 @@ def test_submodule_existence():
         ("ssb_sirius_dash.control.framework", "Kvalitetsrapport"),
     ],
 )
-def test_specific_imports(module_path, symbol):
+def test_specific_imports(module_path: str, symbol: str) -> None:
     try:
         # Dynamically construct the import statement
         exec(f"from {module_path} import {symbol}")

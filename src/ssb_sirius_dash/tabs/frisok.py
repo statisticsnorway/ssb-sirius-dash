@@ -1,4 +1,5 @@
 import ast
+from typing import Any
 
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
@@ -7,6 +8,7 @@ from dash import html
 from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
+from dash.exceptions import PreventUpdate
 
 
 class FrisokTab:
@@ -35,7 +37,12 @@ class FrisokTab:
         Attributes:
             database (object): The provided database connection or interface.
             label (str): Label for the tab, set to "🔍 Frisøk".
+
+        Raises:
+            TypeError: If database does not have a query method an error is raised, as this module assumes database.query(sql_query) is possible.
         """
+        if not hasattr(database, "query"):
+            raise TypeError("The provided object does not have a 'query' method.")
         self.database = database
         self.callbacks()
         self.label = "🔍 Frisøk"
@@ -94,7 +101,9 @@ class FrisokTab:
             State("tab-frisøk-textarea1", "value"),
             State("tab-frisøk-input1", "value"),
         )
-        def table_frisok(n_clicks: int, query: str, partisjoner: str) -> tuple:
+        def table_frisok(
+            n_clicks: int, query: str, partisjoner: str
+        ) -> tuple[list[dict[str, Any]], list[dict[str, str | bool]]]:
             """Execute an SQL query and update the table with results.
 
             Args:
@@ -108,19 +117,23 @@ class FrisokTab:
                     - rowData (list[dict]): Records to display in the table.
                     - columnDefs (list[dict]): Column definitions for the table.
 
+            Raises:
+                PreventUpdate: If click is None.
+
             Notes:
                 - Column definitions hide the "row_id" column by default, if present.
             """
-            if n_clicks:
-                if partisjoner is not None:
-                    partisjoner = ast.literal_eval(partisjoner)
-                df = self.database.query(query, partition_select=partisjoner)
-                columns = [
-                    {
-                        "headerName": col,
-                        "field": col,
-                        "hide": True if col == "row_id" else False,
-                    }
-                    for col in df.columns
-                ]
-                return df.to_dict("records"), columns
+            if not n_clicks:
+                raise PreventUpdate
+            if partisjoner is not None:
+                partisjoner = ast.literal_eval(partisjoner)
+            df = self.database.query(query, partition_select=partisjoner)
+            columns = [
+                {
+                    "headerName": col,
+                    "field": col,
+                    "hide": True if col == "row_id" else False,
+                }
+                for col in df.columns
+            ]
+            return df.to_dict("records"), columns

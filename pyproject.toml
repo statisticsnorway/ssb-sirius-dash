@@ -69,6 +69,7 @@ show_missing = true
 fail_under = 50
 
 [tool.mypy]
+ignore_missing_imports = true
 strict = true
 warn_unreachable = true
 pretty = true
