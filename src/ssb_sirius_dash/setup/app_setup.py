@@ -5,6 +5,7 @@ from dash import Dash
 from dash import Input
 from dash import Output
 from dash import State
+from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 
 theme_map = {
@@ -67,12 +68,16 @@ def app_setup(port: int, service_prefix: str, domain: str, stylesheet: str) -> D
 
         Returns:
             dict: Updated style dictionary for `main-varvelger`.
+
+        Raises:
+            PreventUpdate: If click is None.
         """
-        if n_clicks:
-            if style == {"display": "none"}:
-                style = {}
-            else:
-                style = {"display": "none"}
-            return style
+        if not n_clicks:
+            raise PreventUpdate
+        if style == {"display": "none"}:
+            style = {}
+        else:
+            style = {"display": "none"}
+        return style
 
     return app
