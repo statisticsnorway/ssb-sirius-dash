@@ -1,4 +1,6 @@
 import logging
+from typing import Any
+from typing import cast
 
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
@@ -141,7 +143,10 @@ class Kontroller:
             Input("kontroll-table-overview", "cellClicked"),
             State("kontroll-table-overview", "rowData"),
         )
-        def kontroll_main_click(click: dict | None, rowdata: dict) -> dict:
+        def kontroll_main_click(
+            click: dict[str, int | dict[str, Any] | None] | None,
+            rowdata: list[dict[str, Any]],
+        ) -> dict[str, dict[str, str]]:
             """Links clicks on the control overview table to filter the detailed control results table.
 
             Args:
@@ -154,10 +159,13 @@ class Kontroller:
             Raises:
                 PreventUpdate: Stops the callback if click is None.
             """
-            if not click:
+            if not click or not isinstance(click.get("rowIndex"), int):
                 raise PreventUpdate
-
-            kontroll = rowdata[click["rowIndex"]]["kontroll_id"]
+            row_index = cast(int, click["rowIndex"])
+            try:
+                kontroll = rowdata[row_index]["kontroll_id"]
+            except (IndexError, KeyError) as e:
+                raise PreventUpdate from e
             return {
                 "kontrollnavn": {
                     "filterType": "text",
@@ -171,7 +179,10 @@ class Kontroller:
             Input("kontroll-table-detailed", "cellClicked"),
             State("kontroll-table-detailed", "rowData"),
         )
-        def kontroll_detail_click(click: dict | None, rowdata: dict) -> str:
+        def kontroll_detail_click(
+            click: dict[str, int | dict[str, Any] | None] | None,
+            rowdata: list[dict[str, Any]],
+        ) -> str:
             """Links clicks in the detailed control results table to select the identification variable value.
 
             Args:
@@ -184,9 +195,15 @@ class Kontroller:
             Raises:
                 PreventUpdate: Stops the callback if click is None.
             """
-            if not click:
+            if not click or not isinstance(click.get("rowIndex"), int):
                 raise PreventUpdate
-            observation = rowdata[click["rowIndex"]]["observasjon_id"]
+
+            row_index = cast(int, click["rowIndex"])
+            try:
+                observation = rowdata[row_index]["observasjon_id"]
+            except (IndexError, KeyError) as e:
+                raise PreventUpdate from e
+
             if not isinstance(observation, str):
                 logger.warning(
                     f"observation_id should be str, is {type(observation).__name__}"
