@@ -235,7 +235,11 @@ class VoFForetakTab:
             Input("var-foretak", "value"),
             State("var-aar", "value"),  # Is not used in this iteration
         )
-        def vof_data(orgf: str, aar: int) -> tuple:
+        def vof_data(
+            orgf: str, aar: int
+        ) -> tuple[
+            str, str, str, str, int, str, str, str, str, int, str, str
+        ]:  # Må dobbeltsjekke at datatyper for ansatte og ansatte_tot skal være int.
             """Fetch VoF Foretak data based on the selected organization number.
 
             Args:
@@ -260,12 +264,12 @@ class VoFForetakTab:
                 navn = df["navn"][0]
                 nace = df["sn07_1"][0]
                 statuskode = df["statuskode"][0]
-                ansatte = df["antall_ansatte"][0]
+                ansatte = int(df["antall_ansatte"][0])
                 sektor = df["sektor_2014"][0]
                 kommune = df["f_kommunenr"][0]
                 orgform = df["org_form"][0]
                 størrelse = "S (placeholder)"
-                ansatte_tot = df["ansatte_totalt"][0]
+                ansatte_tot = int(df["ansatte_totalt"][0])
                 undersektor = df["undersektor_2014"][0]
                 typen = df["sf_type"][0]
                 return (
