@@ -123,7 +123,6 @@ class Control:
             Output("control-modal", "is_open"),
             Input("sidebar-control-button", "n_clicks"),
             State("control-modal", "is_open"),
-
         )
         def controlmodal_toggle(n: int | None, is_open: bool) -> bool:
             """Toggles the open/close state of the control modal.
@@ -144,7 +143,6 @@ class Control:
             Input("control-table-overview", "cellClicked"),
             State("control-table-overview", "rowData"),
         )
-
         def control_main_click(
             click: dict[str, int | dict[str, Any] | None] | None,
             rowdata: list[dict[str, Any]],
