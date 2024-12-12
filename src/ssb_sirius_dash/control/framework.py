@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 from collections.abc import Callable
 from enum import Enum
 from functools import wraps
@@ -8,8 +9,9 @@ from typing import Any
 import dapla as dp
 import pandas as pd
 
+logger = logging.getLogger(__name__)
+
 error_list: list[Any] = []
-corrections_list: list[Any] = []
 kontroll_dokumentasjon: dict[str, Any] = {}
 
 
@@ -67,9 +69,9 @@ def kontroll(
     result_type: Kontrolltype,
     error_description: str,
     id_column: str,
-    filter_for_relevant_data: Callable | None = None,
-    important_variables: list | None = None,
-) -> Callable:
+    filter_for_relevant_data: Callable[[pd.DataFrame], pd.DataFrame] | None = None,
+    important_variables: list[str] | None = None,
+) -> Callable[[pd.DataFrame], pd.DataFrame]:
     """Decorator to define a quality control function.
 
     Args:
@@ -86,7 +88,9 @@ def kontroll(
         Assumes all data given to the function is data that should be checked.
     """
 
-    def decorator(control_function: Callable) -> Callable:
+    def decorator(
+        control_function: Callable[[pd.DataFrame], pd.DataFrame]
+    ) -> Callable[[pd.DataFrame], pd.DataFrame]:
         @wraps(control_function)
         def wrapper(data: pd.DataFrame) -> pd.DataFrame:
             data = data.copy()
@@ -315,7 +319,7 @@ def lag_kvalitetsrapport(
         if any(error.result_type == i for error in control_errors):
             quality_results.append(i)
     if not any(quality_results):
-        quality_results.append(Kontrolltype.OK)
+        logger.info("No errors listed")
 
     report = Kvalitetsrapport(
         statistics_name=statistics_name,
@@ -325,7 +329,6 @@ def lag_kvalitetsrapport(
         quality_control_datetime=datetime.datetime.now(),
         quality_control_results=quality_results,
         quality_control_errors=error_list,
-        corrections=corrections_list,
     )
 
     if also_return_control_docs:
@@ -335,7 +338,7 @@ def lag_kvalitetsrapport(
 
 
 def lag_kontroll_dokumentasjon(
-    kvalitetsrapport: Kvalitetsrapport | dict,
+    kvalitetsrapport: Kvalitetsrapport | dict[str, Any],
 ) -> pd.DataFrame:
     """Create control documentation.
 
