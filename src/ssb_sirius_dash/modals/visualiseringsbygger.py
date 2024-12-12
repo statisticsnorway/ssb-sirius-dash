@@ -1,13 +1,17 @@
+from typing import Any
+
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from dash import callback
 from dash import dcc
 from dash import html
 from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
+from dash.exceptions import PreventUpdate
 
 from .modal_functions import sidebar_button
 
@@ -24,7 +28,12 @@ class VisualiseringsbyggerModule:
 
         Args:
             database (object): The database connection or interface used for querying data.
+
+        Raises:
+            TypeError: If database object does not have query method.
         """
+        if not hasattr(database, "query"):
+            raise TypeError("The provided object does not have a 'query' method.")
         self.database = database
         self.callbacks()
 
@@ -204,7 +213,13 @@ class VisualiseringsbyggerModule:
             Input("sql-button", "n_clicks"),
             State("sqlmodal-textarea", "value"),
         )
-        def sql_query(n_clicks: int, value: str) -> tuple:
+        def sql_query(n_clicks: int, value: str) -> tuple[
+            list[dict[str, Any]],
+            list[dict[str, str]],
+            list[dict[str, str]],
+            list[dict[str, str]],
+            list[dict[str, str]],
+        ]:
             """Executes an SQL query and updates table data and dropdown options.
 
             Args:
@@ -216,12 +231,16 @@ class VisualiseringsbyggerModule:
                     - rowData (list[dict]): The table data.
                     - columnDefs (list[dict]): The column definitions for the table.
                     - x, y, hover options (list[dict]): Dropdown options for graph axes and hover data.
+
+            Raises:
+                PreventUpdate: If n_clicks is None.
             """
-            if n_clicks:
-                df = self.database.query(f"""{value}""")
-                options = [{"label": col, "value": col} for col in df.columns]
-                columns = [{"headerName": col, "field": col} for col in df.columns]
-                return df.to_dict("records"), columns, options, options, options
+            if not n_clicks:
+                raise PreventUpdate
+            df = self.database.query(f"""{value}""")
+            options = [{"label": col, "value": col} for col in df.columns]
+            columns = [{"headerName": col, "field": col} for col in df.columns]
+            return df.to_dict("records"), columns, options, options, options
 
         @callback(  # type: ignore[misc]
             Output("sql-graph1", "figure"),
@@ -233,13 +252,13 @@ class VisualiseringsbyggerModule:
             State("sql-output-table", "columnDefs"),
         )
         def update_graph(
-            x_axis: str | list,
-            y_axis: str | list,
-            hover_data: str | list,
+            x_axis: str | list[str],
+            y_axis: str | list[str],
+            hover_data: str | list[dict[str, Any]],
             graph_type: str,
-            rowdata: list[dict],
-            columndefs: list[dict],
-        ) -> dict:
+            rowdata: list[dict[str, Any]],
+            columndefs: list[dict[str, str]],
+        ) -> dict[Any, Any] | go.Figure:
             """Generates a graph based on the selected columns and graph type.
 
             Args:
@@ -251,7 +270,7 @@ class VisualiseringsbyggerModule:
                 columndefs (list[dict]): The column definitions for the table.
 
             Returns:
-                dict: A Plotly figure dictionary.
+                dict | go.Figure: A Plotly figure or an empty dict.
             """
             if x_axis and y_axis:
                 if isinstance(x_axis, list) and len(x_axis) == 1:

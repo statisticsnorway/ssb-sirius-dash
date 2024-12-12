@@ -1,3 +1,7 @@
+import logging
+from typing import Any
+from typing import cast
+
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -6,12 +10,16 @@ from dash import Output
 from dash import State
 from dash import callback
 from dash import html
+from dash.exceptions import PreventUpdate
 
 from ..control.framework import Kvalitetsrapport
 from ..control.framework import lag_kontroll_dokumentasjon
 from .modal_functions import sidebar_button
 
 # +
+
+logger = logging.getLogger(__name__)
+
 ident_options = [
     {
         "orgb": ("var-bedrift", "value"),
@@ -136,7 +144,11 @@ class Control:
             Input("control-table-overview", "cellClicked"),
             State("control-table-overview", "rowData"),
         )
-        def control_main_click(click: dict | None, rowdata: dict) -> dict:
+
+        def control_main_click(
+            click: dict[str, int | dict[str, Any] | None] | None,
+            rowdata: list[dict[str, Any]],
+        ) -> dict[str, dict[str, str]]:
             """Links clicks on the control overview table to filter the detailed control results table.
 
             Args:
@@ -145,23 +157,34 @@ class Control:
 
             Returns:
                 dict: Filter model to apply to the detailed results table.
+
+            Raises:
+                PreventUpdate: Stops the callback if click is None.
             """
-            if click:
-                kontroll = rowdata[click["rowIndex"]]["kontroll_id"]
-                return {
-                    "kontrollnavn": {
-                        "filterType": "text",
-                        "type": "contains",
-                        "filter": kontroll,
-                    }
+            if not click or not isinstance(click.get("rowIndex"), int):
+                raise PreventUpdate
+            row_index = cast(int, click["rowIndex"])
+            try:
+                kontroll = rowdata[row_index]["kontroll_id"]
+            except (IndexError, KeyError) as e:
+                raise PreventUpdate from e
+            return {
+                "kontrollnavn": {
+                    "filterType": "text",
+                    "type": "contains",
+                    "filter": kontroll,
                 }
+            }
 
         @callback(  # type: ignore[misc]
             Output(self.ident[0], self.ident[1]),
             Input("control-table-detailed", "cellClicked"),
             State("control-table-detailed", "rowData"),
         )
-        def control_detail_click(click: dict | None, rowdata: dict) -> str:
+        def control_detail_click(
+            click: dict[str, int | dict[str, Any] | None] | None,
+            rowdata: list[dict[str, Any]],
+        ) -> str:
             """Links clicks in the detailed control results table to select the identification variable value.
 
             Args:
@@ -170,6 +193,21 @@ class Control:
 
             Returns:
                 str: Selected identification variable value.
+
+            Raises:
+                PreventUpdate: Stops the callback if click is None.
             """
-            if click:
-                return rowdata[click["rowIndex"]]["observasjon_id"]
+            if not click or not isinstance(click.get("rowIndex"), int):
+                raise PreventUpdate
+
+            row_index = cast(int, click["rowIndex"])
+            try:
+                observation = rowdata[row_index]["observasjon_id"]
+            except (IndexError, KeyError) as e:
+                raise PreventUpdate from e
+
+            if not isinstance(observation, str):
+                logger.warning(
+                    f"observation_id should be str, is {type(observation).__name__}"
+                )
+            return str(observation)

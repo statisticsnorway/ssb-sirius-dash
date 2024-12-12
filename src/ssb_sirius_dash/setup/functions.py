@@ -42,7 +42,10 @@ def skjermcard(
 
 
 def sidebar_button(
-    icon: str, text: str, component_id: str, additional_styling: dict | None = None
+    icon: str,
+    text: str,
+    component_id: str,
+    additional_styling: dict[str, str] | None = None,
 ) -> html.Div:
     """Generate a sidebar button with an icon and label.
 

@@ -86,11 +86,11 @@ class AlertHandler:
     def callbacks(self) -> None:
         """Define and register the Dash callbacks for the alert modal and alerts."""
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("sidebar-feilmeldinger-button", "children"),
             Input("error_log", "children"),
         )
-        def feilmelding_update_button_label(feilmeldinger: list) -> str:
+        def feilmelding_update_button_label(feilmeldinger: list[dbc.Alert]) -> str:
             """Updates the label on the button for opening error logs with the current number of errors.
 
             Args:
@@ -101,7 +101,7 @@ class AlertHandler:
             """
             return f"Feilmeldinger: {len(feilmeldinger)}"
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("feilmeldinger-modal", "is_open"),
             Input("sidebar-feilmeldinger-button", "n_clicks"),
             State("feilmeldinger-modal", "is_open"),
@@ -120,7 +120,7 @@ class AlertHandler:
                 return not is_open
             return is_open
 
-        @callback(
+        @callback(  # type: ignore[misc]
             Output("error_log", "children"),
             [
                 Input("error_log_button_show_all", "n_clicks"),
@@ -135,7 +135,7 @@ class AlertHandler:
             show_info: int | None,
             show_warning: int | None,
             show_danger: int | None,
-            current_alerts: list[dict] | None,
+            current_alerts: list[dbc.Alert] | None,
         ) -> list[dbc.Alert]:
             """Filter alerts based on the button clicked.
 
@@ -144,7 +144,7 @@ class AlertHandler:
                 show_info (int | None): Clicks for "Show Info" button.
                 show_warning (int | None): Clicks for "Show Warning" button.
                 show_danger (int | None): Clicks for "Show Danger" button.
-                current_alerts (list[dict] | None): Current list of alerts.
+                current_alerts (list[dbc.Alert] | None): Current list of alerts.
 
             Returns:
                 list[dbc.Alert]: Filtered alerts as a list of Dash components.

@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Any
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -14,17 +15,17 @@ from dash.exceptions import PreventUpdate
 from ..kostra_r_wrapper import hb_method
 from .modal_functions import sidebar_button
 
-states_options = [
+states_options: list[dict[str, tuple[str, str]]] = [
     {
         "aar": ("var-aar", "value"),
         "termin": ("var-termin", "value"),
-        "maaned": {"var-maaned", "value"},
+        "maaned": ("var-maaned", "value"),
         "nace": ("var-nace", "value"),
         "nspekfelt": ("var-nspekfelt", "value"),
     }
 ]
 
-ident_options = [
+ident_options: list[dict[str, tuple[str, str]]] = [
     {
         "orgb": ("var-bedrift", "value"),
         "orgf": ("var-foretak", "value"),
@@ -51,9 +52,9 @@ class HBMethodModule:
     def __init__(
         self,
         database: object,
-        hb_get_data_func: Callable,
+        hb_get_data_func: Callable[..., pd.DataFrame],
         selected_state_keys: list[str],
-        selected_ident: list[str],
+        selected_ident: str,
         variable: str,
     ) -> None:
         """Initializes the HBMethodModule.
@@ -62,7 +63,7 @@ class HBMethodModule:
             database (object): Database connection or interface to fetch relevant data.
             hb_get_data_func (Callable): Function to fetch data for processing using the HB method.
             selected_state_keys (list of str): Keys representing selected states for filtering data.
-            selected_ident (list of str): Identifier used for grouping or unique identification in the data.
+            selected_ident (str): Identifier used for grouping or unique identification in the data.
             variable (str): Name of the value variable to analyze using the HB method.
         """
         self.database = database
@@ -249,7 +250,7 @@ class HBMethodModule:
         id_name: str,
         default_value: int | float,
         min_value: int | float,
-        max_value: int | float,
+        max_value: int | float | None,
         initial_value: int | float,
         tooltip_text: str,
     ) -> dbc.Col:
@@ -297,13 +298,13 @@ class HBMethodModule:
         )
 
     def callbacks(
-        self, selected_state_keys: list[str], selected_ident: list[str], variable: str
+        self, selected_state_keys: list[str], selected_ident: str, variable: str
     ) -> None:
         """Registers callbacks for the HB method Dash app components.
 
         Args:
             selected_state_keys (list of str): List of state keys for dynamic state configuration.
-            selected_ident (list of str): Identifier used for grouping or filtering data.
+            selected_ident (str): Identifier used for grouping or filtering data.
             variable (str): Name of the value variable for HB method analysis.
 
         Notes:
@@ -329,7 +330,7 @@ class HBMethodModule:
             *dynamic_states,
         )
         def use_hb(
-            n_click: int, pc: int, pu: float, pa: float, *dynamic_states: list
+            n_click: int, pc: int, pu: float, pa: float, *dynamic_states: list[Any]
         ) -> go.Figure:
             """Executes the HB method and updates the visualization.
 
@@ -352,7 +353,7 @@ class HBMethodModule:
                 for key, value in zip(selected_state_keys, states_values, strict=False)
             }
 
-            args = []
+            args: list[Any] = []
             for key in selected_state_keys:
                 var = state_params.get(key)
                 if var is not None:
@@ -360,7 +361,9 @@ class HBMethodModule:
 
             if "nace" in state_params and state_params["nace"] is not None:
                 n = len(state_params["nace"])
-                args.append(n)
+                args.append(
+                    n
+                )  # TODO: Hva gjør dette egentlig? Burde omformuleres/dokumenteres
 
             if n_click:
                 data = self.hb_get_data(self.database, *args)
@@ -393,7 +396,7 @@ class HBMethodModule:
             Input("hb_figure", "clickData"),
             prevent_initial_call=True,
         )
-        def hb_to_main_table(clickdata: dict) -> str:
+        def hb_to_main_table(clickdata: dict[str, list[dict[str, Any]]]) -> str:
             """Passes the selected observation identifier to `variabelvelger`.
 
             Args:
@@ -401,7 +404,11 @@ class HBMethodModule:
 
             Returns:
                 str: Identifier of the selected observation.
+
+            Raises:
+                PreventUpdate: if clickdata is None.
             """
-            if clickdata:
-                ident = clickdata["points"][0]["hovertext"]
-                return ident
+            if not clickdata:
+                raise PreventUpdate
+            ident = str(clickdata["points"][0]["hovertext"])
+            return ident

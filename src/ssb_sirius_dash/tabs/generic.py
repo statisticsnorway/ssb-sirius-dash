@@ -12,17 +12,17 @@ from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
-input_options = {
+input_options: dict[str, Input] = {
     "orgb": Input("var-bedrift", "value"),
     "orgf": Input("var-foretak", "value"),
     "oppgavegiver": Input("var-oppgavegiver", "value"),
     "skjemaident": Input("var-skjemaident", "value"),
 }
 
-states_options = [
+states_options: list[dict[str, tuple[str, str]]] = [
     {
         "aar": ("var-aar", "value"),
-        "maaned": {"var-maaned", "value"},
+        "maaned": ("var-maaned", "value"),
         "termin": ("var-termin", "value"),
         "nace": ("var-nace", "value"),
     }
@@ -133,7 +133,9 @@ class EditingTable:
             self.selected_ident,
             *dynamic_states,
         )
-        def load_ag_grid(tabell: str, ident: str, *dynamic_states: list) -> tuple:
+        def load_ag_grid(
+            tabell: str, ident: str, *dynamic_states: list[str]
+        ) -> tuple[list[dict[str, Any]], list[dict[str, str | bool]]]:
             """Load data into the Dash AgGrid table.
 
             Args:
@@ -161,7 +163,7 @@ class EditingTable:
                     for key, value in zip(self.states, states_values, strict=False)
                 }
 
-                args = []
+                args: list[Any] = []
                 for key in self.states:
                     var = state_params.get(key)
                     if var is not None:
@@ -193,7 +195,7 @@ class EditingTable:
             prevent_initial_call=True,
         )
         def update_table(
-            edited: list[dict],
+            edited: list[dict[str, dict[str, Any] | Any]],
             tabell: str,
             error_log: list[dbc.Alert],
             *dynamic_states: list[str],
