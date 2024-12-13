@@ -26,33 +26,6 @@ Subpackages
    ssb_sirius_dash.setup
    ssb_sirius_dash.tabs
 
-Submodules
-----------
-
-ssb\_sirius\_dash.hb\_method\_aio module
-----------------------------------------
-
-.. automodule:: ssb_sirius_dash.hb_method_aio
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ssb\_sirius\_dash.kostra\_r\_wrapper module
--------------------------------------------
-
-.. automodule:: ssb_sirius_dash.kostra_r_wrapper
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ssb\_sirius\_dash.sunburst\_aio module
---------------------------------------
-
-.. automodule:: ssb_sirius_dash.sunburst_aio
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 
