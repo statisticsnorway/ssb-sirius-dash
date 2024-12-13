@@ -11,7 +11,7 @@ from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
 
-class FrisokTab:
+class FreeSearch:
     """Tab for free-text SQL queries and displaying results in an AgGrid table.
 
     This class provides a layout for a tab that allows users to:
@@ -101,7 +101,7 @@ class FrisokTab:
             State("tab-frisøk-textarea1", "value"),
             State("tab-frisøk-input1", "value"),
         )
-        def table_frisok(
+        def table_free_search(
             n_clicks: int, query: str, partisjoner: str
         ) -> tuple[list[dict[str, Any]], list[dict[str, str | bool]]]:
             """Execute an SQL query and update the table with results.

@@ -9,7 +9,7 @@ from dash.dependencies import Output
 from dash.exceptions import PreventUpdate
 
 
-class AarsregnskapTab:
+class Aarsregnskap:
     """Tab for displaying annual financial statements (Årsregnskap).
 
     Attributes:

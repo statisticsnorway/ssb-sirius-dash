@@ -16,7 +16,7 @@ variable_options = {
 }
 
 
-def skjermcard(
+def create_variable_card(
     text: str,
     component_id: str,
     input_type: str,
@@ -58,7 +58,7 @@ def skjermcard(
     return card
 
 
-def generate_skjermcards(
+def create_variable_selector_content(
     selected_keys: list[str], default_values: dict[str, str | float | int] | None = None
 ) -> list[dbc.Col]:
     """Generate a list of Dash Bootstrap cards based on selected variable keys.
@@ -107,7 +107,7 @@ def generate_skjermcards(
                 f"Value for '{key}' must be of type str, float or int. Got {type(value).__name__}"
             )
 
-        card = skjermcard(
+        card = create_variable_card(
             text=title, component_id=card_id, input_type=card_type, value=value
         )
         cards_list.append(card)
