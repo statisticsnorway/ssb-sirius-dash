@@ -2,6 +2,32 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 
+def format_timespan(start: int | float, end: int | float) -> str:
+    """Formats the elapsed time between two time points into a human-readable string.
+
+    Args:
+        start (int | float): Start time in seconds, typically as a timestamp or relative value.
+        end (int | float): End time in seconds, typically as a timestamp or relative value.
+
+    Returns:
+        str: A formatted string representing the elapsed time between `start` and `end`.
+        The format is "MM:SS.sss (sss ms)", where:
+        - MM is minutes, zero-padded to 2 digits.
+        - SS.sss is seconds with 2 decimal places.
+        - sss ms represents milliseconds.
+
+    Raises:
+        ValueError: If `start` is greater than `end`.
+    """
+    if start > end:
+        raise ValueError("Start time must not be greater than end time.")
+
+    elapsed_time = end - start
+    minutes, seconds = divmod(elapsed_time, 60)
+    milliseconds = (seconds - int(seconds)) * 1000
+    return f"{int(minutes):0>2}:{seconds:05.2f} ({milliseconds:.0f} ms)"
+
+
 def sidebar_button(
     icon: str,
     text: str,
