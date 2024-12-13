@@ -27,7 +27,7 @@ def test_submodule_existence() -> None:
     modules_to_check = [
         "ssb_sirius_dash.modals.hb_method",
         "ssb_sirius_dash.setup.main_layout",
-        "ssb_sirius_dash.tabs.vof_foretak",
+        "ssb_sirius_dash.tabs.bofregistry",
         "ssb_sirius_dash.control.framework",
     ]
 
@@ -41,7 +41,7 @@ def test_submodule_existence() -> None:
     [
         ("ssb_sirius_dash.modals.hb_method", "HBMethodModule"),
         ("ssb_sirius_dash.setup.main_layout", "main_layout"),
-        ("ssb_sirius_dash.tabs.vof_foretak", "VoFForetakTab"),
+        ("ssb_sirius_dash.tabs.bofregistry", "BofInformation"),
         ("ssb_sirius_dash.control.framework", "Kvalitetsrapport"),
     ],
 )
