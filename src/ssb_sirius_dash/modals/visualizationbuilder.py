@@ -13,7 +13,7 @@ from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
-from .modal_functions import sidebar_button
+from ..utils.functions import sidebar_button
 
 
 class VisualizationBuilderModule:

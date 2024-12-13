@@ -15,7 +15,7 @@ from dash import html
 from dash.exceptions import PreventUpdate
 
 from ..control.framework import Kvalitetsrapport
-from .modal_functions import sidebar_button
+from ..utils.functions import sidebar_button
 
 
 class KvalitetsindikatorerModule:

@@ -2,45 +2,6 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 
-def skjermcard(
-    text: str, component_id: str, input_type: str, value: str | None = None
-) -> dbc.Col:
-    """Generate a Dash Bootstrap card with an input field.
-
-    Args:
-        text (str): The title text displayed on the card.
-        component_id (str): The ID assigned to the input component inside the card.
-        input_type (str): The type of the input field (e.g., "text", "number").
-        value (str, optional): The default value for the input field. Defaults to an empty string.
-
-    Returns:
-        dbc.Col: A column containing the card with an input field.
-    """
-    if value is None:
-        value = ""
-    card = dbc.Col(
-        dbc.Card(
-            dbc.CardBody(
-                [
-                    html.H5(text, className="card-title"),
-                    html.Div(
-                        style={
-                            "display": "grid",
-                            "grid-template-columns": "100%",
-                        },
-                        children=[
-                            dbc.Input(value=value, id=component_id, type=input_type),
-                        ],
-                    ),
-                ],
-                style={"max-height": "100%"},
-            ),
-            style={"max-height": "100%"},
-        )
-    )
-    return card
-
-
 def sidebar_button(
     icon: str,
     text: str,

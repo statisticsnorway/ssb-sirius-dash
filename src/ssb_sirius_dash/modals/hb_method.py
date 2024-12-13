@@ -13,7 +13,7 @@ from dash import html
 from dash.exceptions import PreventUpdate
 
 from ..kostra_r_wrapper import hb_method
-from .modal_functions import sidebar_button
+from ..utils.functions import sidebar_button
 
 states_options: list[dict[str, tuple[str, str]]] = [
     {

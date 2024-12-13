@@ -14,7 +14,7 @@ from dash.exceptions import PreventUpdate
 
 from ..control.framework import Kvalitetsrapport
 from ..control.framework import lag_kontroll_dokumentasjon
-from .modal_functions import sidebar_button
+from ..utils.functions import sidebar_button
 
 # +
 

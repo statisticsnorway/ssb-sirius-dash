@@ -5,7 +5,7 @@ from dash import State
 from dash import callback
 from dash import html
 
-from ..modals.modal_functions import sidebar_button
+from ..utils.functions import sidebar_button
 
 
 class AlertHandler:
