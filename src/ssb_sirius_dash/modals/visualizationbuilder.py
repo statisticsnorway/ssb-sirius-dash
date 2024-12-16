@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 import dash_ag_grid as dag
@@ -13,10 +14,12 @@ from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
-from .modal_functions import sidebar_button
+from ..utils.functions import sidebar_button
+
+logger = logging.getLogger(__name__)
 
 
-class VisualiseringsbyggerModule:
+class VisualizationBuilder:
     """A module for creating and visualizing data queries and graphs interactively.
 
     Attributes:

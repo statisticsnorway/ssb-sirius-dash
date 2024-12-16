@@ -2,10 +2,10 @@
 import numpy as np
 import pandas as pd
 
-from ssb_sirius_dash import Kontrolltype
+from ssb_sirius_dash import ControlType
 from ssb_sirius_dash import automatisk_oppretting
-from ssb_sirius_dash import kontroll
-from ssb_sirius_dash import lag_kvalitetsrapport
+from ssb_sirius_dash import control
+from ssb_sirius_dash import create_quality_report
 
 # %%
 eksempel_data = pd.DataFrame(
@@ -14,9 +14,9 @@ eksempel_data = pd.DataFrame(
 
 
 # %%
-@kontroll(
+@control(
     id_column="ident",
-    result_type=Kontrolltype.MULIG_FEIL,
+    result_type=ControlType.MULIG_FEIL,
     error_description="Veldig høy alder",
 )
 def min_kontrollfunksjon_1(data):
@@ -27,9 +27,9 @@ def min_kontrollfunksjon_1(data):
     return data
 
 
-@kontroll(
+@control(
     id_column="ident",
-    result_type=Kontrolltype.ABSOLUTT_FEIL,
+    result_type=ControlType.ABSOLUTT_FEIL,
     error_description="Ugyldig verdi",
 )
 def min_kontrollfunksjon_2(data):
@@ -57,7 +57,7 @@ min_kontrollfunksjon_1(eksempel_data[eksempel_data["Alder"].notna()])
 min_kontrollfunksjon_2(eksempel_data)
 
 # %%
-feilrapport, kontrollrapport = lag_kvalitetsrapport(
+feilrapport, kontrollrapport = create_quality_report(
     statistics_name="Demo",
     data_location="path/to/data",
     data_period="2024K1",
@@ -70,7 +70,7 @@ feilrapport.to_dict()
 pd.DataFrame().from_dict(feilrapport.to_dict()["kontrollutslag"])
 
 # %%
-pd.DataFrame().from_dict(feilrapport.to_dict()["kontrolldokumentasjon"], orient="index")
+pd.DataFrame().from_dict(feilrapport.to_dict()["control_documentation"], orient="index")
 
 # %%
 kontrollrapport

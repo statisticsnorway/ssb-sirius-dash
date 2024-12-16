@@ -1,4 +1,5 @@
 import base64
+import logging
 
 import dash_bootstrap_components as dbc
 from dapla import FileClient
@@ -8,8 +9,10 @@ from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.exceptions import PreventUpdate
 
+logger = logging.getLogger(__name__)
 
-class AarsregnskapTab:
+
+class Aarsregnskap:
     """Tab for displaying annual financial statements (Årsregnskap).
 
     Attributes:

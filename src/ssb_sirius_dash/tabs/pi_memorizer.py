@@ -1,3 +1,5 @@
+import logging
+
 import dash_bootstrap_components as dbc
 from dash import callback
 from dash import callback_context
@@ -7,12 +9,13 @@ from dash.dependencies import Output
 from dash.dependencies import State
 from mpmath import mp
 
+logger = logging.getLogger(__name__)
 mp.dps = 1000
 
 pi = str(mp.pi)
 
 
-class PimemorizerTab:
+class Pimemorizer:
     """A tab for testing and improving memory of the digits of π (Pi).
 
     This component provides:

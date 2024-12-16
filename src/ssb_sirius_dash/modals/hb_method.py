@@ -1,3 +1,5 @@
+import logging
+import time
 from collections.abc import Callable
 from typing import Any
 
@@ -13,7 +15,10 @@ from dash import html
 from dash.exceptions import PreventUpdate
 
 from ..kostra_r_wrapper import hb_method
-from .modal_functions import sidebar_button
+from ..utils.functions import format_timespan
+from ..utils.functions import sidebar_button
+
+logger = logging.getLogger(__name__)
 
 states_options: list[dict[str, tuple[str, str]]] = [
     {
@@ -33,7 +38,7 @@ ident_options: list[dict[str, tuple[str, str]]] = [
 ]
 
 
-class HBMethodModule:
+class HBMethod:
     """Module for detecting outliers using the Hidiroglou-Berthelot (HB) method in a Dash application.
 
     This module applies the HB method to identify potential outliers in time-series data by comparing
@@ -66,6 +71,7 @@ class HBMethodModule:
             selected_ident (str): Identifier used for grouping or unique identification in the data.
             variable (str): Name of the value variable to analyze using the HB method.
         """
+        self.selected_ident = selected_ident
         self.database = database
         self.hb_get_data = hb_get_data_func
         self.callbacks(selected_state_keys, selected_ident, variable)
@@ -209,7 +215,7 @@ class HBMethodModule:
                                             "Parameter that controls the length of the confidence interval.",
                                         ),
                                         self._build_input_field(
-                                            "Skriv inn pu",
+                                            "Skriv inn pU",
                                             "hb_pu",
                                             0.5,
                                             0,
@@ -311,6 +317,7 @@ class HBMethodModule:
             This method registers Dash callbacks for handling user interactions, including
             running the HB method, toggling the modal, and passing results to `variabelvelger`.
         """
+        time.time()
         states_dict = states_options[0]
         dynamic_states = [
             State(states_dict[key][0], states_dict[key][1])
@@ -347,6 +354,7 @@ class HBMethodModule:
             Raises:
                 PreventUpdate: If no button click is detected.
             """
+            start_time = time.time()
             states_values = dynamic_states[: len(selected_state_keys)]
             state_params = {
                 key: value
@@ -368,6 +376,8 @@ class HBMethodModule:
             if n_click:
                 data = self.hb_get_data(self.database, *args)
                 data = self.make_hb_data(data, pc, pu, pa, selected_ident, variable)
+                end_time = time.time()
+                logger.info(format_timespan(start_time, end_time))
                 return self.make_hb_figure(data, variable)
             else:
                 raise PreventUpdate
@@ -387,6 +397,7 @@ class HBMethodModule:
             Returns:
                 bool: New state of the modal (open/closed).
             """
+            logger.info("Toggle modal")
             if n:
                 return not is_open
             return is_open
@@ -411,4 +422,5 @@ class HBMethodModule:
             if not clickdata:
                 raise PreventUpdate
             ident = str(clickdata["points"][0]["hovertext"])
+            logger.info(f"Transfering {ident} to {self.selected_ident}")
             return ident

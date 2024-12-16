@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 import dash_bootstrap_components as dbc
@@ -8,6 +9,7 @@ from dash import State
 from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 
+logger = logging.getLogger(__name__)
 theme_map = {
     "sketchy": dbc.themes.SKETCHY,
     "slate": dbc.themes.SLATE,
@@ -59,8 +61,8 @@ def app_setup(port: int, service_prefix: str, domain: str, stylesheet: str) -> D
         Input("sidebar-varvelger-button", "n_clicks"),
         State("main-varvelger", "style"),
     )
-    def toggle_varvelger(n_clicks: int, style: dict[str, Any]) -> dict[str, Any]:
-        """Toggle the visibility of the `main-varvelger` component.
+    def toggle_varselector(n_clicks: int, style: dict[str, Any]) -> dict[str, Any]:
+        """Toggle the visibility of the `main-varselector` component.
 
         Args:
             n_clicks (int): The number of times the `sidebar-varvelger-button` is clicked.

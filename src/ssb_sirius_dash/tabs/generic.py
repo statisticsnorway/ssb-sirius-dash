@@ -1,4 +1,5 @@
 import datetime
+import logging
 from collections.abc import Callable
 from typing import Any
 
@@ -12,6 +13,7 @@ from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
+logger = logging.getLogger(__name__)
 input_options: dict[str, Input] = {
     "orgb": Input("var-bedrift", "value"),
     "orgf": Input("var-foretak", "value"),
@@ -133,7 +135,7 @@ class EditingTable:
             self.selected_ident,
             *dynamic_states,
         )
-        def load_ag_grid(
+        def load_to_table(
             tabell: str, ident: str, *dynamic_states: list[str]
         ) -> tuple[list[dict[str, Any]], list[dict[str, str | bool]]]:
             """Load data into the Dash AgGrid table.
