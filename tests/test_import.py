@@ -39,7 +39,7 @@ def test_submodule_existence() -> None:
 @pytest.mark.parametrize(
     "module_path, symbol",
     [
-        ("ssb_sirius_dash.modals.hb_method", "HBMethodModule"),
+        ("ssb_sirius_dash.modals.hb_method", "HBMethod"),
         ("ssb_sirius_dash.setup.main_layout", "main_layout"),
         ("ssb_sirius_dash.tabs.bofregistry", "BofInformation"),
         ("ssb_sirius_dash.control.framework", "QualityReport"),

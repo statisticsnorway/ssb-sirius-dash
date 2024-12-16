@@ -16,7 +16,7 @@ from dash.exceptions import PreventUpdate
 from ..utils.functions import sidebar_button
 
 
-class VisualizationBuilderModule:
+class VisualizationBuilder:
     """A module for creating and visualizing data queries and graphs interactively.
 
     Attributes:

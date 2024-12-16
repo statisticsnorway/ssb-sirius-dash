@@ -38,7 +38,7 @@ ident_options: list[dict[str, tuple[str, str]]] = [
 ]
 
 
-class HBMethodModule:
+class HBMethod:
     """Module for detecting outliers using the Hidiroglou-Berthelot (HB) method in a Dash application.
 
     This module applies the HB method to identify potential outliers in time-series data by comparing
