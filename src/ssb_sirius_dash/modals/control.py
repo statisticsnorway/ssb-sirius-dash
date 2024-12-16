@@ -36,7 +36,7 @@ class Control:
         control_documentation_path (str): Path to the saved quality report in JSON format on Dapla.
     """
 
-    def __init__(self, ident: str, kvalitetsrapport_path: str) -> None:
+    def __init__(self, ident: str, qualityreport_path: str) -> None:
         """Initialize the control module.
 
         This method sets up the identification variable, loads the quality report from a JSON file,
@@ -44,7 +44,7 @@ class Control:
 
         Args:
             ident (str): The key for the identification variable, e.g., 'orgf'.
-            kvalitetsrapport_path (str): Path to the quality report saved as a JSON file on Dapla.
+            qualityreport_path (str): Path to the quality report saved as a JSON file on Dapla.
 
         Attributes Set:
             ident (str): The resolved name of the identification variable.
@@ -52,8 +52,8 @@ class Control:
             utslagstabell (pd.DataFrame): A table detailing the control outputs.
         """
         self.ident = ident_options[0][ident]
-        if kvalitetsrapport_path:
-            data = QualityReport.from_json(kvalitetsrapport_path).to_dict()
+        if qualityreport_path:
+            data = QualityReport.from_json(qualityreport_path).to_dict()
             self.kontrolltabell = create_control_documentation(data)
             self.utslagstabell = pd.DataFrame(data["kontrollutslag"])
         self.callbacks()

@@ -306,34 +306,34 @@ class KvalitetsindikatorKontrollutslagsandel:
 
     Attributes:
         control_documentation (QualityReport | None): The quality report used for calculations.
-        kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format on Dapla.
+        qualityreport_path (str | None): File path to a saved quality report in JSON format on Dapla.
     """
 
     def __init__(
         self,
         control_documentation: QualityReport | None = None,
-        kvalitetsrapport_path: str | None = None,
+        qualityreport_path: str | None = None,
     ) -> None:
         """Initializes the control outcome ratio view for the quality indicator modal.
 
         Args:
             control_documentation (QualityReport | None): A quality report for calculation.
-            kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format.
+            qualityreport_path (str | None): File path to a saved quality report in JSON format.
 
         Raises:
-            ValueError: If both `control_documentation` and `kvalitetsrapport_path` are defined,
+            ValueError: If both `control_documentation` and `qualityreport_path` are defined,
                         or if neither is provided.
         """
-        if kvalitetsrapport_path and control_documentation:
+        if qualityreport_path and control_documentation:
             raise ValueError(
-                "Remove either control_documentation or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of control_documentation and kvalitetsrapport_path is defined. If both are defined, it will not work."
+                "Remove either control_documentation or qualityreport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of control_documentation and qualityreport_path is defined. If both are defined, it will not work."
             )
-        if kvalitetsrapport_path:
+        if qualityreport_path:
             import json
 
             import dapla as dp
 
-            with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
+            with dp.FileClient.gcs_open(qualityreport_path, "r") as outfile:
                 data = json.load(outfile)
             self.control_documentation = (
                 pd.DataFrame(data["control_documentation"])
@@ -344,7 +344,7 @@ class KvalitetsindikatorKontrollutslagsandel:
             self.control_documentation = control_documentation
         else:
             raise ValueError(
-                "Either control_documentation or kvalitetsrapport_path needs to have a value."
+                "Either control_documentation or qualityreport_path needs to have a value."
             )
         self.kontrollutslagsandel_total, self.kontrollutslagsandel_detaljer = (
             self.kontrollutslag()
@@ -689,7 +689,7 @@ class KvalitetsindikatorTreffsikkerhet:
             Example: [(orgnr_1, variabel_1), (orgnr_1, variabel_2), (orgnr_2, variabel_1)].
         quality_report (QualityReport | None):
             The quality report used for calculations.
-        kvalitetsrapport_path (str | None):
+        qualityreport_path (str | None):
             File path to a saved quality report in JSON format on Dapla.
     """
 
@@ -697,7 +697,7 @@ class KvalitetsindikatorTreffsikkerhet:
         self,
         get_edits_list_func: Callable[..., list[tuple[str, str]]],
         quality_report: QualityReport | None = None,
-        kvalitetsrapport_path: str | None = None,
+        qualityreport_path: str | None = None,
     ) -> None:
         """Initializes the accuracy indicator view for the quality indicator modal.
 
@@ -706,30 +706,30 @@ class KvalitetsindikatorTreffsikkerhet:
                 Function to fetch the list of edits made to the data. The list must contain tuples, which contain the identification variable of the observation that has been changed and the variable that was changed.
             quality_report (QualityReport | None):
                 Quality report for calculations.
-            kvalitetsrapport_path (str | None):
+            qualityreport_path (str | None):
                 File path to a saved quality report in JSON format.
 
         Raises:
-            ValueError: If both `quality_report` and `kvalitetsrapport_path` are defined
+            ValueError: If both `quality_report` and `qualityreport_path` are defined
                         or if neither is provided.
         """
-        if kvalitetsrapport_path and quality_report:
+        if qualityreport_path and quality_report:
             raise ValueError(
-                "Remove either quality_report or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of quality_report and kvalitetsrapport_path is defined. If both are defined, it will not work."
+                "Remove either quality_report or qualityreport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of quality_report and qualityreport_path is defined. If both are defined, it will not work."
             )
-        if kvalitetsrapport_path:
+        if qualityreport_path:
             import json
 
             import dapla as dp
 
-            with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
+            with dp.FileClient.gcs_open(qualityreport_path, "r") as outfile:
                 data = json.load(outfile)
             self.quality_report = data
         elif quality_report:
             self.quality_report = quality_report
         else:
             raise ValueError(
-                "Either quality_report or kvalitetsrapport_path needs to have a value."
+                "Either quality_report or qualityreport_path needs to have a value."
             )
         self.get_edits_list_func = get_edits_list_func
 
