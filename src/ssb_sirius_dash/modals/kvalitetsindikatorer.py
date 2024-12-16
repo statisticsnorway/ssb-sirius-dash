@@ -305,28 +305,28 @@ class KvalitetsindikatorKontrollutslagsandel:
     `kontroll_id`, `Enheter kontrollert`, `Kontrollutslag`.
 
     Attributes:
-        kontrolldokumentasjon (QualityReport | None): The quality report used for calculations.
+        control_documentation (QualityReport | None): The quality report used for calculations.
         kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format on Dapla.
     """
 
     def __init__(
         self,
-        kontrolldokumentasjon: QualityReport | None = None,
+        control_documentation: QualityReport | None = None,
         kvalitetsrapport_path: str | None = None,
     ) -> None:
         """Initializes the control outcome ratio view for the quality indicator modal.
 
         Args:
-            kontrolldokumentasjon (QualityReport | None): A quality report for calculation.
+            control_documentation (QualityReport | None): A quality report for calculation.
             kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format.
 
         Raises:
-            ValueError: If both `kontrolldokumentasjon` and `kvalitetsrapport_path` are defined,
+            ValueError: If both `control_documentation` and `kvalitetsrapport_path` are defined,
                         or if neither is provided.
         """
-        if kvalitetsrapport_path and kontrolldokumentasjon:
+        if kvalitetsrapport_path and control_documentation:
             raise ValueError(
-                "Remove either kontrolldokumentasjon or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kontrolldokumentasjon and kvalitetsrapport_path is defined. If both are defined, it will not work."
+                "Remove either control_documentation or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of control_documentation and kvalitetsrapport_path is defined. If both are defined, it will not work."
             )
         if kvalitetsrapport_path:
             import json
@@ -335,16 +335,16 @@ class KvalitetsindikatorKontrollutslagsandel:
 
             with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
                 data = json.load(outfile)
-            self.kontrolldokumentasjon = (
-                pd.DataFrame(data["kontrolldokumentasjon"])
+            self.control_documentation = (
+                pd.DataFrame(data["control_documentation"])
                 .T.reset_index()
                 .rename(columns={"index": "kontroll_id"})
             )
-        elif kontrolldokumentasjon:
-            self.kontrolldokumentasjon = kontrolldokumentasjon
+        elif control_documentation:
+            self.control_documentation = control_documentation
         else:
             raise ValueError(
-                "Either kontrolldokumentasjon or kvalitetsrapport_path needs to have a value."
+                "Either control_documentation or kvalitetsrapport_path needs to have a value."
             )
         self.kontrollutslagsandel_total, self.kontrollutslagsandel_detaljer = (
             self.kontrollutslag()
@@ -440,16 +440,16 @@ class KvalitetsindikatorKontrollutslagsandel:
                 - A DataFrame with detailed proportions for each control.
         """
         total = (
-            self.kontrolldokumentasjon["Kontrollutslag"].sum()
-            / self.kontrolldokumentasjon["Enheter kontrollert"].sum()
+            self.control_documentation["Kontrollutslag"].sum()
+            / self.control_documentation["Enheter kontrollert"].sum()
         )
 
-        self.kontrolldokumentasjon["kontrollutslagsandel"] = (
-            self.kontrolldokumentasjon["Kontrollutslag"]
-            / self.kontrolldokumentasjon["Enheter kontrollert"]
+        self.control_documentation["kontrollutslagsandel"] = (
+            self.control_documentation["Kontrollutslag"]
+            / self.control_documentation["Enheter kontrollert"]
         )
 
-        return total, self.kontrolldokumentasjon
+        return total, self.control_documentation
 
     def callbacks(self) -> None:
         """Sets up callbacks for opening and closing the detailed view."""
@@ -810,8 +810,8 @@ class KvalitetsindikatorTreffsikkerhet:
         treffsikkerhet = {}
         total_kontrollutslag = 0
         total_celler_markert_editert = 0
-        for i in quality_report["kontrolldokumentasjon"]:
-            kontrollutslag = quality_report["kontrolldokumentasjon"][i][
+        for i in quality_report["control_documentation"]:
+            kontrollutslag = quality_report["control_documentation"][i][
                 "Kontrollutslag"
             ]
             total_kontrollutslag = total_kontrollutslag + kontrollutslag

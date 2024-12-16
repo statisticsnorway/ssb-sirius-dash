@@ -203,7 +203,7 @@ class QualityReport:
             "kontrollutslag": [
                 error.to_dict() for error in self.quality_control_errors
             ],
-            "kontrolldokumentasjon": (
+            "control_documentation": (
                 self.quality_control_documentation
                 if self.quality_control_documentation is not None
                 else kontroll_dokumentasjon
@@ -268,7 +268,7 @@ class QualityReport:
             )
             for error in kvalitetsrapport_dict["kontrollutslag"]
         ]
-        quality_control_documentation = kvalitetsrapport_dict["kontrolldokumentasjon"]
+        quality_control_documentation = kvalitetsrapport_dict["control_documentation"]
 
         return cls(
             statistics_name=statistics_name,
@@ -349,23 +349,23 @@ def create_control_documentation(
         pd.DataFrame: A DataFrame containing control documentation.
     """
     if isinstance(quality_report, dict):
-        kontrolldokumentasjon = pd.DataFrame(
-            quality_report["kontrolldokumentasjon"]
+        control_documentation = pd.DataFrame(
+            quality_report["control_documentation"]
         ).T.assign(periode=quality_report["data_periode"])
     elif isinstance(quality_report, QualityReport):
-        kontrolldokumentasjon = pd.DataFrame(
-            quality_report.to_dict()["kontrolldokumentasjon"]
+        control_documentation = pd.DataFrame(
+            quality_report.to_dict()["control_documentation"]
         ).T.assign(periode=quality_report.to_dict()["data_periode"])
-    kontrolldokumentasjon.index.names = ["kontroll_id"]
-    kontrolldokumentasjon = kontrolldokumentasjon.reset_index()
-    return kontrolldokumentasjon
+    control_documentation.index.names = ["kontroll_id"]
+    control_documentation = control_documentation.reset_index()
+    return control_documentation
 
 
-def eimerdb_template(kontrolldokumentasjon: pd.DataFrame) -> list[list[Any]]:
+def eimerdb_template(control_documentation: pd.DataFrame) -> list[list[Any]]:
     """Create a template for the EimerDB control table.
 
     Args:
-        kontrolldokumentasjon (pd.DataFrame): The control documentation as a DataFrame.
+        control_documentation (pd.DataFrame): The control documentation as a DataFrame.
 
     Returns:
         list[list[Any]]: A list of lists representing the template for the control table.
@@ -374,15 +374,15 @@ def eimerdb_template(kontrolldokumentasjon: pd.DataFrame) -> list[list[Any]]:
         Each entry in the resulting list represents a control, including its period, ID, type, and description.
     """
     kontroller = []
-    for i in kontrolldokumentasjon.to_dict()["kontrolldokumentasjon"]:
+    for i in control_documentation.to_dict()["control_documentation"]:
         kontroller.append(
             [
-                kontrolldokumentasjon.to_dict()["data_periode"],
+                control_documentation.to_dict()["data_periode"],
                 i,
-                kontrolldokumentasjon.to_dict()["kontrolldokumentasjon"][i][
+                control_documentation.to_dict()["control_documentation"][i][
                     "kontrolltype"
                 ].name,
-                kontrolldokumentasjon.to_dict()["kontrolldokumentasjon"][i][
+                control_documentation.to_dict()["control_documentation"][i][
                     "feilbeskrivelse"
                 ],
             ]

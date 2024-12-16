@@ -70,7 +70,7 @@ feilrapport.to_dict()
 pd.DataFrame().from_dict(feilrapport.to_dict()["kontrollutslag"])
 
 # %%
-pd.DataFrame().from_dict(feilrapport.to_dict()["kontrolldokumentasjon"], orient="index")
+pd.DataFrame().from_dict(feilrapport.to_dict()["control_documentation"], orient="index")
 
 # %%
 kontrollrapport
