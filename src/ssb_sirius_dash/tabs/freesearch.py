@@ -11,7 +11,7 @@ from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
 
-class FrisokTab:
+class FreeSearch:
     """Tab for free-text SQL queries and displaying results in an AgGrid table.
 
     This class provides a layout for a tab that allows users to:
@@ -69,7 +69,7 @@ class FrisokTab:
                     children=[
                         dbc.Input(
                             id="tab-frisøk-input1",
-                            placeholder="Velg partisjoner. f.eks. {'aar': [2023], 'termin':[1, 2]}",
+                            placeholder="Velg partition. f.eks. {'aar': [2023], 'termin':[1, 2]}",
                         ),
                         dbc.Button(
                             "kjør",
@@ -101,15 +101,15 @@ class FrisokTab:
             State("tab-frisøk-textarea1", "value"),
             State("tab-frisøk-input1", "value"),
         )
-        def table_frisok(
-            n_clicks: int, query: str, partisjoner: str
+        def table_free_search(
+            n_clicks: int, query: str, partition: str
         ) -> tuple[list[dict[str, Any]], list[dict[str, str | bool]]]:
             """Execute an SQL query and update the table with results.
 
             Args:
                 n_clicks (int): Number of clicks on the "kjør" button.
                 query (str): SQL query entered by the user in the text area.
-                partisjoner (str): Partition filters entered as a dictionary string
+                partition (str): Partition filters entered as a dictionary string
                                    (e.g., "{'aar': [2023]}"). Can be None if no filters are provided.
 
             Returns:
@@ -125,9 +125,9 @@ class FrisokTab:
             """
             if not n_clicks:
                 raise PreventUpdate
-            if partisjoner is not None:
-                partisjoner = ast.literal_eval(partisjoner)
-            df = self.database.query(query, partition_select=partisjoner)
+            if partition is not None:
+                partition = ast.literal_eval(partition)
+            df = self.database.query(query, partition_select=partition)
             columns = [
                 {
                     "headerName": col,

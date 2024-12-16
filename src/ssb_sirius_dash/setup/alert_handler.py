@@ -5,7 +5,7 @@ from dash import State
 from dash import callback
 from dash import html
 
-from ..modals.modal_functions import sidebar_button
+from ..utils.functions import sidebar_button
 
 
 class AlertHandler:
@@ -75,11 +75,11 @@ class AlertHandler:
                             ]
                         ),
                     ],
-                    id="feilmeldinger-modal",
+                    id="alerts-modal",
                     size="xl",
                     fullscreen="xxl-down",
                 ),
-                sidebar_button("❗", "Feilmeldinger", "sidebar-feilmeldinger-button"),
+                sidebar_button("❗", "Feilmeldinger", "sidebar-alerts-button"),
             ]
         )
 
@@ -87,24 +87,24 @@ class AlertHandler:
         """Define and register the Dash callbacks for the alert modal and alerts."""
 
         @callback(  # type: ignore[misc]
-            Output("sidebar-feilmeldinger-button", "children"),
+            Output("sidebar-alerts-button", "children"),
             Input("error_log", "children"),
         )
-        def feilmelding_update_button_label(feilmeldinger: list[dbc.Alert]) -> str:
+        def feilmelding_update_button_label(alerts: list[dbc.Alert]) -> str:
             """Updates the label on the button for opening error logs with the current number of errors.
 
             Args:
-                feilmeldinger (list): List of existing errors.
+                alerts (list): List of existing errors.
 
             Returns:
                 str: New label with the count of errors.
             """
-            return f"Feilmeldinger: {len(feilmeldinger)}"
+            return f"Feilmeldinger: {len(alerts)}"  # Should probably rather be len alert for alert in alerts where style == visible or something
 
         @callback(  # type: ignore[misc]
-            Output("feilmeldinger-modal", "is_open"),
-            Input("sidebar-feilmeldinger-button", "n_clicks"),
-            State("feilmeldinger-modal", "is_open"),
+            Output("alerts-modal", "is_open"),
+            Input("sidebar-alerts-button", "n_clicks"),
+            State("alerts-modal", "is_open"),
         )
         def feilmelding_toggle(n: int | None, is_open: bool) -> bool:
             """Toggle the state of the modal window.

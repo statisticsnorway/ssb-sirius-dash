@@ -9,7 +9,7 @@ from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
 
-VOF_COLUMNS = [
+BOF_COLUMNS = [
     "orgnr",
     "navn",
     "sn07_1",
@@ -24,8 +24,8 @@ VOF_COLUMNS = [
 ]
 
 
-class VoFForetakTab:
-    """Tab for displaying and managing information from VoF.
+class BofInformation:
+    """Tab for displaying and managing information from BoF.
 
     This component:
     - Displays detailed information about selected foretak using cards.
@@ -33,26 +33,26 @@ class VoFForetakTab:
     - Interacts with a DuckDB in-memory database to fetch data.
 
     Attributes:
-        database (duckdb.DuckDBPyConnection): In-memory database connection for querying VoF foretak data.
-        label (str): Label for the tab, displayed as "🗃️ VoF Foretak".
+        database (duckdb.DuckDBPyConnection): In-memory database connection for querying BoF foretak data.
+        label (str): Label for the tab, displayed as "🗃️ BoF Foretak".
 
     Methods:
         generate_card(title, component_id, var_type): Generates a Dash Bootstrap card for displaying information.
-        register_table(): Registers the VoF foretak data as a table in DuckDB.
-        layout(): Generates the layout for the VoF Foretak tab.
+        register_table(): Registers the BoF foretak data as a table in DuckDB.
+        layout(): Generates the layout for the BoF Foretak tab.
         callbacks(): Registers Dash callbacks for handling user interactions.
     """
 
     def __init__(self) -> None:
-        """Initialize the VoFForetakTab component.
+        """Initialize the BofInformation tab component.
 
         Attributes:
-            database (duckdb.DuckDBPyConnection): In-memory database connection for querying VoF foretak data.
-            label (str): The label for the tab, displayed as "🗃️ VoF Foretak".
+            database (duckdb.DuckDBPyConnection): In-memory database connection for querying BoF foretak data.
+            label (str): The label for the tab, displayed as "🗃️ BoF Foretak".
         """
         self.database = self.register_table()
         self.callbacks()
-        self.label = "🗃️ VoF Foretak"
+        self.label = "🗃️ BoF Foretak"
 
     def generate_card(self, title: str, component_id: str, var_type: str) -> dbc.Card:
         """Generate a Dash Bootstrap card for displaying data.
@@ -80,20 +80,23 @@ class VoFForetakTab:
         return card
 
     def register_table(self) -> duckdb.DuckDBPyConnection:
-        """Register the VoF foretak data as a DuckDB table.
+        """Register the BoF foretak data as a DuckDB table.
 
         Returns:
-            duckdb.DuckDBPyConnection: A connection to an in-memory DuckDB instance with the VoF foretak data registered.
+            duckdb.DuckDBPyConnection: A connection to an in-memory DuckDB instance with the BoF foretak data registered.
+
+        Notes:
+            This function will need refactoring when a more permanent data storage for BoF is established.
         """
         fs = FileClient.get_gcs_file_system()
         fil_ssb_foretak = "ssb-vof-data-delt-oracle-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
-        ssb_foretak = pq.read_table(fil_ssb_foretak, columns=VOF_COLUMNS, filesystem=fs)
+        ssb_foretak = pq.read_table(fil_ssb_foretak, columns=BOF_COLUMNS, filesystem=fs)
         dsbbase = duckdb.connect()
         dsbbase.register("ssb_foretak", ssb_foretak)
         return dsbbase
 
     def layout(self) -> html.Div:
-        """Generate the layout for the VoF Foretak tab.
+        """Generate the layout for the BoF Foretak tab.
 
         Returns:
             html.Div: A Div element containing:
@@ -119,10 +122,10 @@ class VoFForetakTab:
                             },
                             children=[
                                 self.generate_card(
-                                    "Orgnr", "tab-vof_foretak-orgnrcard", "text"
+                                    "Orgnr", "tab-bof_foretak-orgnrcard", "text"
                                 ),
                                 self.generate_card(
-                                    "Navn", "tab-vof_foretak-navncard", "text"
+                                    "Navn", "tab-bof_foretak-navncard", "text"
                                 ),
                             ],
                         ),
@@ -135,20 +138,20 @@ class VoFForetakTab:
                             },
                             children=[
                                 self.generate_card(
-                                    "Nace", "tab-vof_foretak-nacecard", "text"
+                                    "Nace", "tab-bof_foretak-nacecard", "text"
                                 ),
                                 self.generate_card(
-                                    "Statuskode", "tab-vof_foretak-statuscard", "text"
+                                    "Statuskode", "tab-bof_foretak-statuscard", "text"
                                 ),
                                 self.generate_card(
-                                    "Ansatte", "tab-vof_foretak-ansattecard", "text"
+                                    "Ansatte", "tab-bof_foretak-ansattecard", "text"
                                 ),
                                 self.generate_card(
-                                    "Sektor 2014", "tab-vof_foretak-sektorcard", "text"
+                                    "Sektor 2014", "tab-bof_foretak-sektorcard", "text"
                                 ),
                                 self.generate_card(
                                     "Kommunenummer",
-                                    "tab-vof_foretak-kommunecard",
+                                    "tab-bof_foretak-kommunecard",
                                     "text",
                                 ),
                             ],
@@ -163,26 +166,26 @@ class VoFForetakTab:
                             children=[
                                 self.generate_card(
                                     "Organisasjonsform",
-                                    "tab-vof_foretak-orgformcard",
+                                    "tab-bof_foretak-orgformcard",
                                     "text",
                                 ),
                                 self.generate_card(
                                     "Størrelseskode",
-                                    "tab-vof_foretak-størrelsecard",
+                                    "tab-bof_foretak-størrelsecard",
                                     "text",
                                 ),
                                 self.generate_card(
                                     "Ansatte tot.",
-                                    "tab-vof_foretak-totansattecard",
+                                    "tab-bof_foretak-totansattecard",
                                     "text",
                                 ),
                                 self.generate_card(
                                     "Undersektor",
-                                    "tab-vof_foretak-undersektorcard",
+                                    "tab-bof_foretak-undersektorcard",
                                     "text",
                                 ),
                                 self.generate_card(
-                                    "Type", "tab-vof_foretak-typecard", "text"
+                                    "Type", "tab-bof_foretak-typecard", "text"
                                 ),
                             ],
                         ),
@@ -201,7 +204,7 @@ class VoFForetakTab:
                             [
                                 dag.AgGrid(
                                     defaultColDef={"editable": True},
-                                    id="tab-vof_foretak-table1",
+                                    id="tab-bof_foretak-table1",
                                     className="ag-theme-alpine-dark header-style-on-filter",
                                 ),
                             ]
@@ -213,34 +216,34 @@ class VoFForetakTab:
         return layout
 
     def callbacks(self) -> None:
-        """Register Dash callbacks for the VoF Foretak tab.
+        """Register Dash callbacks for the BoF Foretak tab.
 
         Notes:
-            - The `vof_data` callback fetches and updates data in the cards based on the selected foretak.
+            - The `bof_data` callback fetches and updates data in the cards based on the selected foretak.
         """
 
         @callback(  # type: ignore[misc]
-            Output("tab-vof_foretak-orgnrcard", "value"),
-            Output("tab-vof_foretak-navncard", "value"),
-            Output("tab-vof_foretak-nacecard", "value"),
-            Output("tab-vof_foretak-statuscard", "value"),
-            Output("tab-vof_foretak-ansattecard", "value"),
-            Output("tab-vof_foretak-sektorcard", "value"),
-            Output("tab-vof_foretak-kommunecard", "value"),
-            Output("tab-vof_foretak-orgformcard", "value"),
-            Output("tab-vof_foretak-størrelsecard", "value"),
-            Output("tab-vof_foretak-totansattecard", "value"),
-            Output("tab-vof_foretak-undersektorcard", "value"),
-            Output("tab-vof_foretak-typecard", "value"),
+            Output("tab-bof_foretak-orgnrcard", "value"),
+            Output("tab-bof_foretak-navncard", "value"),
+            Output("tab-bof_foretak-nacecard", "value"),
+            Output("tab-bof_foretak-statuscard", "value"),
+            Output("tab-bof_foretak-ansattecard", "value"),
+            Output("tab-bof_foretak-sektorcard", "value"),
+            Output("tab-bof_foretak-kommunecard", "value"),
+            Output("tab-bof_foretak-orgformcard", "value"),
+            Output("tab-bof_foretak-størrelsecard", "value"),
+            Output("tab-bof_foretak-totansattecard", "value"),
+            Output("tab-bof_foretak-undersektorcard", "value"),
+            Output("tab-bof_foretak-typecard", "value"),
             Input("var-foretak", "value"),
             State("var-aar", "value"),  # Is not used in this iteration
         )
-        def vof_data(
+        def bof_data(
             orgf: str, aar: int
         ) -> tuple[
             str, str, str, str, int, str, str, str, str, int, str, str
-        ]:  # Må dobbeltsjekke at datatyper for ansatte og ansatte_tot skal være int.
-            """Fetch VoF Foretak data based on the selected organization number.
+        ]:  # Need to check that ansatte and ansatte_tot should be english
+            """Fetch BoF Foretak data based on the selected organization number.
 
             Args:
                 orgf (str): The organization number of the selected foretak.

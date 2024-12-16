@@ -13,10 +13,10 @@ from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
-from .modal_functions import sidebar_button
+from ..utils.functions import sidebar_button
 
 
-class VisualiseringsbyggerModule:
+class VisualizationBuilderModule:
     """A module for creating and visualizing data queries and graphs interactively.
 
     Attributes:
