@@ -11,7 +11,7 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-error_list: list[Any] = []
+_error_list: list[Any] = []
 _control_docs: dict[str, Any] = {}
 
 
@@ -123,8 +123,8 @@ def control(
                 for index, row in error_rows.iterrows()
             ]
 
-            global error_list
-            error_list.extend(new_error_details)
+            global _error_list
+            _error_list.extend(new_error_details)
 
             global _control_docs
             _control_docs[control_function.__name__] = {
@@ -309,7 +309,7 @@ def create_quality_report(
         data_period is not None
     ), "Må definere hvilken periode dataene gjelder for (data_period)"
 
-    control_errors_nested = [error_list]
+    control_errors_nested = [_error_list]
 
     control_errors = [item for sublist in control_errors_nested for item in sublist]
 
@@ -328,7 +328,7 @@ def create_quality_report(
         data_period=data_period,
         quality_control_datetime=datetime.datetime.now(),
         quality_control_results=quality_results,
-        quality_control_errors=error_list,
+        quality_control_errors=_error_list,
     )
 
     if also_return_control_docs:
