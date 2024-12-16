@@ -14,7 +14,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
-from ..control.framework import Quality_report
+from ..control.framework import QualityReport
 from ..utils.functions import sidebar_button
 
 
@@ -305,19 +305,19 @@ class KvalitetsindikatorKontrollutslagsandel:
     `kontroll_id`, `Enheter kontrollert`, `Kontrollutslag`.
 
     Attributes:
-        kontrolldokumentasjon (Quality_report | None): The quality report used for calculations.
+        kontrolldokumentasjon (QualityReport | None): The quality report used for calculations.
         kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format on Dapla.
     """
 
     def __init__(
         self,
-        kontrolldokumentasjon: Quality_report | None = None,
+        kontrolldokumentasjon: QualityReport | None = None,
         kvalitetsrapport_path: str | None = None,
     ) -> None:
         """Initializes the control outcome ratio view for the quality indicator modal.
 
         Args:
-            kontrolldokumentasjon (Quality_report | None): A quality report for calculation.
+            kontrolldokumentasjon (QualityReport | None): A quality report for calculation.
             kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format.
 
         Raises:
@@ -687,7 +687,7 @@ class KvalitetsindikatorTreffsikkerhet:
             Used to check against control outcomes to determine if a control outcome
             likely resulted in an edit.
             Example: [(orgnr_1, variabel_1), (orgnr_1, variabel_2), (orgnr_2, variabel_1)].
-        quality_report (Quality_report | None):
+        quality_report (QualityReport | None):
             The quality report used for calculations.
         kvalitetsrapport_path (str | None):
             File path to a saved quality report in JSON format on Dapla.
@@ -696,7 +696,7 @@ class KvalitetsindikatorTreffsikkerhet:
     def __init__(
         self,
         get_edits_list_func: Callable[..., list[tuple[str, str]]],
-        quality_report: Quality_report | None = None,
+        quality_report: QualityReport | None = None,
         kvalitetsrapport_path: str | None = None,
     ) -> None:
         """Initializes the accuracy indicator view for the quality indicator modal.
@@ -704,7 +704,7 @@ class KvalitetsindikatorTreffsikkerhet:
         Args:
             get_edits_list_func (Callable):
                 Function to fetch the list of edits made to the data. The list must contain tuples, which contain the identification variable of the observation that has been changed and the variable that was changed.
-            quality_report (Quality_report | None):
+            quality_report (QualityReport | None):
                 Quality report for calculations.
             kvalitetsrapport_path (str | None):
                 File path to a saved quality report in JSON format.
@@ -802,7 +802,7 @@ class KvalitetsindikatorTreffsikkerhet:
             dict: A dictionary where keys are control names and values are the accuracy percentage.
                   Includes a "total" key for overall accuracy.
         """
-        if isinstance(self.quality_report, Quality_report):
+        if isinstance(self.quality_report, QualityReport):
             quality_report = self.quality_report.to_dict()
         else:
             quality_report = self.quality_report

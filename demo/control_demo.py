@@ -5,7 +5,7 @@ import pandas as pd
 from ssb_sirius_dash import Kontrolltype
 from ssb_sirius_dash import automatisk_oppretting
 from ssb_sirius_dash import kontroll
-from ssb_sirius_dash import lag_kvalitetsrapport
+from ssb_sirius_dash import create_quality_report
 
 # %%
 eksempel_data = pd.DataFrame(
@@ -57,7 +57,7 @@ min_kontrollfunksjon_1(eksempel_data[eksempel_data["Alder"].notna()])
 min_kontrollfunksjon_2(eksempel_data)
 
 # %%
-feilrapport, kontrollrapport = lag_kvalitetsrapport(
+feilrapport, kontrollrapport = create_quality_report(
     statistics_name="Demo",
     data_location="path/to/data",
     data_period="2024K1",

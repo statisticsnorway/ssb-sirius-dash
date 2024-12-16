@@ -150,7 +150,7 @@ def kontroll(
     return decorator
 
 
-class Quality_report:
+class QualityReport:
     """A class representing the result of a quality control check.
 
     Attributes:
@@ -196,7 +196,7 @@ class Quality_report:
             "quality_control_id": self.quality_control_id,  # Trengs denne?
             "data_plassering": self.data_location,
             "data_periode": self.data_period,
-            "Quality_report opprettet": self.quality_control_datetime.isoformat(),
+            "QualityReport opprettet": self.quality_control_datetime.isoformat(),
             "typer_kontrollutslag": [
                 result.name for result in self.quality_control_results
             ],
@@ -220,14 +220,14 @@ class Quality_report:
             json.dump(self.to_dict(), outfile)
 
     @classmethod
-    def from_json(cls, path: str) -> "Quality_report":
-        """Initialize a Quality_report from a saved JSON file.
+    def from_json(cls, path: str) -> "QualityReport":
+        """Initialize a QualityReport from a saved JSON file.
 
         Args:
             path (str): Path to the JSON file.
 
         Returns:
-            Quality_report: An instance of the quality control report.
+            QualityReport: An instance of the quality control report.
         """
         import json
 
@@ -236,14 +236,14 @@ class Quality_report:
         return cls.from_dict(json_data)
 
     @classmethod
-    def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]) -> "Quality_report":
-        """Initialize a Quality_report from a dictionary.
+    def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]) -> "QualityReport":
+        """Initialize a QualityReport from a dictionary.
 
         Args:
             kvalitetsrapport_dict (dict[str, Any]): A dictionary representing the quality control report.
 
         Returns:
-            Quality_report: An instance of the quality control report.
+            QualityReport: An instance of the quality control report.
         """
         statistics_name = kvalitetsrapport_dict["statistikknavn"]
         quality_control_id = kvalitetsrapport_dict["quality_control_id"]
@@ -282,12 +282,12 @@ class Quality_report:
         )
 
 
-def lag_kvalitetsrapport(
+def create_quality_report(
     statistics_name: str,
     data_location: str,
     data_period: str,
     also_return_control_docs: bool = False,
-) -> Quality_report | tuple[Quality_report, pd.DataFrame]:
+) -> QualityReport | tuple[QualityReport, pd.DataFrame]:
     """Create a quality control report.
 
     Args:
@@ -297,7 +297,7 @@ def lag_kvalitetsrapport(
         also_return_control_docs (bool): Whether to return control documentation as part of the result.
 
     Returns:
-        Quality_report | tuple[Quality_report, pd.DataFrame]:
+        QualityReport | tuple[QualityReport, pd.DataFrame]:
             The quality control report or a tuple containing the report and control documentation.
 
     Raises:
@@ -321,7 +321,7 @@ def lag_kvalitetsrapport(
     if not any(quality_results):
         logger.info("No errors listed")
 
-    report = Quality_report(
+    report = QualityReport(
         statistics_name=statistics_name,
         quality_control_id="A reference (or link/uri) to the quality control description",
         data_location=[data_location],
@@ -338,12 +338,12 @@ def lag_kvalitetsrapport(
 
 
 def lag_kontroll_dokumentasjon(
-    quality_report: Quality_report | dict[str, Any],
+    quality_report: QualityReport | dict[str, Any],
 ) -> pd.DataFrame:
     """Create control documentation.
 
     Args:
-        quality_report (Quality_report | dict): The quality control report or its dictionary representation.
+        quality_report (QualityReport | dict): The quality control report or its dictionary representation.
 
     Returns:
         pd.DataFrame: A DataFrame containing control documentation.
@@ -352,7 +352,7 @@ def lag_kontroll_dokumentasjon(
         kontrolldokumentasjon = pd.DataFrame(
             quality_report["kontrolldokumentasjon"]
         ).T.assign(periode=quality_report["data_periode"])
-    elif isinstance(quality_report, Quality_report):
+    elif isinstance(quality_report, QualityReport):
         kontrolldokumentasjon = pd.DataFrame(
             quality_report.to_dict()["kontrolldokumentasjon"]
         ).T.assign(periode=quality_report.to_dict()["data_periode"])
