@@ -1,5 +1,23 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     custom_cell_magics: kql
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.16.2
+#   kernelspec:
+#     display_name: .venv
+#     language: python
+#     name: python3
+# ---
+
+# %%
 import logging
 
+# %%
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import duckdb
@@ -11,6 +29,7 @@ from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
 
+# %%
 logger = logging.getLogger(__name__)
 BOF_COLUMNS = [
     "orgnr",
@@ -26,7 +45,15 @@ BOF_COLUMNS = [
     "f_kommunenr",
 ]
 
+# %%
+import dapla as dp
 
+dp.read_pandas(
+    "ssb-vof-data-delt-oracle-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
+)
+
+
+# %%
 class BofInformation:
     """Tab for displaying and managing information from BoF.
 
@@ -93,10 +120,17 @@ class BofInformation:
         """
         fs = FileClient.get_gcs_file_system()
         fil_ssb_foretak = "ssb-vof-data-delt-oracle-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
-        ssb_foretak = pq.read_table(fil_ssb_foretak, columns=BOF_COLUMNS, filesystem=fs)
-        dsbbase = duckdb.connect()
-        dsbbase.register("ssb_foretak", ssb_foretak)
-        return dsbbase
+        try:
+            ssb_foretak = pq.read_table(
+                fil_ssb_foretak, columns=BOF_COLUMNS, filesystem=fs
+            )
+            dsbbase = duckdb.connect()
+            dsbbase.register("ssb_foretak", ssb_foretak)
+            return dsbbase
+        except OSError:
+            logger.error(
+                "No access to BoF in Dapla! Either remove this module from your code or apply for access."
+            )
 
     def layout(self) -> html.Div:
         """Generate the layout for the BoF Foretak tab.
