@@ -4,7 +4,7 @@ import pandas as pd
 
 from ssb_sirius_dash import ControlType
 from ssb_sirius_dash import automatisk_oppretting
-from ssb_sirius_dash import kontroll
+from ssb_sirius_dash import control
 from ssb_sirius_dash import create_quality_report
 
 # %%
