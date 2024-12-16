@@ -65,7 +65,7 @@ class ErrorReport:
         }
 
 
-def kontroll(
+def control(
     result_type: ControlType,
     error_description: str,
     id_column: str,

@@ -14,7 +14,7 @@ eksempel_data = pd.DataFrame(
 
 
 # %%
-@kontroll(
+@control(
     id_column="ident",
     result_type=ControlType.MULIG_FEIL,
     error_description="Veldig høy alder",
@@ -27,7 +27,7 @@ def min_kontrollfunksjon_1(data):
     return data
 
 
-@kontroll(
+@control(
     id_column="ident",
     result_type=ControlType.ABSOLUTT_FEIL,
     error_description="Ugyldig verdi",
