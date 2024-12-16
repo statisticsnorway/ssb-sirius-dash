@@ -12,7 +12,7 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 error_list: list[Any] = []
-kontroll_dokumentasjon: dict[str, Any] = {}
+_control_docs: dict[str, Any] = {}
 
 
 class ControlType(Enum):
@@ -126,8 +126,8 @@ def control(
             global error_list
             error_list.extend(new_error_details)
 
-            global kontroll_dokumentasjon
-            kontroll_dokumentasjon[control_function.__name__] = {
+            global _control_docs
+            _control_docs[control_function.__name__] = {
                 "kontrolltype": result_type.name,
                 "feilbeskrivelse": error_description,
                 "docstring": control_function.__doc__,
@@ -137,7 +137,7 @@ def control(
                 "Kontrollutslag": error_rows.shape[0],
             }
             if important_variables:
-                kontroll_dokumentasjon[control_function.__name__][
+                _control_docs[control_function.__name__][
                     "Relevante variabler"
                 ] = important_variables
 
@@ -206,7 +206,7 @@ class QualityReport:
             "control_documentation": (
                 self.quality_control_documentation
                 if self.quality_control_documentation is not None
-                else kontroll_dokumentasjon
+                else _control_docs
             ),
         }
 
@@ -373,9 +373,9 @@ def eimerdb_template(control_documentation: pd.DataFrame) -> list[list[Any]]:
     Notes:
         Each entry in the resulting list represents a control, including its period, ID, type, and description.
     """
-    kontroller = []
+    controls = []
     for i in control_documentation.to_dict()["control_documentation"]:
-        kontroller.append(
+        controls.append(
             [
                 control_documentation.to_dict()["data_periode"],
                 i,
@@ -387,4 +387,4 @@ def eimerdb_template(control_documentation: pd.DataFrame) -> list[list[Any]]:
                 ],
             ]
         )
-    return kontroller
+    return controls
