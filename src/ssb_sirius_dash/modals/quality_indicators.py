@@ -25,12 +25,12 @@ logger.warning(
 )
 
 
-class Kvalitetsindikatorer:
+class QualityIndicator:
     """A module for setting up the view for selected quality indicators.
 
     Attributes:
         indicators (list): A list of quality indicators.
-            Example: [KvalitetsindikatorEditeringsandel(), KvalitetsindikatorEffektaveditering()]
+            Example: [QualityIndicatorEditeringsandel(), QualityIndicatorEffektaveditering()]
 
     Notes:
         All indicators assume a long format for the data with a minimum of
@@ -83,7 +83,7 @@ class Kvalitetsindikatorer:
                     fullscreen="xxl-down",
                 ),
                 sidebar_button(
-                    "🎯", "Kvalitetsindikatorer", "sidebar-kvalitetsindikatorer-button"
+                    "🎯", "Quality indicators", "sidebar-kvalitetsindikatorer-button"
                 ),
             ]
         )
@@ -111,7 +111,7 @@ class Kvalitetsindikatorer:
             return is_open
 
 
-class KvalitetsindikatorEditeringsandel:
+class QualityIndicatorEditeringsandel:
     """Quality indicator for editing ratio.
 
     Attributes:
@@ -305,7 +305,7 @@ class KvalitetsindikatorEditeringsandel:
                 raise PreventUpdate
 
 
-class KvalitetsindikatorKontrollutslagsandel:
+class QualityIndicatorKontrollutslagsandel:
     """Indicator for displaying the percentage of possible control outcomes that trigger a flag.
 
     The control documentation must be a dataset with the following columns:
@@ -333,7 +333,7 @@ class KvalitetsindikatorKontrollutslagsandel:
         """
         if qualityreport_path and control_documentation:
             raise ValueError(
-                "Remove either control_documentation or qualityreport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of control_documentation and qualityreport_path is defined. If both are defined, it will not work."
+                "Remove either control_documentation or qualityreport_path. QualityIndicatorTreffsikkerhet() requires that only one of control_documentation and qualityreport_path is defined. If both are defined, it will not work."
             )
         if qualityreport_path:
             import json
@@ -481,7 +481,7 @@ class KvalitetsindikatorKontrollutslagsandel:
             return is_open
 
 
-class KvalitetsindikatorEffektaveditering:
+class QualityIndicatorEffektaveditering:
     """Indicator to display the effect of editing.
 
     Attributes:
@@ -684,7 +684,7 @@ class KvalitetsindikatorEffektaveditering:
                 raise PreventUpdate
 
 
-class KvalitetsindikatorTreffsikkerhet:
+class QualityIndicatorTreffsikkerhet:
     """Indicator to display the accuracy of the controls being run.
 
     Attributes:
@@ -722,7 +722,7 @@ class KvalitetsindikatorTreffsikkerhet:
         """
         if qualityreport_path and quality_report:
             raise ValueError(
-                "Remove either quality_report or qualityreport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of quality_report and qualityreport_path is defined. If both are defined, it will not work."
+                "Remove either quality_report or qualityreport_path. QualityIndicatorTreffsikkerhet() requires that only one of quality_report and qualityreport_path is defined. If both are defined, it will not work."
             )
         if qualityreport_path:
             import json
