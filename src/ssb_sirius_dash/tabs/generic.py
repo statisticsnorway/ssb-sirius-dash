@@ -1,4 +1,5 @@
 import datetime
+import logging
 from collections.abc import Callable
 from typing import Any
 
@@ -12,6 +13,7 @@ from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
+logger = logging.getLogger(__name__)
 input_options: dict[str, Input] = {
     "orgb": Input("var-bedrift", "value"),
     "orgf": Input("var-foretak", "value"),

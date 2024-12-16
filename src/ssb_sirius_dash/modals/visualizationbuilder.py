@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 import dash_ag_grid as dag
@@ -14,6 +15,8 @@ from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
 from ..utils.functions import sidebar_button
+
+logger = logging.getLogger(__name__)
 
 
 class VisualizationBuilder:

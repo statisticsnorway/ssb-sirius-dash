@@ -1,4 +1,5 @@
 import ast
+import logging
 from typing import Any
 
 import dash_ag_grid as dag
@@ -9,6 +10,8 @@ from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
+
+logger = logging.getLogger(__name__)
 
 
 class FreeSearch:

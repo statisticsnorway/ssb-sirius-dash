@@ -1,6 +1,9 @@
+import logging
+
 import dash_bootstrap_components as dbc
 from dash import html
 
+logger = logging.getLogger(__name__)
 variable_options = {
     "aar": {"title": "År", "id": "var-aar", "type": "number"},
     "termin": {"title": "Termin", "id": "var-termin", "type": "number"},

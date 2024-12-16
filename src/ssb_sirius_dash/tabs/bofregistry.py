@@ -1,3 +1,5 @@
+import logging
+
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import duckdb
@@ -9,6 +11,7 @@ from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
 
+logger = logging.getLogger(__name__)
 BOF_COLUMNS = [
     "orgnr",
     "navn",

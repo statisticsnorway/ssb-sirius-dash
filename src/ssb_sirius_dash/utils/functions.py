@@ -1,5 +1,9 @@
+import logging
+
 import dash_bootstrap_components as dbc
 from dash import html
+
+logger = logging.getLogger(__name__)
 
 
 def format_timespan(start: int | float, end: int | float) -> str:

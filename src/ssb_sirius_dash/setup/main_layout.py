@@ -1,8 +1,12 @@
+import logging
+
 import dash_bootstrap_components as dbc
 from dash import html
 
 from ..utils.functions import sidebar_button
 from .alert_handler import AlertHandler
+
+logger = logging.getLogger(__name__)
 
 
 def main_layout(

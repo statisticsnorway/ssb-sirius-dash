@@ -1,3 +1,5 @@
+import logging
+
 import dash_bootstrap_components as dbc
 from dash import Input
 from dash import Output
@@ -6,6 +8,8 @@ from dash import callback
 from dash import html
 
 from ..utils.functions import sidebar_button
+
+logger = logging.getLogger(__name__)
 
 
 class AlertHandler:
