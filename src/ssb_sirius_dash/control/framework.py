@@ -15,7 +15,7 @@ error_list: list[Any] = []
 kontroll_dokumentasjon: dict[str, Any] = {}
 
 
-class Kontrolltype(Enum):
+class ControlType(Enum):
     """Enum class representing the types of quality control checks."""
 
     AUTOMATISK_OPPRETTING = 0
@@ -29,7 +29,7 @@ class Feilrapport:
 
     Attributes:
         sub_control_id (str): Identifier for the sub control check.
-        result_type (Kontrolltype): The result type of the quality control check.
+        result_type (ControlType): The result type of the quality control check.
         context_id (str): Identifier for the context within which the error was detected.
         error_description (str, optional): A description of the error, if applicable.
         important_variables (list[str], optional): A list of important variables related to the error.
@@ -38,7 +38,7 @@ class Feilrapport:
     def __init__(
         self,
         sub_control_id: str,
-        result_type: Kontrolltype,
+        result_type: ControlType,
         context_id: str,
         error_description: str | None = None,
         important_variables: list[str] | None = None,
@@ -66,7 +66,7 @@ class Feilrapport:
 
 
 def kontroll(
-    result_type: Kontrolltype,
+    result_type: ControlType,
     error_description: str,
     id_column: str,
     filter_for_relevant_data: Callable[[pd.DataFrame], pd.DataFrame] | None = None,
@@ -75,7 +75,7 @@ def kontroll(
     """Decorator to define a quality control function.
 
     Args:
-        result_type (Kontrolltype): The type of quality control being performed.
+        result_type (ControlType): The type of quality control being performed.
         error_description (str): Description of the error being checked for.
         id_column (str): The column used to uniquely identify rows in the dataset.
         filter_for_relevant_data (Callable, optional): A function to filter relevant rows from the dataset.
@@ -159,7 +159,7 @@ class QualityReport:
         data_location (list[str]): Locations of the data checked.
         data_period (str): The period for which the data was checked.
         quality_control_datetime (datetime.datetime): The datetime when the quality control was performed.
-        quality_control_results (list[Kontrolltype]): The results of the quality control.
+        quality_control_results (list[ControlType]): The results of the quality control.
         quality_control_errors (list[Feilrapport]): Detailed errors found during the quality control.
         quality_control_documentation (dict[str, str], optional): Documentation of the quality control process.
     """
@@ -171,7 +171,7 @@ class QualityReport:
         data_location: list[str],
         data_period: str,
         quality_control_datetime: datetime.datetime,
-        quality_control_results: list[Kontrolltype],
+        quality_control_results: list[ControlType],
         quality_control_errors: list[Feilrapport],
         quality_control_documentation: dict[str, str] | None = None,
     ) -> None:
@@ -254,14 +254,14 @@ class QualityReport:
         )
 
         quality_control_results = [
-            Kontrolltype[result]
+            ControlType[result]
             for result in kvalitetsrapport_dict["typer_kontrollutslag"]
         ]
 
         quality_control_errors = [
             Feilrapport(
                 sub_control_id=error["kontrollnavn"],
-                result_type=Kontrolltype[error["kontrolltype"]],
+                result_type=ControlType[error["kontrolltype"]],
                 context_id=error["observasjon_id"],
                 error_description=error.get("feilbeskrivelse"),
                 important_variables=error.get("relevante_variabler"),
@@ -313,9 +313,9 @@ def create_quality_report(
 
     control_errors = [item for sublist in control_errors_nested for item in sublist]
 
-    quality_results: list[Kontrolltype] = []
+    quality_results: list[ControlType] = []
 
-    for i in Kontrolltype:
+    for i in ControlType:
         if any(error.result_type == i for error in control_errors):
             quality_results.append(i)
     if not any(quality_results):
