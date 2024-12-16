@@ -45,13 +45,6 @@ BOF_COLUMNS = [
     "f_kommunenr",
 ]
 
-# %%
-import dapla as dp
-
-dp.read_pandas(
-    "ssb-vof-data-delt-oracle-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
-)
-
 
 # %%
 class BofInformation:
