@@ -108,11 +108,16 @@ class BofInformation:
         Returns:
             duckdb.DuckDBPyConnection: A connection to an in-memory DuckDB instance with the BoF foretak data registered.
 
+        Raises:
+            PermissionError: If user does not have access to the BoF registry.
+            OSError: If another error occurs when trying to read data from the BoF registry.
+
         Notes:
             This function will need refactoring when a more permanent data storage for BoF is established.
         """
         fs = FileClient.get_gcs_file_system()
         fil_ssb_foretak = "ssb-vof-data-delt-oracle-prod/vof-oracle_data/klargjorte-data/ssb_foretak.parquet"
+        logger.info("Reading BoF data.")
         try:
             ssb_foretak = pq.read_table(
                 fil_ssb_foretak, columns=BOF_COLUMNS, filesystem=fs
@@ -120,10 +125,13 @@ class BofInformation:
             dsbbase = duckdb.connect()
             dsbbase.register("ssb_foretak", ssb_foretak)
             return dsbbase
-        except OSError:
-            logger.error(
-                "No access to BoF in Dapla! Either remove this module from your code or apply for access."
-            )
+        except OSError as e:
+            if "storage.objects.list access" in str(e):
+                raise PermissionError(
+                    "You do not have access to the BoF registry. Either remove this module from your code or apply for access."
+                ) from e
+            else:
+                raise e
 
     def layout(self) -> html.Div:
         """Generate the layout for the BoF Foretak tab.
