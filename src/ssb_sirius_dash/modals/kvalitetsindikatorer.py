@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 from typing import Any
 
@@ -17,8 +18,14 @@ from dash.exceptions import PreventUpdate
 from ..control.framework import QualityReport
 from ..utils.functions import sidebar_button
 
+logger = logging.getLogger(__name__)
 
-class KvalitetsindikatorerModule:
+logger.warning(
+    "This module is still in early development. Names for classes/functions in this module are subject to change with little warning."
+)
+
+
+class Kvalitetsindikatorer:
     """A module for setting up the view for selected quality indicators.
 
     Attributes:
