@@ -33,7 +33,7 @@ class Control:
 
     Attributes:
         ident (str): Name of the identification variable, e.g., 'orgf'.
-        kontroll_dokumentasjon_path (str): Path to the saved quality report in JSON format on Dapla.
+        control_documentation_path (str): Path to the saved quality report in JSON format on Dapla.
     """
 
     def __init__(self, ident: str, kvalitetsrapport_path: str) -> None:
