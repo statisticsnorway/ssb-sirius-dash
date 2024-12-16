@@ -332,12 +332,12 @@ def create_quality_report(
     )
 
     if also_return_control_docs:
-        return report, lag_kontroll_dokumentasjon(report)
+        return report, create_control_documentation(report)
     else:
         return report
 
 
-def lag_kontroll_dokumentasjon(
+def create_control_documentation(
     quality_report: QualityReport | dict[str, Any],
 ) -> pd.DataFrame:
     """Create control documentation.
