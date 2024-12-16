@@ -42,7 +42,7 @@ def test_submodule_existence() -> None:
         ("ssb_sirius_dash.modals.hb_method", "HBMethodModule"),
         ("ssb_sirius_dash.setup.main_layout", "main_layout"),
         ("ssb_sirius_dash.tabs.vof_foretak", "VoFForetakTab"),
-        ("ssb_sirius_dash.control.framework", "Kvalitetsrapport"),
+        ("ssb_sirius_dash.control.framework", "Quality_report"),
     ],
 )
 def test_specific_imports(module_path: str, symbol: str) -> None:

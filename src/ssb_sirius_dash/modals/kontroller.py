@@ -12,7 +12,7 @@ from dash import callback
 from dash import html
 from dash.exceptions import PreventUpdate
 
-from ..control.framework import Kvalitetsrapport
+from ..control.framework import Quality_report
 from ..control.framework import lag_kontroll_dokumentasjon
 from .modal_functions import sidebar_button
 
@@ -53,7 +53,7 @@ class Kontroller:
         """
         self.ident = ident_options[0][ident]
         if kvalitetsrapport_path:
-            data = Kvalitetsrapport.from_json(kvalitetsrapport_path).to_dict()
+            data = Quality_report.from_json(kvalitetsrapport_path).to_dict()
             self.kontrolltabell = lag_kontroll_dokumentasjon(data)
             self.utslagstabell = pd.DataFrame(data["kontrollutslag"])
         self.callbacks()

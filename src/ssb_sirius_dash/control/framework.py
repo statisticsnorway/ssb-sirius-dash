@@ -150,7 +150,7 @@ def kontroll(
     return decorator
 
 
-class Kvalitetsrapport:
+class Quality_report:
     """A class representing the result of a quality control check.
 
     Attributes:
@@ -196,7 +196,7 @@ class Kvalitetsrapport:
             "quality_control_id": self.quality_control_id,  # Trengs denne?
             "data_plassering": self.data_location,
             "data_periode": self.data_period,
-            "kvalitetsrapport opprettet": self.quality_control_datetime.isoformat(),
+            "Quality_report opprettet": self.quality_control_datetime.isoformat(),
             "typer_kontrollutslag": [
                 result.name for result in self.quality_control_results
             ],
@@ -220,14 +220,14 @@ class Kvalitetsrapport:
             json.dump(self.to_dict(), outfile)
 
     @classmethod
-    def from_json(cls, path: str) -> "Kvalitetsrapport":
-        """Initialize a Kvalitetsrapport from a saved JSON file.
+    def from_json(cls, path: str) -> "Quality_report":
+        """Initialize a Quality_report from a saved JSON file.
 
         Args:
             path (str): Path to the JSON file.
 
         Returns:
-            Kvalitetsrapport: An instance of the quality control report.
+            Quality_report: An instance of the quality control report.
         """
         import json
 
@@ -236,21 +236,21 @@ class Kvalitetsrapport:
         return cls.from_dict(json_data)
 
     @classmethod
-    def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]) -> "Kvalitetsrapport":
-        """Initialize a Kvalitetsrapport from a dictionary.
+    def from_dict(cls, kvalitetsrapport_dict: dict[str, Any]) -> "Quality_report":
+        """Initialize a Quality_report from a dictionary.
 
         Args:
             kvalitetsrapport_dict (dict[str, Any]): A dictionary representing the quality control report.
 
         Returns:
-            Kvalitetsrapport: An instance of the quality control report.
+            Quality_report: An instance of the quality control report.
         """
         statistics_name = kvalitetsrapport_dict["statistikknavn"]
         quality_control_id = kvalitetsrapport_dict["quality_control_id"]
         data_location = kvalitetsrapport_dict["data_plassering"]
         data_period = kvalitetsrapport_dict["data_periode"]
         quality_control_datetime = datetime.datetime.fromisoformat(
-            kvalitetsrapport_dict["kvalitetsrapport opprettet"]
+            kvalitetsrapport_dict["quality_report opprettet"]
         )
 
         quality_control_results = [
@@ -287,7 +287,7 @@ def lag_kvalitetsrapport(
     data_location: str,
     data_period: str,
     also_return_control_docs: bool = False,
-) -> Kvalitetsrapport | tuple[Kvalitetsrapport, pd.DataFrame]:
+) -> Quality_report | tuple[Quality_report, pd.DataFrame]:
     """Create a quality control report.
 
     Args:
@@ -297,7 +297,7 @@ def lag_kvalitetsrapport(
         also_return_control_docs (bool): Whether to return control documentation as part of the result.
 
     Returns:
-        Kvalitetsrapport | tuple[Kvalitetsrapport, pd.DataFrame]:
+        Quality_report | tuple[Quality_report, pd.DataFrame]:
             The quality control report or a tuple containing the report and control documentation.
 
     Raises:
@@ -321,7 +321,7 @@ def lag_kvalitetsrapport(
     if not any(quality_results):
         logger.info("No errors listed")
 
-    report = Kvalitetsrapport(
+    report = Quality_report(
         statistics_name=statistics_name,
         quality_control_id="A reference (or link/uri) to the quality control description",
         data_location=[data_location],
@@ -338,24 +338,24 @@ def lag_kvalitetsrapport(
 
 
 def lag_kontroll_dokumentasjon(
-    kvalitetsrapport: Kvalitetsrapport | dict[str, Any],
+    quality_report: Quality_report | dict[str, Any],
 ) -> pd.DataFrame:
     """Create control documentation.
 
     Args:
-        kvalitetsrapport (Kvalitetsrapport | dict): The quality control report or its dictionary representation.
+        quality_report (Quality_report | dict): The quality control report or its dictionary representation.
 
     Returns:
         pd.DataFrame: A DataFrame containing control documentation.
     """
-    if isinstance(kvalitetsrapport, dict):
+    if isinstance(quality_report, dict):
         kontrolldokumentasjon = pd.DataFrame(
-            kvalitetsrapport["kontrolldokumentasjon"]
-        ).T.assign(periode=kvalitetsrapport["data_periode"])
-    elif isinstance(kvalitetsrapport, Kvalitetsrapport):
+            quality_report["kontrolldokumentasjon"]
+        ).T.assign(periode=quality_report["data_periode"])
+    elif isinstance(quality_report, Quality_report):
         kontrolldokumentasjon = pd.DataFrame(
-            kvalitetsrapport.to_dict()["kontrolldokumentasjon"]
-        ).T.assign(periode=kvalitetsrapport.to_dict()["data_periode"])
+            quality_report.to_dict()["kontrolldokumentasjon"]
+        ).T.assign(periode=quality_report.to_dict()["data_periode"])
     kontrolldokumentasjon.index.names = ["kontroll_id"]
     kontrolldokumentasjon = kontrolldokumentasjon.reset_index()
     return kontrolldokumentasjon

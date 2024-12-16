@@ -14,7 +14,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
-from ..control.framework import Kvalitetsrapport
+from ..control.framework import Quality_report
 from .modal_functions import sidebar_button
 
 
@@ -305,19 +305,19 @@ class KvalitetsindikatorKontrollutslagsandel:
     `kontroll_id`, `Enheter kontrollert`, `Kontrollutslag`.
 
     Attributes:
-        kontrolldokumentasjon (Kvalitetsrapport | None): The quality report used for calculations.
+        kontrolldokumentasjon (Quality_report | None): The quality report used for calculations.
         kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format on Dapla.
     """
 
     def __init__(
         self,
-        kontrolldokumentasjon: Kvalitetsrapport | None = None,
+        kontrolldokumentasjon: Quality_report | None = None,
         kvalitetsrapport_path: str | None = None,
     ) -> None:
         """Initializes the control outcome ratio view for the quality indicator modal.
 
         Args:
-            kontrolldokumentasjon (Kvalitetsrapport | None): A quality report for calculation.
+            kontrolldokumentasjon (Quality_report | None): A quality report for calculation.
             kvalitetsrapport_path (str | None): File path to a saved quality report in JSON format.
 
         Raises:
@@ -687,7 +687,7 @@ class KvalitetsindikatorTreffsikkerhet:
             Used to check against control outcomes to determine if a control outcome
             likely resulted in an edit.
             Example: [(orgnr_1, variabel_1), (orgnr_1, variabel_2), (orgnr_2, variabel_1)].
-        kvalitetsrapport (Kvalitetsrapport | None):
+        quality_report (Quality_report | None):
             The quality report used for calculations.
         kvalitetsrapport_path (str | None):
             File path to a saved quality report in JSON format on Dapla.
@@ -696,7 +696,7 @@ class KvalitetsindikatorTreffsikkerhet:
     def __init__(
         self,
         get_edits_list_func: Callable[..., list[tuple[str, str]]],
-        kvalitetsrapport: Kvalitetsrapport | None = None,
+        quality_report: Quality_report | None = None,
         kvalitetsrapport_path: str | None = None,
     ) -> None:
         """Initializes the accuracy indicator view for the quality indicator modal.
@@ -704,18 +704,18 @@ class KvalitetsindikatorTreffsikkerhet:
         Args:
             get_edits_list_func (Callable):
                 Function to fetch the list of edits made to the data. The list must contain tuples, which contain the identification variable of the observation that has been changed and the variable that was changed.
-            kvalitetsrapport (Kvalitetsrapport | None):
+            quality_report (Quality_report | None):
                 Quality report for calculations.
             kvalitetsrapport_path (str | None):
                 File path to a saved quality report in JSON format.
 
         Raises:
-            ValueError: If both `kvalitetsrapport` and `kvalitetsrapport_path` are defined
+            ValueError: If both `quality_report` and `kvalitetsrapport_path` are defined
                         or if neither is provided.
         """
-        if kvalitetsrapport_path and kvalitetsrapport:
+        if kvalitetsrapport_path and quality_report:
             raise ValueError(
-                "Remove either kvalitetsrapport or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of kvalitetsrapport and kvalitetsrapport_path is defined. If both are defined, it will not work."
+                "Remove either quality_report or kvalitetsrapport_path. KvalitetsindikatorTreffsikkerhet() requires that only one of quality_report and kvalitetsrapport_path is defined. If both are defined, it will not work."
             )
         if kvalitetsrapport_path:
             import json
@@ -724,12 +724,12 @@ class KvalitetsindikatorTreffsikkerhet:
 
             with dp.FileClient.gcs_open(kvalitetsrapport_path, "r") as outfile:
                 data = json.load(outfile)
-            self.kvalitetsrapport = data
-        elif kvalitetsrapport:
-            self.kvalitetsrapport = kvalitetsrapport
+            self.quality_report = data
+        elif quality_report:
+            self.quality_report = quality_report
         else:
             raise ValueError(
-                "Either kvalitetsrapport or kvalitetsrapport_path needs to have a value."
+                "Either quality_report or kvalitetsrapport_path needs to have a value."
             )
         self.get_edits_list_func = get_edits_list_func
 
@@ -802,22 +802,22 @@ class KvalitetsindikatorTreffsikkerhet:
             dict: A dictionary where keys are control names and values are the accuracy percentage.
                   Includes a "total" key for overall accuracy.
         """
-        if isinstance(self.kvalitetsrapport, Kvalitetsrapport):
-            kvalitetsrapport = self.kvalitetsrapport.to_dict()
+        if isinstance(self.quality_report, Quality_report):
+            quality_report = self.quality_report.to_dict()
         else:
-            kvalitetsrapport = self.kvalitetsrapport
+            quality_report = self.quality_report
         edits = self.get_edits_list_func()
         treffsikkerhet = {}
         total_kontrollutslag = 0
         total_celler_markert_editert = 0
-        for i in kvalitetsrapport["kontrolldokumentasjon"]:
-            kontrollutslag = kvalitetsrapport["kontrolldokumentasjon"][i][
+        for i in quality_report["kontrolldokumentasjon"]:
+            kontrollutslag = quality_report["kontrolldokumentasjon"][i][
                 "Kontrollutslag"
             ]
             total_kontrollutslag = total_kontrollutslag + kontrollutslag
             celler_markert = [
                 (x["observasjon_id"], var)
-                for x in kvalitetsrapport["kontrollutslag"]
+                for x in quality_report["kontrollutslag"]
                 if x["kontrollnavn"] == i
                 for var in x["relevante_variabler"]
             ]
