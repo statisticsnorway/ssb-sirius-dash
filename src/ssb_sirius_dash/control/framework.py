@@ -24,7 +24,7 @@ class ControlType(Enum):
     ABSOLUTT_FEIL = 3
 
 
-class Feilrapport:
+class ErrorReport:
     """A class to detail errors found during quality control checks.
 
     Attributes:
@@ -113,7 +113,7 @@ def kontroll(
             error_rows = filtered_data[filtered_data["utslag"]]
 
             new_error_details = [
-                Feilrapport(
+                ErrorReport(
                     sub_control_id=control_function.__name__,
                     result_type=result_type,
                     context_id=row[id_column],
@@ -160,7 +160,7 @@ class QualityReport:
         data_period (str): The period for which the data was checked.
         quality_control_datetime (datetime.datetime): The datetime when the quality control was performed.
         quality_control_results (list[ControlType]): The results of the quality control.
-        quality_control_errors (list[Feilrapport]): Detailed errors found during the quality control.
+        quality_control_errors (list[ErrorReport]): Detailed errors found during the quality control.
         quality_control_documentation (dict[str, str], optional): Documentation of the quality control process.
     """
 
@@ -172,7 +172,7 @@ class QualityReport:
         data_period: str,
         quality_control_datetime: datetime.datetime,
         quality_control_results: list[ControlType],
-        quality_control_errors: list[Feilrapport],
+        quality_control_errors: list[ErrorReport],
         quality_control_documentation: dict[str, str] | None = None,
     ) -> None:
         """Initialize the quality control report."""
@@ -259,7 +259,7 @@ class QualityReport:
         ]
 
         quality_control_errors = [
-            Feilrapport(
+            ErrorReport(
                 sub_control_id=error["kontrollnavn"],
                 result_type=ControlType[error["kontrolltype"]],
                 context_id=error["observasjon_id"],
