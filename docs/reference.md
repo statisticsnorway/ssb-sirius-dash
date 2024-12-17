@@ -26,3 +26,4 @@ Subpackages
    ssb_sirius_dash.setup
    ssb_sirius_dash.tabs
    ssb_sirius_dash.utils
+```
