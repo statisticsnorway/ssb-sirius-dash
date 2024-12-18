@@ -10,7 +10,7 @@ Det du trenger for å starte er:
 
 Om du ønsker å lage **egne komponenter** til dashbordet eller bidra til å utvide rammeverket, se [contributor guide]. Her forklares rammeverket mer i dybden og noen valg som er tatt begrunnes.
 
-#### Ordliste
+## Ordliste
 
 Her finner du en kort forklaring av hva som menes med visse ord i veiledningen.
 

@@ -25,11 +25,5 @@ Subpackages
    ssb_sirius_dash.modals
    ssb_sirius_dash.setup
    ssb_sirius_dash.tabs
-
-Module contents
----------------
-
-.. automodule:: ssb_sirius_dash
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   ssb_sirius_dash.utils
+```
