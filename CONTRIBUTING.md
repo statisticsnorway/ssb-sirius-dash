@@ -40,17 +40,17 @@ Generally, in this framework, tabs are for micro-level information while modals 
 
 In order to keep the code easier to work with, describe how the required data should look instead of creating functionality to handle different formats. If a user wants to use your module, they need to do the legwork to make their data fit (within reason).
 
-### Variabelvelger (variable picker)
+### Variableselector
 
-If you need to add an alternative to the Variabelvelger, have it added into the package. In order to keep the modules cross-compatible and standardized, we do not want users to add their own custom fields.
+If you need to add an alternative to the Variableselector, have it added into the package. In order to keep the modules cross-compatible and standardized, we do not want users to add their own custom fields.
 
 #### Dynamic states
 
-In order to use the Variabelvelger in modules you can use dynamic states to include fields in callbacks.
+In order to use the Variableselector in modules you can use dynamic states to include fields in callbacks.
 
-Your component should include all variabelvelger fields that can be used as a State() in your module in the way depicted below.
+Your component should include all Variableselector fields that can be used as a State() in your module in the way depicted below.
 
-Firstly include the supported Variabelvelger options for your module:
+Firstly include the supported Variableselector options for your module:
 
     states_options = [
         {
@@ -117,7 +117,7 @@ Each module is written as a class containing its layout and callbacks:
                     return not is_open
                 return is_open
 
-### Deliberate design choices
+### Design choices
 
 #### Include the layout as a method in the class
 
@@ -147,8 +147,28 @@ An example of a use-case for this is a function to get/transform data to adhere 
 
 As our goal is to make a library of easily reusable, customizable and expandable modules/views we have decided to avoid using AiO when possible. They require more complicated syntax and it requires more effort to understand and contribute, which we want to avoid.
 
+### Tips and tricks
 
+#### Common annotations for callbacks to make mypy happy
 
+- rowData: list[dict[str, Any]]
+- columnDefs: list[dict[str, str]]
+- clickData: dict[str, list[dict[str, Any]]]
+
+#### Raise PreventUpdate early when possible
+
+It is usually more readable to have PreventUpdate show up early and raised if some condition is not fulfilled, rather than have it as the "else" part of the logic. For short callbacks it doesn't make a huge difference, but for complex or long callbacks it helps a lot to have PreventUpdate at the beginning.
+
+See simple example below.
+
+    @callback(
+        Output("some-component", "some-attribute"),
+        Input("some-button", "n_clicks")
+    )
+    def some_callback(n_clicks):
+        if not n_clicks:
+            raise PreventUpdate
+        return some_output
 
 
 ## How to set up your development environment
