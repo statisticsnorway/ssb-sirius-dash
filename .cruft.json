@@ -1,7 +1,7 @@
 {
   "template": "https://github.com/statisticsnorway/ssb-pypitemplate.git",
-  "commit": "364d8a1371f3eefd7228f0189126db6ba96e76ee",
-  "checkout": "2024.11.26",
+  "commit": "66884cffa5aa67ed505bb121009501b51cc4d847",
+  "checkout": "2025.1.14",
   "context": {
     "cookiecutter": {
       "project_name": "ssb-sirius-dash",
@@ -23,7 +23,8 @@
         "lstrip_blocks": true,
         "trim_blocks": true
       },
-      "_template": "https://github.com/statisticsnorway/ssb-pypitemplate.git"
+      "_template": "https://github.com/statisticsnorway/ssb-pypitemplate.git",
+      "_commit": "66884cffa5aa67ed505bb121009501b51cc4d847"
     }
   },
   "directory": null

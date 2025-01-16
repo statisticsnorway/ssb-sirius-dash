@@ -1,0 +1,8 @@
+diff a/.cookiecutter.json b/.cookiecutter.json	(rejected hunks)
+@@ -1,5 +1,5 @@
+ {
+-  "_commit": "364d8a1371f3eefd7228f0189126db6ba96e76ee",
++  "_commit": "66884cffa5aa67ed505bb121009501b51cc4d847",
+   "_copy_without_render": [
+     "*.rst_t"
+   ],
