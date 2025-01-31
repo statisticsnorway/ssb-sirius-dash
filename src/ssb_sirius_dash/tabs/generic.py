@@ -1,4 +1,3 @@
-import datetime
 import logging
 from collections.abc import Callable
 from typing import Any
@@ -12,6 +11,8 @@ from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
+
+from ..setup.alert_handler import create_alert
 
 logger = logging.getLogger(__name__)
 input_options: dict[str, Input] = {
@@ -247,18 +248,23 @@ class EditingTable:
                     self.database, variable, new_value, row_id, tabell, *args
                 )
 
-                new_alert = dbc.Alert(
-                    f"{datetime.datetime.now()} - {variable} updatert fra {old_value} til {new_value}",
-                    color="info",
-                    dismissable=True,
+                error_log.append(
+                    create_alert(
+                        f"{variable} updatert fra {old_value} til {new_value}",
+                        "info",
+                        ephemeral=True,
+                    )
                 )
 
-                return [new_alert, *error_log]
+                return error_log
 
             except Exception:
-                new_alert = dbc.Alert(
-                    f"{datetime.datetime.now()} - Oppdatering av {variable} fra {old_value} til {new_value} feilet!",
-                    color="danger",
-                    dismissable=True,
+                error_log.append(
+                    create_alert(
+                        f"Oppdatering av {variable} fra {old_value} til {new_value} feilet!",
+                        "info",
+                        ephemeral=True,
+                    )
                 )
-                return [new_alert, *error_log]
+
+                return error_log

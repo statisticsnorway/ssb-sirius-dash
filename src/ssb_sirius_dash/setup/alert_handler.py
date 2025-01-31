@@ -1,10 +1,15 @@
+import datetime
 import logging
+import time
 
 import dash_bootstrap_components as dbc
+from dash import ALL
 from dash import Input
 from dash import Output
 from dash import State
 from dash import callback
+from dash import ctx
+from dash import dcc
 from dash import html
 
 from ..utils.functions import sidebar_button
@@ -12,74 +17,100 @@ from ..utils.functions import sidebar_button
 logger = logging.getLogger(__name__)
 
 
+def create_alert(message: str, color: str = "info", ephemeral: bool = False) -> dict:
+    """Create a standardized alert record.
+    - color: typically 'info', 'warning', or 'danger'
+    - ephemeral=True => the alert also appears top-center for 4s
+                        (but remains in the store for the modal).
+    """
+    return {
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "message": message,
+        "color": color,
+        "ephemeral": ephemeral,
+        # used to track how long it's been visible if ephemeral
+        "created_at": time.time(),
+    }
+
+
 class AlertHandler:
-    """Handler class to manage and display alerts within the application.
-
-    This class provides functionality to:
-    - Display alerts categorized as "info", "warning", or "danger".
-    - Filter alerts based on their type using buttons.
-    - Maintain a modal interface for viewing alerts.
-
-    Methods:
-        layout(): Generates the layout for the alert modal and sidebar button.
-        callbacks(): Defines and registers Dash callbacks for managing alerts.
+    """Manages alerts:
+    - A modal that displays all alerts (filterable, dismissable).
+    - An ephemeral "top-middle" area showing alerts for 4s, but not removed from store.
     """
 
     def __init__(self) -> None:
-        """Initialize the AlertHandler class and set up the callbacks."""
         self.callbacks()
 
     def layout(self) -> html.Div:
-        """Generate the layout for the alert modal and sidebar button.
-
-        Returns:
-            html.Div: The layout containing the modal and the sidebar button.
+        """Returns a Div containing:
+        - dcc.Store for all alerts
+        - dcc.Store for current filter
+        - fixed container for ephemeral alerts
+        - interval to drive ephemeral updates
+        - a modal with filter buttons and a dismissable alert container
+        - a button to open the modal
         """
         return html.Div(
             [
+                # Stores for alerts and filter
+                dcc.Store(id="alert_store", data=[]),
+                dcc.Store(id="alert_filter", data="all"),
+                # Container for ephemeral alerts.
+                html.Div(
+                    id="alert_ephemeral_container",
+                    style={
+                        "position": "fixed",
+                        "top": "10px",
+                        "left": "50%",
+                        "transform": "translateX(-50%)",
+                        "zIndex": 2000,
+                    },
+                ),
+                dcc.Interval(
+                    id="alert_ephemeral_interval", interval=4000, n_intervals=0
+                ),  # Unsure of performance, check if maybe it should update less often.
                 dbc.Modal(
                     [
                         dbc.ModalHeader(dbc.ModalTitle("Feilmeldinger")),
                         dbc.ModalBody(
                             [
+                                # Filter buttons
                                 dbc.Row(
-                                    children=[
+                                    [
                                         dbc.Col(
                                             dbc.Button(
-                                                "Vis alle beskjeder",
-                                                id="error_log_button_show_all",
-                                            ),
-                                            width="auto",  # Adjust width as needed
-                                        ),
-                                        dbc.Col(
-                                            dbc.Button(
-                                                "Vis kun info",
-                                                id="error_log_button_show_info",
+                                                "Vis alle", id="alert_filter_all"
                                             ),
                                             width="auto",
                                         ),
                                         dbc.Col(
                                             dbc.Button(
-                                                "Vis kun advarsler",
-                                                id="error_log_button_show_warning",
+                                                "Vis kun info", id="alert_filter_info"
                                             ),
                                             width="auto",
                                         ),
                                         dbc.Col(
                                             dbc.Button(
-                                                "Vis kun feil",
-                                                id="error_log_button_show_danger",
+                                                "Vis kun advarsel",
+                                                id="alert_filter_warning",
+                                            ),
+                                            width="auto",
+                                        ),
+                                        dbc.Col(
+                                            dbc.Button(
+                                                "Vis kun feil", id="alert_filter_danger"
                                             ),
                                             width="auto",
                                         ),
                                     ],
                                     className="mb-3",
                                 ),
-                                dbc.Row(html.Div(id="error_log"), className="g-3"),
+                                html.Div(id="alert_modal_container"),
                             ]
                         ),
                     ],
-                    id="alerts-modal",
+                    id="alerts_modal",
                     size="xl",
                     fullscreen="xxl-down",
                 ),
@@ -87,96 +118,130 @@ class AlertHandler:
             ]
         )
 
-    def callbacks(self) -> None:
-        """Define and register the Dash callbacks for the alert modal and alerts."""
-
+    def callbacks(self):
         @callback(  # type: ignore[misc]
-            Output("sidebar-alerts-button", "children"),
-            Input("error_log", "children"),
-        )
-        def feilmelding_update_button_label(alerts: list[dbc.Alert]) -> str:
-            """Updates the label on the button for opening error logs with the current number of errors.
-
-            Args:
-                alerts (list): List of existing errors.
-
-            Returns:
-                str: New label with the count of errors.
-            """
-            return f"Feilmeldinger: {len(alerts)}"  # Should probably rather be len alert for alert in alerts where style == visible or something
-
-        @callback(  # type: ignore[misc]
-            Output("alerts-modal", "is_open"),
+            Output("alerts_modal", "is_open"),
             Input("sidebar-alerts-button", "n_clicks"),
-            State("alerts-modal", "is_open"),
+            State("alerts_modal", "is_open"),
+            prevent_initial_call=True,
         )
-        def feilmelding_toggle(n: int | None, is_open: bool) -> bool:
-            """Toggle the state of the modal window.
-
-            Args:
-                n (int | None): Number of clicks on the toggle button. None if never clicked.
-                is_open (bool): Current state of the modal (open/closed).
-
-            Returns:
-                bool: New state of the modal (open/closed).
-            """
+        def toggle_modal(n, is_open):
+            """Open/close the error log modal."""
             if n:
                 return not is_open
             return is_open
 
         @callback(  # type: ignore[misc]
-            Output("error_log", "children"),
-            [
-                Input("error_log_button_show_all", "n_clicks"),
-                Input("error_log_button_show_info", "n_clicks"),
-                Input("error_log_button_show_warning", "n_clicks"),
-                Input("error_log_button_show_danger", "n_clicks"),
-            ],
-            State("error_log", "children"),
+            Output("alert_filter", "data"),
+            Input("alert_filter_all", "n_clicks"),
+            Input("alert_filter_info", "n_clicks"),
+            Input("alert_filter_warning", "n_clicks"),
+            Input("alert_filter_danger", "n_clicks"),
+            prevent_initial_call=True,
         )
-        def filter_alerts(
-            show_all: int | None,
-            show_info: int | None,
-            show_warning: int | None,
-            show_danger: int | None,
-            current_alerts: list[dbc.Alert] | None,
-        ) -> list[dbc.Alert]:
-            """Filter alerts based on the button clicked.
+        def set_filter(_, __, ___, ____):
+            """Update the filter store based on which filter button was clicked."""
+            triggered_id = ctx.triggered_id if hasattr(ctx, "triggered_id") else None
+            if triggered_id == "alert_filter_info":
+                return "info"
+            elif triggered_id == "alert_filter_warning":
+                return "warning"
+            elif triggered_id == "alert_filter_danger":
+                return "danger"
+            else:
+                return "all"
 
-            Args:
-                show_all (int | None): Clicks for "Show All" button.
-                show_info (int | None): Clicks for "Show Info" button.
-                show_warning (int | None): Clicks for "Show Warning" button.
-                show_danger (int | None): Clicks for "Show Danger" button.
-                current_alerts (list[dbc.Alert] | None): Current list of alerts.
-
-            Returns:
-                list[dbc.Alert]: Filtered alerts as a list of Dash components.
-
-            Notes:
-                - If no filters are clicked, all alerts are displayed.
-                - Filters alerts by `level` ("info", "warning", "danger").
+        @callback(  # type: ignore[misc]
+            Output("alert_modal_container", "children"),
+            Input("alert_store", "data"),
+            Input("alert_filter", "data"),
+        )
+        def show_modal_alerts(alerts, current_filter):
+            """Display the alerts in the modal, filtered by color/type.
+            Each alert is dismissable with a pattern-matching ID.
             """
-            if not current_alerts:
+            if not alerts:
                 return []
 
-            if show_info:
-                level = "info"
-            elif show_warning:
-                level = "warning"
-            elif show_danger:
-                level = "danger"
-            else:
-                return [
-                    dbc.Alert(alert["message"], color=alert["color"], dismissable=True)
-                    for alert in current_alerts
-                ]
+            # Filter by color if not "all"
+            if current_filter != "all":
+                alerts = [a for a in alerts if a["color"] == current_filter]
 
-            filtered_alerts = [
-                alert for alert in current_alerts if alert.get("level") == level
+            # Build dismissable alerts
+            components = []
+            for i, alert_data in enumerate(alerts):
+                components.append(
+                    dbc.Alert(
+                        [
+                            html.Span(
+                                alert_data["timestamp"] + " ", className="text-muted"
+                            ),
+                            alert_data["message"],
+                        ],
+                        color=alert_data["color"],
+                        dismissable=True,
+                        is_open=True,
+                        id={"type": "modal_alert", "index": i},
+                        className="mb-2",
+                    )
+                )
+            return components
+
+        @callback(  # type: ignore[misc]
+            Output("alert_store", "data", allow_duplicate=True),
+            Input({"type": "modal_alert", "index": ALL}, "is_open"),
+            State("alert_store", "data"),
+            prevent_initial_call=True,
+        )
+        def remove_dismissed_alerts(is_open_list, current_alerts):
+            """If the user dismisses an alert in the modal (clicks 'x'),
+            remove that alert from the store.
+            """
+            if not current_alerts or not is_open_list:
+                return current_alerts
+
+            new_list = []
+            display_index = 0
+            for alert_item in current_alerts:
+                if display_index < len(is_open_list):
+                    if is_open_list[display_index]:  # still open => keep
+                        new_list.append(alert_item)
+                    display_index += 1
+                else:
+                    # Not displayed (perhaps filtered out?), so keep
+                    new_list.append(alert_item)
+
+            return new_list
+
+        @callback(  # type: ignore[misc]
+            Output("alert_ephemeral_container", "children"),
+            Input("alert_ephemeral_interval", "n_intervals"),
+            State("alert_store", "data"),
+        )
+        def display_ephemeral_alerts(_, alerts):
+            """Show ephemeral alerts at top-center for 4 seconds.
+            We do NOT remove them from the store, so they remain visible in the modal.
+            """
+            if not alerts:
+                return []
+
+            now = time.time()
+            ephemeral_alerts = [
+                a
+                for a in alerts
+                if a.get("ephemeral", False) and (now - a["created_at"] < 4)
             ]
 
-            return [
-                dbc.Alert(alert["message"], color=alert["color"], dismissable=True)
-                for alert in filtered_alerts
-            ]
+            comps = []
+            for a in ephemeral_alerts:
+                comps.append(
+                    dbc.Alert(
+                        [
+                            html.Small(a["timestamp"] + ": ", className="text-muted"),
+                            a["message"],
+                        ],
+                        color=a["color"],
+                        className="mb-2",
+                    )
+                )
+            return comps
