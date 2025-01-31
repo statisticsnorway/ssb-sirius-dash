@@ -54,7 +54,9 @@ class AlertHandler:
         return html.Div(
             [
                 # Stores for alerts and filter
-                dcc.Store(id="alert_store", data=[]),
+                dcc.Store(
+                    id="alert_store", data=[create_alert("Application started", "info")]
+                ),
                 dcc.Store(id="alert_filter", data="all"),
                 # Container for ephemeral alerts.
                 html.Div(
@@ -68,7 +70,7 @@ class AlertHandler:
                     },
                 ),
                 dcc.Interval(
-                    id="alert_ephemeral_interval", interval=4000, n_intervals=0
+                    id="alert_ephemeral_interval", interval=1000, n_intervals=0
                 ),  # Unsure of performance, check if maybe it should update less often.
                 dbc.Modal(
                     [
