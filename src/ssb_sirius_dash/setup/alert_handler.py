@@ -1,6 +1,7 @@
 import datetime
 import logging
 import time
+from typing import Any
 
 import dash_bootstrap_components as dbc
 from dash import ALL
@@ -121,13 +122,18 @@ class AlertHandler:
         )
 
     def callbacks(self):
+        """Register Dash callbacks for the Alert handler functionality.
+
+        Notes:
+            - Alerts must be added to each callback.
+        """
         @callback(  # type: ignore[misc]
             Output("alerts_modal", "is_open"),
             Input("sidebar-alerts-button", "n_clicks"),
             State("alerts_modal", "is_open"),
             prevent_initial_call=True,
         )
-        def toggle_modal(n, is_open):
+        def toggle_modal(n: int | None, is_open: bool):
             """Open/close the error log modal."""
             if n:
                 return not is_open
@@ -141,7 +147,7 @@ class AlertHandler:
             Input("alert_filter_danger", "n_clicks"),
             prevent_initial_call=True,
         )
-        def set_filter(_, __, ___, ____):
+        def set_filter(_:int | None, __:int | None, ___:int | None, ____:int | None):
             """Update the filter store based on which filter button was clicked."""
             triggered_id = ctx.triggered_id if hasattr(ctx, "triggered_id") else None
             if triggered_id == "alert_filter_info":
@@ -158,8 +164,9 @@ class AlertHandler:
             Input("alert_store", "data"),
             Input("alert_filter", "data"),
         )
-        def show_modal_alerts(alerts, current_filter):
+        def show_modal_alerts(alerts: list[dict[str, Any]], current_filter: str):
             """Display the alerts in the modal, filtered by color/type.
+
             Each alert is dismissable with a pattern-matching ID.
             """
             if not alerts:
@@ -195,8 +202,10 @@ class AlertHandler:
             State("alert_store", "data"),
             prevent_initial_call=True,
         )
-        def remove_dismissed_alerts(is_open_list, current_alerts):
-            """If the user dismisses an alert in the modal (clicks 'x'),
+        def remove_dismissed_alerts(is_open_list, current_alerts: list[dict[str, Any]]):
+            """Removes dismissed alerts. 
+            
+            If the user dismisses an alert in the modal (clicks 'x'),
             remove that alert from the store.
             """
             if not current_alerts or not is_open_list:
@@ -220,8 +229,9 @@ class AlertHandler:
             Input("alert_ephemeral_interval", "n_intervals"),
             State("alert_store", "data"),
         )
-        def display_ephemeral_alerts(_, alerts):
+        def display_ephemeral_alerts(_: int, alerts: list[dict[str, Any]]):
             """Show ephemeral alerts at top-center for 4 seconds.
+            
             We do NOT remove them from the store, so they remain visible in the modal.
             """
             if not alerts:
