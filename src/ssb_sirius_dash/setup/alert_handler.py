@@ -172,7 +172,7 @@ class AlertHandler:
             Input("alert_store", "data"),
             Input("alert_filter", "data"),
         )
-        def show_modal_alerts(alerts: list[dict[str, Any]], current_filter: str):
+        def show_modal_alerts(alerts: list[dict[str, Any]], current_filter: str) -> list[dbc.Alert]:
             """Display the alerts in the modal, filtered by color/type.
 
             Each alert is dismissable with a pattern-matching ID.
@@ -210,7 +210,7 @@ class AlertHandler:
             State("alert_store", "data"),
             prevent_initial_call=True,
         )
-        def remove_dismissed_alerts(is_open_list, current_alerts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        def remove_dismissed_alerts(is_open_list: list[dbc.Alert], current_alerts: list[dict[str, Any]]) -> list[dict[str, Any]]:
             """Removes dismissed alerts.
 
             If the user dismisses an alert in the modal (clicks 'x'),
