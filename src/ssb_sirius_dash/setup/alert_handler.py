@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 def create_alert(message: str, color: str = "info", ephemeral: bool = False) -> dict:
     """Create a standardized alert record.
+
     - color: typically 'info', 'warning', or 'danger'
     - ephemeral=True => the alert also appears top-center for 4s
                         (but remains in the store for the modal).
@@ -36,21 +37,25 @@ def create_alert(message: str, color: str = "info", ephemeral: bool = False) -> 
 
 class AlertHandler:
     """Manages alerts:
+    
     - A modal that displays all alerts (filterable, dismissable).
     - An ephemeral "top-middle" area showing alerts for 4s, but not removed from store.
     """
 
     def __init__(self) -> None:
+        """Initializes the AlertHandler module.
+        """
         self.callbacks()
 
     def layout(self) -> html.Div:
-        """Returns a Div containing:
-        - dcc.Store for all alerts
-        - dcc.Store for current filter
-        - fixed container for ephemeral alerts
-        - interval to drive ephemeral updates
-        - a modal with filter buttons and a dismissable alert container
-        - a button to open the modal
+        """Returns a Div containing.
+
+        - dcc.Store for all alerts.
+        - dcc.Store for current filter.
+        - fixed container for ephemeral alerts.
+        - interval to drive ephemeral updates.
+        - a modal with filter buttons and a dismissable alert container.
+        - a button to open the modal.
         """
         return html.Div(
             [
@@ -121,7 +126,7 @@ class AlertHandler:
             ]
         )
 
-    def callbacks(self):
+    def callbacks(self) -> None:
         """Register Dash callbacks for the Alert handler functionality.
 
         Notes:
