@@ -18,7 +18,9 @@ from ..utils.functions import sidebar_button
 logger = logging.getLogger(__name__)
 
 
-def create_alert(message: str, color: str = "info", ephemeral: bool = False) -> dict[str, Any]:
+def create_alert(
+    message: str, color: str = "info", ephemeral: bool = False
+) -> dict[str, Any]:
     """Create a standardized alert record.
 
     - color: typically 'info', 'warning', or 'danger'
@@ -36,15 +38,14 @@ def create_alert(message: str, color: str = "info", ephemeral: bool = False) -> 
 
 
 class AlertHandler:
-    """Manages alerts:
+    """Manages alerts.
 
     - A modal that displays all alerts (filterable, dismissable).
     - An ephemeral "top-middle" area showing alerts for 4s, but not removed from store.
     """
 
     def __init__(self) -> None:
-        """Initializes the AlertHandler module.
-        """
+        """Initializes the AlertHandler module."""
         self.callbacks()
 
     def layout(self) -> html.Div:
@@ -172,7 +173,9 @@ class AlertHandler:
             Input("alert_store", "data"),
             Input("alert_filter", "data"),
         )
-        def show_modal_alerts(alerts: list[dict[str, Any]], current_filter: str) -> list[dbc.Alert]:
+        def show_modal_alerts(
+            alerts: list[dict[str, Any]], current_filter: str
+        ) -> list[dbc.Alert]:
             """Display the alerts in the modal, filtered by color/type.
 
             Each alert is dismissable with a pattern-matching ID.
@@ -210,7 +213,9 @@ class AlertHandler:
             State("alert_store", "data"),
             prevent_initial_call=True,
         )
-        def remove_dismissed_alerts(is_open_list: list[dbc.Alert], current_alerts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        def remove_dismissed_alerts(
+            is_open_list: list[dbc.Alert], current_alerts: list[dict[str, Any]]
+        ) -> list[dict[str, Any]]:
             """Removes dismissed alerts.
 
             If the user dismisses an alert in the modal (clicks 'x'),
@@ -237,7 +242,9 @@ class AlertHandler:
             Input("alert_ephemeral_interval", "n_intervals"),
             State("alert_store", "data"),
         )
-        def display_ephemeral_alerts(_: int, alerts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        def display_ephemeral_alerts(
+            _: int, alerts: list[dict[str, Any]]
+        ) -> list[dict[str, Any]]:
             """Show ephemeral alerts at top-center for 4 seconds.
 
             We do NOT remove them from the store, so they remain visible in the modal.
