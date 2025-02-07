@@ -163,6 +163,15 @@ As our goal is to make a library of easily reusable, customizable and expandable
 
 ### Tips and tricks
 
+#### Fix mypy complaining about callbacks
+
+Add "# type: ignore[misc]" to decorator to avoid mypy reporting it as an error.
+
+    @callback(  # type: ignore[misc]
+        Input(),
+        Output()
+    )
+
 #### Common annotations for callbacks to make mypy happy
 
 - rowData: list[dict[str, Any]]
