@@ -125,9 +125,9 @@ Third add *dynamic_states in the callback to make the values included in the cal
         *dynamic_states,
     )
 
-
-
 ### Design choices
+
+Throughout development we have made some conscious choices regarding the structure of the code and how to solve certain issues. In order to simplify reuse and maintenance, we wish to keep the code style similar across different modules. 
 
 #### Include the layout as a method in the class
 
@@ -137,7 +137,7 @@ While not all modules will need parameters to its layout, it will be confusing f
 
 #### Use @callback
 
-In order for this to work you need to use @callback and not @app.callback. This is to make the callback code more modular and simplifying imports.
+In order for this code structure to work you need to use @callback and not @app.callback. This is to make the callback code more modular and simplifying imports.
 
 More information: https://community.plotly.com/t/dash-2-0-prerelease-candidate-available/55861#from-dash-import-callback-clientside_callback-5
 
