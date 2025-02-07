@@ -70,9 +70,9 @@ class AlertHandler:
                     id="alert_ephemeral_container",
                     style={
                         "position": "fixed",
-                        "top": "10px",
-                        "left": "50%",
-                        "transform": "translateX(-50%)",
+                        "bottom": "10px",
+                        "left": "15%",
+                        "transform": "translateX(-85%)",
                         "zIndex": 2000,
                     },
                 ),
