@@ -65,7 +65,7 @@ First add this to your pyproject.toml:
 Then run this command, optionally with --allow-prereleases
 
 ```console
-poetry add --source testpypi PACKAGE_NAME  --allow-prereleases
+poetry add --source testpypi ssb-sirius-dash  --allow-prereleases
 ```
 
 ## Usage
