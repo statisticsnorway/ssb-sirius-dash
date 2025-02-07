@@ -77,6 +77,9 @@ Please see the [Reference Guide] for details.
 Contributions are very welcome.
 To learn more, see the [Contributor Guide].
 
+We are following the gitflow workflow, meaning that the main branch is the release version, while development happens on the develop branch.
+An explanation of how gitflow works can be found here: https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow
+
 ## License
 
 Distributed under the terms of the [GNU license][license],
