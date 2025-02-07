@@ -8,7 +8,11 @@ Det du trenger for å starte er:
     - For eksempel [EimerDB](https://github.com/statisticsnorway/ssb-eimerdb)
 -
 
-Om du ønsker å lage **egne komponenter** til dashbordet eller bidra til å utvide rammeverket, se [contributor guide]. Her forklares rammeverket mer i dybden og noen valg som er tatt begrunnes.
+Om du ønsker å lage **egne komponenter** til dashbordet eller bidra til å utvide rammeverket, se [contributor guide].
+
+I den filen finner du:
+- Mer detaljerte forklaringer om koden i rammeverket.
+- Forklaring av tekniske valg som er tatt begrunnes.
 
 ## Ordliste
 
@@ -29,15 +33,15 @@ Som bruker kan du gjøre endringer i variabelvelgeren, modalene og tabs. Det er 
 
 Variabelvelgeren fungerer som et felles punkt for informasjon som skal deles mellom ulike modaler og tabs i appen. Hvis du for eksempel sjekker et skjermbilde hvor det vises en enhet som du vil se på i et annet skjermbilde, så kan du i noen moduler klikke på enheten for å få enheten sin id overført til variabelvelgeren. Variabelvelgeren vil da formidle at det er den enheten vi vil se på til de andre modulene i appen slik at alle viser den samme enheten. På samme måte, hvis du vet at det er én spesifikk enhet du skal se på kan du skrive den direkte inn i variabelvelgeren.
 
-### Variabelvelger
+### Variabelvelger / Variable selector
 
-Dette er limet som holder applikasjonen sammen og gjør at de ulike komponentene kan dele informasjon. Den skal brukes av andre moduler for å koordinere visninger mellom moduler og gjøre at du kan endre f.eks. næringskoden i variabelvelgeren, og alle skjermbilder vil vise informasjon om enheter med den næringskoden.
+Dette er limet som holder applikasjonen sammen og gjør at de ulike komponentene kan dele informasjon. Den brukes av andre moduler for å koordinere visninger mellom moduler. Dette gjør at du kan endre f.eks. næringskoden i variabelvelgeren, og alle skjermbilder vil vise informasjon om enheter med den næringskoden.
 
-Variabelvelgeren skal gi inputs til andre skjermbilder og fungere som et søkefelt, den skal __ikke__ brukes for å vise informasjon om enheten man er inne på.
+Variabelvelgeren skal gi inputs til andre skjermbilder og fungerer som søkefelt. Den skal __ikke__ brukes for å vise informasjon om enheten man er inne på.
 
 For å sikre standardisering og gjenbruk ønsker vi ikke at hver enkelt bruker skal legge inn sine egne alternativer til variabelvelgeren. Gi beskjed hvis du mener det mangler en variabel blant alternativene, det er vanligvis lett å fikse!
 
-### Modaler
+### Modaler / Modals
 
 Modaler er funksjonalitet som finnes med knapper i venstre marg. De åpner nye skjermbilder og har spesifikke bruksområder.
 
@@ -47,7 +51,7 @@ kontroll_modal = Kontroller.layout()
 modals = [kontroll_modal] # Sett inn flere modaler her
 ```
 
-### Tabs
+### Faner / Tabs
 
 Tabs er faner i skjermbildet som viser mer enhet-spesifikk informasjon
 
@@ -56,6 +60,9 @@ Tabs er faner i skjermbildet som viser mer enhet-spesifikk informasjon
 ### Anbefalt datastruktur
 
 ## Sette opp rammeverket
+
+Se over dokumentasjonen for å finne ut hvilke moduler/funksjonaliteter du ønsker i din applikasjon.
+- Merk at noen moduler krever mer tilpasning enn andre.
 
 ### Ekstra steg hvis du bruker jupyter
 
