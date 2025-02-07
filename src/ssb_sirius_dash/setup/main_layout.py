@@ -43,7 +43,7 @@ def main_layout(
             ]
         )
     ]
-    modal_list = [varvelger_toggle, *modal_list]
+    modal_list = varvelger_toggle + modal_list
     selected_tab_list = [dbc.Tab(tab.layout(), label=tab.label) for tab in tab_list]
     layout = dbc.Container(
         [
