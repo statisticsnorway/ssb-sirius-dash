@@ -1,4 +1,3 @@
-import datetime
 import logging
 from collections.abc import Callable
 from typing import Any
@@ -12,6 +11,8 @@ from dash.dependencies import Input
 from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
+
+from ..utils.alert_handler import create_alert
 
 logger = logging.getLogger(__name__)
 input_options: dict[str, Input] = {
@@ -199,7 +200,7 @@ class EditingTable:
         def update_table(
             edited: list[dict[str, dict[str, Any] | Any]],
             tabell: str,
-            error_log: list[dbc.Alert],
+            error_log: list[dict[str, Any]],
             *dynamic_states: list[str],
         ) -> dbc.Alert:
             """Update the database based on edits made in the AgGrid table.
@@ -247,18 +248,23 @@ class EditingTable:
                     self.database, variable, new_value, row_id, tabell, *args
                 )
 
-                new_alert = dbc.Alert(
-                    f"{datetime.datetime.now()} - {variable} updatert fra {old_value} til {new_value}",
-                    color="info",
-                    dismissable=True,
+                error_log.append(
+                    create_alert(
+                        f"{variable} updatert fra {old_value} til {new_value}",
+                        "info",
+                        ephemeral=True,
+                    )
                 )
 
-                return [new_alert, *error_log]
+                return error_log
 
             except Exception:
-                new_alert = dbc.Alert(
-                    f"{datetime.datetime.now()} - Oppdatering av {variable} fra {old_value} til {new_value} feilet!",
-                    color="danger",
-                    dismissable=True,
+                error_log.append(
+                    create_alert(
+                        f"Oppdatering av {variable} fra {old_value} til {new_value} feilet!",
+                        "info",
+                        ephemeral=True,
+                    )
                 )
-                return [new_alert, *error_log]
+
+                return error_log
