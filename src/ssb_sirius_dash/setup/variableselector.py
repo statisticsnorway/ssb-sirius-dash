@@ -1,7 +1,13 @@
 import logging
 
 import dash_bootstrap_components as dbc
+from dash import Input
+from dash import Output
+from dash import State
+from dash import callback
 from dash import html
+
+from ..utils.alert_handler import create_alert
 
 logger = logging.getLogger(__name__)
 variable_options = {
@@ -58,7 +64,29 @@ def create_variable_card(
             style={"max-height": "100%"},
         )
     )
+    make_alert_callback(component_id, text)
     return card
+
+
+def make_alert_callback(component_id: str, component_name: str):
+    @callback(
+        Output("error_log", "children", allow_duplicate=True),
+        Input(component_id, "value"),
+        State("error_log", "children"),
+        prevent_initial_call=True,
+    )
+    def alert_connection(value, error_log):
+        error_log.append(
+            create_alert(
+                f"Oppdatering av variabelvelger: {component_name} til {value}",
+                "info",
+                ephemeral=True,
+            )
+        )
+        return error_log
+
+    alert_connection.__name__ = f"alert_connection_{component_id}"
+    return alert_connection
 
 
 def create_variable_selector_content(
