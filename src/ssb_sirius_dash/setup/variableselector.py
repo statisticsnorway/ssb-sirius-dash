@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 import dash_bootstrap_components as dbc
 from dash import Input
@@ -64,18 +65,23 @@ def create_variable_card(
             style={"max-height": "100%"},
         )
     )
-    make_alert_callback(component_id, text)
+    _make_alert_callback(
+        component_id, text
+    )  # Should be made optional, maybe as an argument in main_layout
     return card
 
 
-def make_alert_callback(component_id: str, component_name: str):
-    @callback(
-        Output("error_log", "children", allow_duplicate=True),
+def _make_alert_callback(component_id: str, component_name: str):
+    """Utility function to add alerts to updates on the variable selector."""
+
+    @callback(  # type: ignore[misc]
+        Output("alert_store", "data", allow_duplicate=True),
         Input(component_id, "value"),
-        State("error_log", "children"),
+        State("alert_store", "data"),
         prevent_initial_call=True,
     )
-    def alert_connection(value, error_log):
+    def alert_connection(value: Any, error_log: list[dict[str, Any]]):
+        """Alert callback connecting variable picker card to the alert handler."""
         error_log.append(
             create_alert(
                 f"Oppdatering av variabelvelger: {component_name} til {value}",
@@ -83,6 +89,7 @@ def make_alert_callback(component_id: str, component_name: str):
                 ephemeral=True,
             )
         )
+        print(error_log)
         return error_log
 
     alert_connection.__name__ = f"alert_connection_{component_id}"

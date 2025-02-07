@@ -200,7 +200,7 @@ class EditingTable:
         def update_table(
             edited: list[dict[str, dict[str, Any] | Any]],
             tabell: str,
-            error_log: list[dbc.Alert],
+            error_log: list[dict[str, Any]],
             *dynamic_states: list[str],
         ) -> dbc.Alert:
             """Update the database based on edits made in the AgGrid table.
