@@ -12,7 +12,7 @@ from dash.dependencies import Output
 from dash.dependencies import State
 from dash.exceptions import PreventUpdate
 
-from ..setup.alert_handler import create_alert
+from ..utils.alert_handler import create_alert
 
 logger = logging.getLogger(__name__)
 input_options: dict[str, Input] = {
