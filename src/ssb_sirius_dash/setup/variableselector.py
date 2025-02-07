@@ -72,7 +72,9 @@ def create_variable_card(
     return card
 
 
-def _make_alert_callback(component_id: str, component_name: str) -> Callable:
+def _make_alert_callback(
+    component_id: str, component_name: str
+) -> Callable[[Any, list[dict[str, Any]]], list[dict[str, Any]]]:
     """Utility function to add alerts to updates on the variable selector."""
 
     @callback(  # type: ignore[misc]
