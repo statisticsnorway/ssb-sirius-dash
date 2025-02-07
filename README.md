@@ -48,6 +48,25 @@ You can install _SSB Sirius Dash_ via [pip] from [PyPI]:
 ```console
 pip install ssb-sirius-dash
 ```
+or using poetry:
+```console
+poetry add ssb-sirius-dash
+```
+
+### Installing the development version
+
+First add this to your pyproject.toml:
+
+> [tool.poetry.source]<br>
+> name = "testpypi"<br>
+> url = "https://test.pypi.org/simple"<br>
+> default = false<br>
+
+Then run this command, optionally with --allow-prereleases
+
+```console
+poetry add --source testpypi PACKAGE_NAME  --allow-prereleases
+```
 
 ## Usage
 
