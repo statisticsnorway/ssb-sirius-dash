@@ -80,7 +80,9 @@ def _make_alert_callback(component_id: str, component_name: str):
         State("alert_store", "data"),
         prevent_initial_call=True,
     )
-    def alert_connection(value: Any, error_log: list[dict[str, Any]]):
+    def alert_connection(
+        value: Any, error_log: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Alert callback connecting variable picker card to the alert handler."""
         error_log.append(
             create_alert(
@@ -89,7 +91,6 @@ def _make_alert_callback(component_id: str, component_name: str):
                 ephemeral=True,
             )
         )
-        print(error_log)
         return error_log
 
     alert_connection.__name__ = f"alert_connection_{component_id}"
