@@ -8,7 +8,9 @@ from dash import State
 from dash import callback
 from dash import html
 
-from ..utils.alert_handler import create_alert
+# +
+# from ..utils.alert_handler import create_alert
+# -
 
 logger = logging.getLogger(__name__)
 variable_options = {
@@ -24,6 +26,70 @@ variable_options = {
     "prodcomkode": {"title": "Prodcomkode", "id": "var-prodcomkode", "type": "text"},
     "nspekfelt": {"title": "NSPEK-felt", "id": "var-nspekfelt", "type": "text"},
 }
+
+
+# +
+class VariableSelector:
+    """Singleton"""
+
+    _variableselectoroptions = []
+
+    def __str__(self):
+        return ("Current options:\n") + self._variableselectoroptions[0].__str__()
+
+
+class VariableSelectorOption:
+
+    def __init__(
+        self, variable_name, variable_title, variable_id, variable_type, input_state
+    ):
+        self.name = variable_name
+        self.title = variable_title
+        self.id = variable_id
+        self.type = variable_type
+        self.input_state = input_state
+
+        VariableSelector._variableselectoroptions.append(self)
+
+    def is_valid(self):
+        pass
+
+    def __str__(self):
+        return (
+            f"Name: {self.name}\n"
+            f"Title: {self.title}\n"
+            f"Id: {self.id}\n"
+            f"Type: {self.type}\n"
+            f"input_state: {self.input_state}"
+        )
+
+    @staticmethod
+    def variableoptionstocallback():
+        """Add this inside the @callback(*VariableSelectorOption.variableoptionstocallback())"""
+        return [
+            Input(VariableOption.id, "value")
+            for VariableOption in VariableSelectorOption._variableselectoroptions
+            if VariableOption.input_state == "Input"
+        ] + [
+            State(VariableOption.id, "value")
+            for VariableOption in VariableSelectorOption._variableselectoroptions
+            if VariableOption.input_state == "State"
+        ]
+
+
+# -
+
+VariableSelectorOption("orgf", "Organisasjonsnummer", "var-orgf", "text", "Input")
+VariableSelectorOption("aar", "År", "var-aar", "number", "State")
+VariableSelectorOption("nace", "Nace", "var-nace", "text", "State")
+
+VariableSelector._variableselectoroptions
+
+print(VariableSelector())
+
+print(VariableSelector._variableselectoroptions[0])
+
+VariableSelectorOption.variableoptionstocallback()
 
 
 def create_variable_card(
