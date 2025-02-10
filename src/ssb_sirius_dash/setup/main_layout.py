@@ -58,7 +58,7 @@ def main_layout(
                 id="main-layout",
                 style={
                     "height": "100vh",
-                    "overflow": "hidden",
+                    "overflow": "auto",
                     "display": "grid",
                     "grid-template-columns": "5% 95%",
                 },
