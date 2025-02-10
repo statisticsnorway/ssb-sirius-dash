@@ -57,7 +57,7 @@ poetry add ssb-sirius-dash
 
 First add this to your pyproject.toml:
 
-> [tool.poetry.source]<br>
+> [[tool.poetry.source]]<br>
 > name = "testpypi"<br>
 > url = "https://test.pypi.org/simple"<br>
 > default = false<br>
