@@ -14,7 +14,6 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
-from ..kostra_r_wrapper import hb_method
 from ..utils.functions import format_timespan
 from ..utils.functions import sidebar_button
 
