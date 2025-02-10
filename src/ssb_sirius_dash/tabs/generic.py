@@ -190,10 +190,10 @@ class EditingTable:
                 raise e
 
         @callback(  # type: ignore[misc]
-            Output("error_log", "children", allow_duplicate=True),
+            Output("alert_store", "data", allow_duplicate=True),
             Input("tab-tabelleditering-table1", "cellValueChanged"),
             State("tab-tabelleditering-dd1", "value"),
-            State("error_log", "children"),
+            State("alert_store", "data"),
             *dynamic_states,
             prevent_initial_call=True,
         )
