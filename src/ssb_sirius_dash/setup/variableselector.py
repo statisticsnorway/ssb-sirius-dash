@@ -19,7 +19,7 @@ class VariableSelector:
 
     _variableselectoroptions = []
 
-    def __init__(self, selected_inputs, selected_states):
+    def __init__(self, selected_inputs, selected_states, default_values = None):
         self.options = [option.title for option in self._variableselectoroptions]
         self.inputs = [
             Input(option.id, "value")
@@ -31,6 +31,8 @@ class VariableSelector:
             for option in self._variableselectoroptions
             if option.title in selected_states
         ]
+        #if default_values:
+        #    something...
         # self.is_valid()
 
     def is_valid(self):
