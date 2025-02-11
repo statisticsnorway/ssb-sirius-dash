@@ -13,19 +13,6 @@ from dash import html
 # -
 
 logger = logging.getLogger(__name__)
-variable_options = {
-    "aar": {"title": "År", "id": "var-aar", "type": "number"},
-    "termin": {"title": "Termin", "id": "var-termin", "type": "number"},
-    "maaned": {"title": "Måned", "id": "var-maaned", "type": "number"},
-    "nace": {"title": "Nace", "id": "var-nace", "type": "text"},
-    "oppgavegiver": {"title": "Oppgavegiver", "id": "var-oppgavegiver", "type": "text"},
-    "foretak": {"title": "Foretak", "id": "var-foretak", "type": "text"},
-    "bedrift": {"title": "Bedrift", "id": "var-bedrift", "type": "text"},
-    "fylke": {"title": "Fylke", "id": "var-fylke", "type": "text"},
-    "skjemaenhet": {"title": "Skjemaenhet", "id": "var-skjemaenhet", "type": "text"},
-    "prodcomkode": {"title": "Prodcomkode", "id": "var-prodcomkode", "type": "text"},
-    "nspekfelt": {"title": "NSPEK-felt", "id": "var-nspekfelt", "type": "text"},
-}
 
 
 class VariableSelector:
@@ -201,12 +188,24 @@ class VariableSelectorOption:
         pass
 
     def __str__(self):
-        return f"Title: {self.title}\n" f"Id: {self.id}\n" f"Type: {self.type}\n"
+        return f"Title: {self.title}\nId: {self.id}\nType: {self.type}\n"
 
 
-VariableSelectorOption("orgf", "text")
+"""Here we define some default values that are available from the get-go"""
+# Periods
 VariableSelectorOption("aar", "number")
+VariableSelectorOption("termin", "number")
+VariableSelectorOption("måned", "number")
+# Groupings
 VariableSelectorOption("nace", "text")
+VariableSelectorOption("fylke", "text")
+VariableSelectorOption("nspekfelt", "text")
+VariableSelectorOption("prodcomkode", "text")
+# Identifiers
+VariableSelectorOption("oppgavegiver", "text")
+VariableSelectorOption("foretak", "text")
+VariableSelectorOption("bedrift", "text")
+VariableSelectorOption("skjemaenhet", "text")
 
 VariableSelector._variableselectoroptions
 
