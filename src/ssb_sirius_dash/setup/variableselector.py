@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 
 class VariableSelector:
-
+    """Bruk setters og getters to make class usable for functions.
+    """
     _variableselectoroptions = []
 
     def __init__(self, selected_inputs, selected_states, default_values = None):
@@ -31,9 +32,13 @@ class VariableSelector:
             for option in self._variableselectoroptions
             if option.title in selected_states
         ]
+        self.selected_variables = [*selected_inputs, *selected_states]
+
+        #self.is_valid()
+        
         #if default_values:
-        #    something...
-        # self.is_valid()
+        #    self.default_values_is_valid()
+
 
     def is_valid(self):
         """Not working atm"""
@@ -48,6 +53,16 @@ class VariableSelector:
                 raise ValueError(
                     f"Received {selected_state}, expected one of {valid_options}"
                 )
+
+    def default_values_is_valid():
+        pass
+
+    def get_callback_components():
+        return [*self.inputs, *self.states]
+
+    def get_callback_args():
+        return self.selected_variables
+
 
     def _create_variable_card(
         text: str,
@@ -120,7 +135,7 @@ class VariableSelector:
         alert_connection.__name__ = f"alert_connection_{component_id}"
         return alert_connection
 
-    def layout(
+    def layout(self,
         selected_keys: list[str],
         default_values: dict[str, str | float | int] | None = None,
     ) -> list[dbc.Col]:
@@ -145,7 +160,8 @@ class VariableSelector:
             - The `variable_options` dictionary provides configuration for each card, including its title, ID, and type.
             - If `selected_keys` includes keys not found in `variable_options`, those keys are ignored.
         """
-        if default_values is None:
+        selected_keys = self.selected_variables
+        if self.default_values is None:
             default_values = {}
         cards_list = []
         for key in selected_keys:
