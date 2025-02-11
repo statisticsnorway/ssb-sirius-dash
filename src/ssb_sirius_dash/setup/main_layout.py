@@ -3,7 +3,7 @@ import logging
 import dash_bootstrap_components as dbc
 from dash import html
 
-from variableselector import VariableSelector
+from .variableselector import VariableSelector
 from ..utils.alert_handler import AlertHandler
 from ..utils.functions import sidebar_button
 

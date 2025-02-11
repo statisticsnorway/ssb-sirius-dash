@@ -33,6 +33,7 @@ class VariableSelector:
             if option.title in selected_states
         ]
         self.selected_variables = [*selected_inputs, *selected_states]
+        self.default_values = default_values
 
         #self.is_valid()
         
@@ -54,17 +55,23 @@ class VariableSelector:
                     f"Received {selected_state}, expected one of {valid_options}"
                 )
 
-    def default_values_is_valid():
+    def default_values_is_valid(self):
         pass
 
-    def get_callback_components():
+    def get_option(self, variable_name):
+        for option in self._variableselectoroptions:
+            if option.title == variable_name:
+                return option
+    
+    def get_callback_components(self):
         return [*self.inputs, *self.states]
 
-    def get_callback_args():
+    def get_callback_args(self):
         return self.selected_variables
 
 
     def _create_variable_card(
+        self,
         text: str,
         component_id: str,
         input_type: str,
@@ -105,12 +112,12 @@ class VariableSelector:
                 style={"max-height": "100%"},
             )
         )
-        _make_alert_callback(
+        self._make_alert_callback(
             component_id, text
         )  # Should be made optional, maybe as an argument in main_layout
         return card
 
-    def _make_alert_callback(component_id: str, component_name: str) -> Any:
+    def _make_alert_callback(self, component_id: str, component_name: str) -> Any:
         """Utility function to add alerts to updates on the variable selector."""
 
         @callback(  # type: ignore[misc]
@@ -136,8 +143,8 @@ class VariableSelector:
         return alert_connection
 
     def layout(self,
-        selected_keys: list[str],
-        default_values: dict[str, str | float | int] | None = None,
+#        selected_keys: list[str],
+#        default_values: dict[str, str | float | int] | None = None,
     ) -> list[dbc.Col]:
         """Generate a list of Dash Bootstrap cards based on selected variable keys.
 
@@ -160,11 +167,20 @@ class VariableSelector:
             - The `variable_options` dictionary provides configuration for each card, including its title, ID, and type.
             - If `selected_keys` includes keys not found in `variable_options`, those keys are ignored.
         """
-        selected_keys = self.selected_variables
         if self.default_values is None:
             default_values = {}
-        cards_list = []
-        for key in selected_keys:
+        else:
+            default_values = self.default_values
+        layout = []
+        for variable in self.selected_variables:
+            option = self.get_option(variable)
+            print(option)
+            card = self._create_variable_card(
+                text=option.title, component_id=option.id, input_type=option.type, value=default_values.get(option.title, None)
+            )
+            layout.append(card)
+        return layout
+        if False:
             card_config = variable_options.get(key)
             if card_config is None:
                 raise KeyError(
