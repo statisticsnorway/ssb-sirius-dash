@@ -8,9 +8,7 @@ from dash import State
 from dash import callback
 from dash import html
 
-# +
-# from ..utils.alert_handler import create_alert
-# -
+from ..utils.alert_handler import create_alert
 
 logger = logging.getLogger(__name__)
 
