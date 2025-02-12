@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 class VariableSelector:
-    """Bruk setters og getters to make class usable for functions.
-    """
+    """Bruk setters og getters to make class usable for functions."""
+
     _variableselectoroptions = []
 
-    def __init__(self, selected_inputs, selected_states, default_values = None):
+    def __init__(self, selected_inputs, selected_states, default_values=None):
         self.options = [option.title for option in self._variableselectoroptions]
         self.inputs = selected_inputs
         self.states = selected_states
@@ -26,24 +26,48 @@ class VariableSelector:
         self.default_values = default_values
 
         self.is_valid()
-        
+
         if default_values:
             self.default_values_is_valid()
 
-
     def is_valid(self):
-        valid_states_inputs = [option.title for option in VariableSelector._variableselectoroptions]
-        print(valid_states_inputs)
+        valid_states_inputs = [
+            option.title for option in VariableSelector._variableselectoroptions
+        ]
         for _input in self.inputs:
-            print(_input)
-            print(self.inputs)
-            print(type(self.inputs))
             if _input not in valid_states_inputs:
-                raise ValueError(f"Invalid value for selected_inputs. Received {_input}. Expected one of {valid_states_inputs}")
-        
+                raise ValueError(
+                    f"Invalid value for selected_inputs. Received {_input}. Expected one of {valid_states_inputs}"
+                )
+        for _state in self.states:
+            if _state not in valid_states_inputs:
+                raise ValueError(
+                    f"Invalid value for selected_states. Received {_state}. Expected one of {valid_states_inputs}"
+                )
 
     def default_values_is_valid(self):
-        pass
+        if not isinstance(self.default_values, dict):
+            raise TypeError(
+                f"Expected default_values to be dict, received {type(self.default_values)}"
+            )
+        valid_states_inputs = [
+            option.title for option in VariableSelector._variableselectoroptions
+        ]
+        for key in self.default_values:
+            if key not in valid_states_inputs:
+                raise KeyError(
+                    f"Invalid key for default_values. Received {key}. Expected one of {valid_states_inputs}"
+                )
+            if self.get_option(key).type == "text":
+                if not isinstance(self.default_values[key], str):
+                    raise TypeError(
+                        f"Invalid type for {key} in default_value. Received type {type(self.default_values[key])} Expected string."
+                    )
+            if self.get_option(key).type == "number":
+                if not isinstance(self.default_values[key], (int, float)):
+                    raise TypeError(
+                        f"Invalid type for {key} in default_value. Received type {type(self.default_values[key])} Expected int or float."
+                    )
 
     def get_option(self, variable_name):
         for option in self._variableselectoroptions:
@@ -56,7 +80,7 @@ class VariableSelector:
             for option in self._variableselectoroptions
             if option.title in self.inputs
         ]
-    
+
     def get_states(self):
         return [
             State(option.id, "value")
@@ -66,18 +90,19 @@ class VariableSelector:
 
     def get_output_object(self, variable):
         if variable not in [option.title for option in self._variableselectoroptions]:
-            raise ValueError(f"Invalid variable name, expected one of {[option.title for option in self._variableselectoroptions]}. Received {variable}")
+            raise ValueError(
+                f"Invalid variable name, expected one of {[option.title for option in self._variableselectoroptions]}. Received {variable}"
+            )
         option = self.get_option(variable)
         return Output(option.id, "value", allow_duplicate=True)
 
-    def get_callback_args(self, inputs=False, states= False):
+    def get_callback_args(self, inputs=False, states=False):
         args = []
         if inputs:
             False
         if states:
             False
         return args
-
 
     def _create_variable_card(
         self,
@@ -151,9 +176,10 @@ class VariableSelector:
         alert_connection.__name__ = f"alert_connection_{component_id}"
         return alert_connection
 
-    def layout(self,
-#        selected_keys: list[str],
-#        default_values: dict[str, str | float | int] | None = None,
+    def layout(
+        self,
+        #        selected_keys: list[str],
+        #        default_values: dict[str, str | float | int] | None = None,
     ) -> list[dbc.Col]:
         """Generate a list of Dash Bootstrap cards based on selected variable keys.
 
@@ -185,7 +211,10 @@ class VariableSelector:
             option = self.get_option(variable)
             print(option)
             card = self._create_variable_card(
-                text=option.title, component_id=option.id, input_type=option.type, value=default_values.get(option.title, None)
+                text=option.title,
+                component_id=option.id,
+                input_type=option.type,
+                value=default_values.get(option.title, None),
             )
             layout.append(card)
         return layout
@@ -203,7 +232,9 @@ class VariableSelectorOption:
     def is_valid(self):
         valid_types = ["text", "number"]
         if self.type not in valid_types:
-            raise ValueError(f"Invalid value for variable_type. Expected one of {valid_types}, received {self.type}")
+            raise ValueError(
+                f"Invalid value for variable_type. Expected one of {valid_types}, received {self.type}"
+            )
 
     def __str__(self):
         return f"Title: {self.title}\nId: {self.id}\nType: {self.type}\n"
