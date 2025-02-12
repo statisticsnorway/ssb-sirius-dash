@@ -14,6 +14,7 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
+from ..setup.variableselector import VariableSelector
 from ..kostra_r_wrapper import hb_method
 from ..utils.functions import format_timespan
 from ..utils.functions import sidebar_button
@@ -72,10 +73,13 @@ class HBMethod:
             variable (str): Name of the value variable to analyze using the HB method.
         """
         self.selected_ident = selected_ident
+        self.variable = variable
+        self.variableselector = VariableSelector(selected_ident, selected_state_keys)
         self.database = database
         self.hb_get_data = hb_get_data_func
         self.callbacks(selected_state_keys, selected_ident, variable)
 
+    
     def make_hb_data(
         self,
         data_df: pd.DataFrame,
@@ -103,19 +107,18 @@ class HBMethod:
             p_c=pc,
             p_u=pu,
             p_a=pa,
-            id_field_name=ident,
-            x_1_field_name=variable,
-            x_2_field_name=f"{variable}_1",
+            id_field_name=self.selected_ident,
+            x_1_field_name=self.variable,
+            x_2_field_name=f"{self.variable}_1",
         )
 
         return hb_result.sort_values(by=["maxX"])
 
-    def make_hb_figure(self, data: pd.DataFrame, variable: str) -> go.Figure:
+    def make_hb_figure(self, data: pd.DataFrame) -> go.Figure:
         """Creates a Plotly figure for visualizing HB method results.
 
         Args:
             data (pandas.DataFrame): Processed data from the HB method, including outlier and limit values.
-            variable (str): Name of the value variable for the method.
 
         Returns:
             plotly.graph_objects.Figure: Plotly figure with scatter plots for observations and limits.
@@ -148,7 +151,7 @@ class HBMethod:
             paper_bgcolor="#1F2833",
             font_color="white",
         )
-        fig.update_xaxes(title=variable, range=[0, max(x) * 1.05])
+        fig.update_xaxes(title=self.variable, range=[0, max(x) * 1.05])
         fig.update_yaxes(title="Forholdstallet")
 
         return fig
@@ -318,12 +321,14 @@ class HBMethod:
             running the HB method, toggling the modal, and passing results to `variabelvelger`.
         """
         time.time()
-        states_dict = states_options[0]
-        dynamic_states = [
-            State(states_dict[key][0], states_dict[key][1])
-            for key in selected_state_keys
-        ]
-
+        
+        #states_dict = states_options[0]
+        #dynamic_states = [
+        #    State(states_dict[key][0], states_dict[key][1])
+        #    for key in selected_state_keys
+        #]
+        dynamic_states = self.variableselector.states
+        print(dynamic_states)
         ident = ident_options[0][selected_ident]
         component_id, property_name = ident
         output_object = Output(component_id, property_name, allow_duplicate=True)
@@ -378,7 +383,7 @@ class HBMethod:
                 data = self.make_hb_data(data, pc, pu, pa, selected_ident, variable)
                 end_time = time.time()
                 logger.info(format_timespan(start_time, end_time))
-                return self.make_hb_figure(data, variable)
+                return self.make_hb_figure(data)
             else:
                 raise PreventUpdate
 
