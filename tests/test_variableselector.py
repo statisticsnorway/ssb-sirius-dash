@@ -2,9 +2,7 @@ from collections.abc import Generator
 
 import pytest
 
-from ssb_sirius_dash.setup.variableselector import VariableSelector
-from ssb_sirius_dash.setup.variableselector import VariableSelectorOption
-
+from ssb_sirius_dash.setup.variableselector import VariableSelector, VariableSelectorOption
 
 @pytest.fixture(autouse=True)
 def clear_VariableSelector_variableselectoroptions() -> Generator[None, None, None]:
@@ -32,7 +30,7 @@ def test_empty_variableselectoroptions_at_start() -> None:
 
     # We create a VariableSelector instance.
     # It should see 0 codes because none have been created.
-    variableselector = VariableSelector([""], [""])
+    variableselector = VariableSelector([], [])
     assert len(variableselector.options) == 0
 
 
@@ -43,13 +41,13 @@ def test_add_one_code() -> None:
     1) The code is actually in the registry.
     2) VariableSelector sees exactly one code.
     """
-    code = VariableSelectorOption(  # Note, "code =" can be removed without losing functionality, is only here to make sure it is added correctly.
+    code = VariableSelectorOption( # Note, "code =" can be removed without losing functionality, is only here to make sure it is added correctly.
         "foretak", "text"
     )
     assert len(VariableSelector._variableselectoroptions) == 1
     assert code in VariableSelector._variableselectoroptions
 
-    variableselector = VariableSelector([""], [""])
+    variableselector = VariableSelector([], [])
     assert len(variableselector.options) == 1
     assert variableselector.options[0] == "foretak"
 
@@ -61,5 +59,5 @@ def test_no_codes_again() -> None:
     clears the registry so we start this test with zero codes.
     """
     assert len(VariableSelector._variableselectoroptions) == 0
-    variableselector = VariableSelector([""], [""])
+    variableselector = VariableSelector([], [])
     assert len(variableselector.options) == 0
