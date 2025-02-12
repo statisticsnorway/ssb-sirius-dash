@@ -72,16 +72,19 @@ class HBMethod:
             selected_ident (str): Identifier used for grouping or unique identification in the data.
             variable (str): Name of the value variable to analyze using the HB method.
         """
+
         self.selected_ident = selected_ident
         self.variable = variable
-        self.variableselector = VariableSelector(selected_ident, selected_state_keys)
-        self.is_valid()
         self.database = database
         self.hb_get_data = hb_get_data_func
+        self.is_valid() # Needs to happen before VariableSelector
+
+        self.variableselector = VariableSelector([selected_ident], selected_state_keys)
         self.callbacks()
 
     def is_valid(self):
-        pass
+        if not isinstance(self.selected_ident, str):
+            raise ValueError(f"selected_ident should be type str, received {type(self.selected_ident)}")
     
     def make_hb_data(
         self,

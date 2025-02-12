@@ -25,25 +25,22 @@ class VariableSelector:
         self.selected_variables = [*selected_inputs, *selected_states]
         self.default_values = default_values
 
-        #self.is_valid()
+        self.is_valid()
         
-        #if default_values:
-        #    self.default_values_is_valid()
+        if default_values:
+            self.default_values_is_valid()
 
 
     def is_valid(self):
-        """Not working atm"""
-        valid_options = [x.title for x in self._variableselectoroptions]
-        for selected_input in self.inputs:
-            if selected_input not in valid_options:
-                raise ValueError(
-                    f"Received {selected_input}, expected one of {valid_options}"
-                )
-        for selected_state in self.states:
-            if selected_state not in valid_options:
-                raise ValueError(
-                    f"Received {selected_state}, expected one of {valid_options}"
-                )
+        valid_states_inputs = [option.title for option in VariableSelector._variableselectoroptions]
+        print(valid_states_inputs)
+        for _input in self.inputs:
+            print(_input)
+            print(self.inputs)
+            print(type(self.inputs))
+            if _input not in valid_states_inputs:
+                raise ValueError(f"Invalid value for selected_inputs. Received {_input}. Expected one of {valid_states_inputs}")
+        
 
     def default_values_is_valid(self):
         pass
@@ -227,11 +224,3 @@ VariableSelectorOption("oppgavegiver", "text")
 VariableSelectorOption("foretak", "text")
 VariableSelectorOption("bedrift", "text")
 VariableSelectorOption("skjemaenhet", "text")
-
-VariableSelector._variableselectoroptions
-
-print(VariableSelector._variableselectoroptions[0])
-
-demo = VariableSelector(selected_inputs=["orgf"], selected_states=["aar", "nace"])
-
-demo.states
