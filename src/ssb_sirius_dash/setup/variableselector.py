@@ -178,33 +178,6 @@ class VariableSelector:
             )
             layout.append(card)
         return layout
-        if False:
-            card_config = variable_options.get(key)
-            if card_config is None:
-                raise KeyError(
-                    f"Key '{key}' not found in variable_options. Accepted values are: {variable_options.keys()}"
-                )
-
-            title = card_config.get("title")
-            if title is None:
-                raise KeyError(f"Key 'title' is missing in configuration for '{key}'")
-            card_id = card_config.get("id")
-            if card_id is None:
-                raise KeyError(f"Key 'id' is missing in configuration for '{key}'")
-            card_type = card_config.get("type")
-            if card_type is None:
-                raise KeyError(f"Key 'type' is missing in configuration for '{key}'")
-            value = default_values.get(key, None)
-            if value is not None and not isinstance(value, (str | float | int)):
-                raise ValueError(
-                    f"Value for '{key}' must be of type str, float or int. Got {type(value).__name__}"
-                )
-
-            card = create_variable_card(
-                text=title, component_id=card_id, input_type=card_type, value=value
-            )
-            cards_list.append(card)
-        return cards_list
 
 
 class VariableSelectorOption:
