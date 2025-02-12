@@ -75,10 +75,13 @@ class HBMethod:
         self.selected_ident = selected_ident
         self.variable = variable
         self.variableselector = VariableSelector(selected_ident, selected_state_keys)
+        self.is_valid()
         self.database = database
         self.hb_get_data = hb_get_data_func
-        self.callbacks(selected_state_keys, selected_ident, variable)
+        self.callbacks()
 
+    def is_valid(self):
+        pass
     
     def make_hb_data(
         self,
@@ -307,7 +310,7 @@ class HBMethod:
         )
 
     def callbacks(
-        self, selected_state_keys: list[str], selected_ident: str, variable: str
+        self
     ) -> None:
         """Registers callbacks for the HB method Dash app components.
 
@@ -322,16 +325,9 @@ class HBMethod:
         """
         time.time()
         
-        #states_dict = states_options[0]
-        #dynamic_states = [
-        #    State(states_dict[key][0], states_dict[key][1])
-        #    for key in selected_state_keys
-        #]
-        dynamic_states = self.variableselector.states
-        print(dynamic_states)
-        ident = ident_options[0][selected_ident]
-        component_id, property_name = ident
-        output_object = Output(component_id, property_name, allow_duplicate=True)
+        dynamic_states = self.variableselector.get_states()
+        output_object = self.variableselector.get_output_object(variable = self.selected_ident)
+#        output_object = Output(component_id, property_name, allow_duplicate=True)
 
         @callback(  # type: ignore[misc]
             Output("hb_figure", "figure"),
@@ -360,14 +356,17 @@ class HBMethod:
                 PreventUpdate: If no button click is detected.
             """
             start_time = time.time()
-            states_values = dynamic_states[: len(selected_state_keys)]
+
+            
+        
+            states_values = dynamic_states[: len(self.variableselector.states)]
             state_params = {
                 key: value
-                for key, value in zip(selected_state_keys, states_values, strict=False)
+                for key, value in zip(self.variableselector.states, states_values, strict=False)
             }
 
             args: list[Any] = []
-            for key in selected_state_keys:
+            for key in self.variableselector.states:
                 var = state_params.get(key)
                 if var is not None:
                     args.append(var)
@@ -379,8 +378,8 @@ class HBMethod:
                 )  # TODO: Hva gjør dette egentlig? Burde omformuleres/dokumenteres
 
             if n_click:
-                data = self.hb_get_data(self.database, *args)
-                data = self.make_hb_data(data, pc, pu, pa, selected_ident, variable)
+                data = self.hb_get_data(self.database, *args) # *args må forklares, kanskje denne biten burde bli refactored?
+                data = self.make_hb_data(data, pc, pu, pa, self.selected_ident, self.variable)
                 end_time = time.time()
                 logger.info(format_timespan(start_time, end_time))
                 return self.make_hb_figure(data)

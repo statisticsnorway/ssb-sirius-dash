@@ -20,16 +20,8 @@ class VariableSelector:
 
     def __init__(self, selected_inputs, selected_states, default_values = None):
         self.options = [option.title for option in self._variableselectoroptions]
-        self.inputs = [
-            Input(option.id, "value")
-            for option in self._variableselectoroptions
-            if option.title in selected_inputs
-        ]
-        self.states = [
-            State(option.id, "value")
-            for option in self._variableselectoroptions
-            if option.title in selected_states
-        ]
+        self.inputs = selected_inputs
+        self.states = selected_states
         self.selected_variables = [*selected_inputs, *selected_states]
         self.default_values = default_values
 
@@ -60,12 +52,34 @@ class VariableSelector:
         for option in self._variableselectoroptions:
             if option.title == variable_name:
                 return option
-    
-    def get_callback_components(self):
-        return [*self.inputs, *self.states]
 
-    def get_callback_args(self):
-        return self.selected_variables
+    def get_inputs(self):
+        return [
+            Input(option.id, "value")
+            for option in self._variableselectoroptions
+            if option.title in self.inputs
+        ]
+    
+    def get_states(self):
+        return [
+            State(option.id, "value")
+            for option in self._variableselectoroptions
+            if option.title in self.states
+        ]
+
+    def get_output_object(self, variable):
+        if variable not in [option.title for option in self._variableselectoroptions]:
+            raise ValueError(f"Invalid variable name, expected one of {[option.title for option in self._variableselectoroptions]}. Received {variable}")
+        option = self.get_option(variable)
+        return Output(option.id, "value", allow_duplicate=True)
+
+    def get_callback_args(self, inputs=False, states= False):
+        args = []
+        if inputs:
+            False
+        if states:
+            False
+        return args
 
 
     def _create_variable_card(
@@ -190,7 +204,9 @@ class VariableSelectorOption:
         VariableSelector._variableselectoroptions.append(self)
 
     def is_valid(self):
-        pass
+        valid_types = ["text", "number"]
+        if self.type not in valid_types:
+            raise ValueError(f"Invalid value for variable_type. Expected one of {valid_types}, received {self.type}")
 
     def __str__(self):
         return f"Title: {self.title}\nId: {self.id}\nType: {self.type}\n"
