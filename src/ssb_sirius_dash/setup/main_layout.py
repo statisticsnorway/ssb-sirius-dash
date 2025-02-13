@@ -3,6 +3,7 @@ import logging
 import dash_bootstrap_components as dbc
 from dash import html
 
+from .variableselector import VariableSelector
 from ..utils.alert_handler import AlertHandler
 from ..utils.functions import sidebar_button
 
@@ -10,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def main_layout(
-    modal_list: list[html.Div], tab_list: list[html.Div], variable_list: list[html.Div]
+    modal_list: list[html.Div], tab_list: list[html.Div], variable_list: list[str], default_values: dict[str, any] | None = None
 ) -> dbc.Container:
     """Generate the main layout for the Dash application.
 
@@ -29,7 +30,9 @@ def main_layout(
     Notes:
         - The function includes an alert handler modal and a toggle button for the variable selector.
         - Each tab in `tab_list` must implement a `layout()` method and have a `label` attribute.
-    """
+    """    
+    variable_selector = VariableSelector(selected_states = variable_list,selected_inputs = [], default_values= default_values) # Because inputs and states don't matter in main_layout, everything is put into the VariableSelector as states. Every module defines its own VariableSelector that sets up interactions. This is to simplify it for the user while maintaining flexibility.
+    
     alerthandler = AlertHandler()
     alerthandler_layout = alerthandler.layout()
     modal_list = [alerthandler_layout, *modal_list]
@@ -75,7 +78,7 @@ def main_layout(
                     html.Div(
                         children=[
                             html.Div(
-                                dbc.Row(children=variable_list),
+                                dbc.Row(children=variable_selector.layout()),
                                 style={"display": "none"},
                                 id="main-varvelger",
                             ),
@@ -93,3 +96,5 @@ def main_layout(
         className="dbc dbc-ag-grid",
     )
     return layout
+
+

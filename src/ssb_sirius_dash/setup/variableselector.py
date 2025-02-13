@@ -11,143 +11,247 @@ from dash import html
 from ..utils.alert_handler import create_alert
 
 logger = logging.getLogger(__name__)
-variable_options = {
-    "aar": {"title": "År", "id": "var-aar", "type": "number"},
-    "termin": {"title": "Termin", "id": "var-termin", "type": "number"},
-    "maaned": {"title": "Måned", "id": "var-maaned", "type": "number"},
-    "nace": {"title": "Nace", "id": "var-nace", "type": "text"},
-    "oppgavegiver": {"title": "Oppgavegiver", "id": "var-oppgavegiver", "type": "text"},
-    "foretak": {"title": "Foretak", "id": "var-foretak", "type": "text"},
-    "bedrift": {"title": "Bedrift", "id": "var-bedrift", "type": "text"},
-    "fylke": {"title": "Fylke", "id": "var-fylke", "type": "text"},
-    "skjemaenhet": {"title": "Skjemaenhet", "id": "var-skjemaenhet", "type": "text"},
-    "prodcomkode": {"title": "Prodcomkode", "id": "var-prodcomkode", "type": "text"},
-    "nspekfelt": {"title": "NSPEK-felt", "id": "var-nspekfelt", "type": "text"},
-}
 
 
-def create_variable_card(
-    text: str,
-    component_id: str,
-    input_type: str,
-    value: str | int | float | None = None,
-) -> dbc.Col:
-    """Generate a Dash Bootstrap card with an input field.
+class VariableSelector:
+    """Bruk setters og getters to make class usable for functions."""
 
-    Args:
-        text (str): The title text to display on the card.
-        component_id (str): The ID to assign to the input field within the card.
-        input_type (str): The type of the input field (e.g., "text", "number").
-        value (str, optional): The default value for the input field. Defaults to an empty string.
+    _variableselectoroptions = []
 
-    Returns:
-        dbc.Col: A column containing the card with an input field.
-    """
-    if value is None:
-        value = ""
-    card = dbc.Col(
-        dbc.Card(
-            dbc.CardBody(
-                [
-                    html.H5(text, className="card-title"),
-                    html.Div(
-                        style={
-                            "display": "grid",
-                            "grid-template-columns": "100%",
-                        },
-                        children=[
-                            dbc.Input(value=value, id=component_id, type=input_type),
-                        ],
-                    ),
-                ],
-                style={"max-height": "100%"},
-            ),
-            style={"max-height": "100%"},
-        )
-    )
-    _make_alert_callback(
-        component_id, text
-    )  # Should be made optional, maybe as an argument in main_layout
-    return card
+    def __init__(self, selected_inputs, selected_states, default_values=None):
+        self.options = [option.title for option in self._variableselectoroptions]
+        self.inputs = selected_inputs
+        self.states = selected_states
+        self.selected_variables = [*selected_inputs, *selected_states]
+        self.default_values = default_values
 
+        self.is_valid()
 
-def _make_alert_callback(component_id: str, component_name: str) -> Any:
-    """Utility function to add alerts to updates on the variable selector."""
+        if default_values:
+            self.default_values_is_valid()
 
-    @callback(  # type: ignore[misc]
-        Output("alert_store", "data", allow_duplicate=True),
-        Input(component_id, "value"),
-        State("alert_store", "data"),
-        prevent_initial_call=True,
-    )
-    def alert_connection(
-        value: Any, error_log: list[dict[str, Any]]
-    ) -> list[dict[str, Any]]:
-        """Alert callback connecting variable picker card to the alert handler."""
-        error_log.append(
-            create_alert(
-                f"Oppdatering av variabelvelger: {component_name} til {value}",
-                "info",
-                ephemeral=True,
+    def is_valid(self):
+        valid_states_inputs = [
+            option.title for option in VariableSelector._variableselectoroptions
+        ]
+        for _input in self.inputs:
+            if _input not in valid_states_inputs:
+                raise ValueError(
+                    f"Invalid value for selected_inputs. Received {_input}. Expected one of {valid_states_inputs}"
+                )
+        for _state in self.states:
+            if _state not in valid_states_inputs:
+                raise ValueError(
+                    f"Invalid value for selected_states. Received {_state}. Expected one of {valid_states_inputs}"
+                )
+
+    def default_values_is_valid(self):
+        if not isinstance(self.default_values, dict):
+            raise TypeError(
+                f"Expected default_values to be dict, received {type(self.default_values)}"
             )
-        )
-        return error_log
+        valid_states_inputs = [
+            option.title for option in VariableSelector._variableselectoroptions
+        ]
+        for key in self.default_values:
+            if key not in valid_states_inputs:
+                raise KeyError(
+                    f"Invalid key for default_values. Received {key}. Expected one of {valid_states_inputs}"
+                )
+            if self.get_option(key).type == "text":
+                if not isinstance(self.default_values[key], str):
+                    raise TypeError(
+                        f"Invalid type for {key} in default_value. Received type {type(self.default_values[key])} Expected string."
+                    )
+            if self.get_option(key).type == "number":
+                if not isinstance(self.default_values[key], (int, float)):
+                    raise TypeError(
+                        f"Invalid type for {key} in default_value. Received type {type(self.default_values[key])} Expected int or float."
+                    )
 
-    alert_connection.__name__ = f"alert_connection_{component_id}"
-    return alert_connection
+    def get_option(self, variable_name):
+        for option in self._variableselectoroptions:
+            if option.title == variable_name:
+                return option
 
+    def get_inputs(self):
+        return [
+            Input(option.id, "value")
+            for option in self._variableselectoroptions
+            if option.title in self.inputs
+        ]
 
-def create_variable_selector_content(
-    selected_keys: list[str], default_values: dict[str, str | float | int] | None = None
-) -> list[dbc.Col]:
-    """Generate a list of Dash Bootstrap cards based on selected variable keys.
+    def get_states(self):
+        return [
+            State(option.id, "value")
+            for option in self._variableselectoroptions
+            if option.title in self.states
+        ]
 
-    Args:
-        selected_keys (list[str]): Keys representing variables to include as cards. Each key corresponds
-                                   to an entry in the `variable_options` dictionary.
-        default_values (dict, optional): A dictionary containing default values for the cards, where the keys
-                                         are variable names, and the values are the default input values.
-                                         Defaults to an empty dictionary.
-
-    Returns:
-        list[dbc.Col]: A list of cards, each represented as a Dash Bootstrap column.
-
-    Raises:
-        KeyError: If any required key ('title', 'id', 'type') is missing in `variable_options` for a selected key.
-        ValueError: If the `value` provided in `default_values` is not of a supported type.
-
-
-    Notes:
-        - The `variable_options` dictionary provides configuration for each card, including its title, ID, and type.
-        - If `selected_keys` includes keys not found in `variable_options`, those keys are ignored.
-    """
-    if default_values is None:
-        default_values = {}
-    cards_list = []
-    for key in selected_keys:
-        card_config = variable_options.get(key)
-        if card_config is None:
-            raise KeyError(
-                f"Key '{key}' not found in variable_options. Accepted values are: {variable_options.keys()}"
-            )
-
-        title = card_config.get("title")
-        if title is None:
-            raise KeyError(f"Key 'title' is missing in configuration for '{key}'")
-        card_id = card_config.get("id")
-        if card_id is None:
-            raise KeyError(f"Key 'id' is missing in configuration for '{key}'")
-        card_type = card_config.get("type")
-        if card_type is None:
-            raise KeyError(f"Key 'type' is missing in configuration for '{key}'")
-        value = default_values.get(key, None)
-        if value is not None and not isinstance(value, (str | float | int)):
+    def get_output_object(self, variable):
+        if variable not in [option.title for option in self._variableselectoroptions]:
             raise ValueError(
-                f"Value for '{key}' must be of type str, float or int. Got {type(value).__name__}"
+                f"Invalid variable name, expected one of {[option.title for option in self._variableselectoroptions]}. Received {variable}"
+            )
+        option = self.get_option(variable)
+        return Output(option.id, "value", allow_duplicate=True)
+
+    def get_callback_args(self, inputs=False, states=False):
+        args = []
+        if inputs:
+            False
+        if states:
+            False
+        return args
+
+    def _create_variable_card(
+        self,
+        text: str,
+        component_id: str,
+        input_type: str,
+        value: str | int | float | None = None,
+    ) -> dbc.Col:
+        """Generate a Dash Bootstrap card with an input field.
+
+        Args:
+            text (str): The title text to display on the card.
+            component_id (str): The ID to assign to the input field within the card.
+            input_type (str): The type of the input field (e.g., "text", "number").
+            value (str, optional): The default value for the input field. Defaults to an empty string.
+
+        Returns:
+            dbc.Col: A column containing the card with an input field.
+        """
+        if value is None:
+            value = ""
+        card = dbc.Col(
+            dbc.Card(
+                dbc.CardBody(
+                    [
+                        html.H5(text, className="card-title"),
+                        html.Div(
+                            style={
+                                "display": "grid",
+                                "grid-template-columns": "100%",
+                            },
+                            children=[
+                                dbc.Input(
+                                    value=value, id=component_id, type=input_type
+                                ),
+                            ],
+                        ),
+                    ],
+                    style={"max-height": "100%"},
+                ),
+                style={"max-height": "100%"},
+            )
+        )
+        self._make_alert_callback(
+            component_id, text
+        )  # Should be made optional, maybe as an argument in main_layout
+        return card
+
+    def _make_alert_callback(self, component_id: str, component_name: str) -> Any:
+        """Utility function to add alerts to updates on the variable selector."""
+
+        @callback(  # type: ignore[misc]
+            Output("alert_store", "data", allow_duplicate=True),
+            Input(component_id, "value"),
+            State("alert_store", "data"),
+            prevent_initial_call=True,
+        )
+        def alert_connection(
+            value: Any, error_log: list[dict[str, Any]]
+        ) -> list[dict[str, Any]]:
+            """Alert callback connecting variable picker card to the alert handler."""
+            error_log.append(
+                create_alert(
+                    f"Oppdatering av variabelvelger: {component_name} til {value}",
+                    "info",
+                    ephemeral=True,
+                )
+            )
+            return error_log
+
+        alert_connection.__name__ = f"alert_connection_{component_id}"
+        return alert_connection
+
+    def layout(
+        self,
+        #        selected_keys: list[str],
+        #        default_values: dict[str, str | float | int] | None = None,
+    ) -> list[dbc.Col]:
+        """Generate a list of Dash Bootstrap cards based on selected variable keys.
+
+        Args:
+            selected_keys (list[str]): Keys representing variables to include as cards. Each key corresponds
+                                       to an entry in the `variable_options` dictionary.
+            default_values (dict, optional): A dictionary containing default values for the cards, where the keys
+                                             are variable names, and the values are the default input values.
+                                             Defaults to an empty dictionary.
+
+        Returns:
+            list[dbc.Col]: A list of cards, each represented as a Dash Bootstrap column.
+
+        Raises:
+            KeyError: If any required key ('title', 'id', 'type') is missing in `variable_options` for a selected key.
+            ValueError: If the `value` provided in `default_values` is not of a supported type.
+
+
+        Notes:
+            - The `variable_options` dictionary provides configuration for each card, including its title, ID, and type.
+            - If `selected_keys` includes keys not found in `variable_options`, those keys are ignored.
+        """
+        if self.default_values is None:
+            default_values = {}
+        else:
+            default_values = self.default_values
+        layout = []
+        for variable in self.selected_variables:
+            option = self.get_option(variable)
+            print(option)
+            card = self._create_variable_card(
+                text=option.title,
+                component_id=option.id,
+                input_type=option.type,
+                value=default_values.get(option.title, None),
+            )
+            layout.append(card)
+        return layout
+
+
+class VariableSelectorOption:
+
+    def __init__(self, variable_title, variable_type):
+        self.title = variable_title
+        self.id = f"var-{variable_title}"
+        self.type = variable_type
+
+        VariableSelector._variableselectoroptions.append(self)
+
+    def is_valid(self):
+        valid_types = ["text", "number"]
+        if self.type not in valid_types:
+            raise ValueError(
+                f"Invalid value for variable_type. Expected one of {valid_types}, received {self.type}"
             )
 
-        card = create_variable_card(
-            text=title, component_id=card_id, input_type=card_type, value=value
-        )
-        cards_list.append(card)
-    return cards_list
+    def __str__(self):
+        return f"Title: {self.title}\nId: {self.id}\nType: {self.type}\n"
+
+
+"""Here we define some default values that are available from the get-go"""
+# Periods
+VariableSelectorOption("aar", "number")
+VariableSelectorOption("termin", "number")
+VariableSelectorOption("måned", "number")
+# Groupings
+VariableSelectorOption("nace", "text")
+VariableSelectorOption("fylke", "text")
+VariableSelectorOption("nspekfelt", "text")
+VariableSelectorOption("prodcomkode", "text")
+# Identifiers
+VariableSelectorOption("oppgavegiver", "text")
+VariableSelectorOption("foretak", "text")
+VariableSelectorOption("bedrift", "text")
+VariableSelectorOption("skjemaenhet", "text")
