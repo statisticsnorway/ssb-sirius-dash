@@ -16,6 +16,7 @@ from dash.exceptions import PreventUpdate
 
 from ..utils.functions import format_timespan
 from ..utils.functions import sidebar_button
+from ..utils.functions import get_r_kostra
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +71,7 @@ class HBMethod:
             selected_ident (str): Identifier used for grouping or unique identification in the data.
             variable (str): Name of the value variable to analyze using the HB method.
         """
+        self.hb_method = get_r_kostra().Hb
         self.selected_ident = selected_ident
         self.database = database
         self.hb_get_data = hb_get_data_func
@@ -97,7 +99,7 @@ class HBMethod:
         Returns:
             pandas.DataFrame: Processed data with outlier results, sorted by "maxX".
         """
-        hb_result = hb_method(
+        hb_result = self.hb_method(
             data=data_df,
             p_c=pc,
             p_u=pu,
