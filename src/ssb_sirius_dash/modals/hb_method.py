@@ -14,6 +14,9 @@ from dash import dcc
 from dash import html
 from dash.exceptions import PreventUpdate
 
+
+from ..setup.variableselector import VariableSelector
+
 from ..utils.functions import format_timespan
 from ..utils.functions import sidebar_button
 from ..utils.functions import get_r_kostra
@@ -73,10 +76,18 @@ class HBMethod:
         """
         self.hb_method = get_r_kostra().Hb
         self.selected_ident = selected_ident
+        self.variable = variable
         self.database = database
         self.hb_get_data = hb_get_data_func
-        self.callbacks(selected_state_keys, selected_ident, variable)
+        self.is_valid() # Needs to happen before VariableSelector
 
+        self.variableselector = VariableSelector([selected_ident], selected_state_keys)
+        self.callbacks()
+
+    def is_valid(self):
+        if not isinstance(self.selected_ident, str):
+            raise ValueError(f"selected_ident should be type str, received {type(self.selected_ident)}")
+    
     def make_hb_data(
         self,
         data_df: pd.DataFrame,
@@ -104,19 +115,18 @@ class HBMethod:
             p_c=pc,
             p_u=pu,
             p_a=pa,
-            id_field_name=ident,
-            x_1_field_name=variable,
-            x_2_field_name=f"{variable}_1",
+            id_field_name=self.selected_ident,
+            x_1_field_name=self.variable,
+            x_2_field_name=f"{self.variable}_1",
         )
 
         return hb_result.sort_values(by=["maxX"])
 
-    def make_hb_figure(self, data: pd.DataFrame, variable: str) -> go.Figure:
+    def make_hb_figure(self, data: pd.DataFrame) -> go.Figure:
         """Creates a Plotly figure for visualizing HB method results.
 
         Args:
             data (pandas.DataFrame): Processed data from the HB method, including outlier and limit values.
-            variable (str): Name of the value variable for the method.
 
         Returns:
             plotly.graph_objects.Figure: Plotly figure with scatter plots for observations and limits.
@@ -149,7 +159,7 @@ class HBMethod:
             paper_bgcolor="#1F2833",
             font_color="white",
         )
-        fig.update_xaxes(title=variable, range=[0, max(x) * 1.05])
+        fig.update_xaxes(title=self.variable, range=[0, max(x) * 1.05])
         fig.update_yaxes(title="Forholdstallet")
 
         return fig
@@ -305,7 +315,7 @@ class HBMethod:
         )
 
     def callbacks(
-        self, selected_state_keys: list[str], selected_ident: str, variable: str
+        self
     ) -> None:
         """Registers callbacks for the HB method Dash app components.
 
@@ -319,15 +329,10 @@ class HBMethod:
             running the HB method, toggling the modal, and passing results to `variabelvelger`.
         """
         time.time()
-        states_dict = states_options[0]
-        dynamic_states = [
-            State(states_dict[key][0], states_dict[key][1])
-            for key in selected_state_keys
-        ]
-
-        ident = ident_options[0][selected_ident]
-        component_id, property_name = ident
-        output_object = Output(component_id, property_name, allow_duplicate=True)
+        
+        dynamic_states = self.variableselector.get_states()
+        output_object = self.variableselector.get_output_object(variable = self.selected_ident)
+#        output_object = Output(component_id, property_name, allow_duplicate=True)
 
         @callback(  # type: ignore[misc]
             Output("hb_figure", "figure"),
@@ -356,14 +361,17 @@ class HBMethod:
                 PreventUpdate: If no button click is detected.
             """
             start_time = time.time()
-            states_values = dynamic_states[: len(selected_state_keys)]
+
+            
+        
+            states_values = dynamic_states[: len(self.variableselector.states)]
             state_params = {
                 key: value
-                for key, value in zip(selected_state_keys, states_values, strict=False)
+                for key, value in zip(self.variableselector.states, states_values, strict=False)
             }
 
             args: list[Any] = []
-            for key in selected_state_keys:
+            for key in self.variableselector.states:
                 var = state_params.get(key)
                 if var is not None:
                     args.append(var)
@@ -375,11 +383,11 @@ class HBMethod:
                 )  # TODO: Hva gjør dette egentlig? Burde omformuleres/dokumenteres
 
             if n_click:
-                data = self.hb_get_data(self.database, *args)
-                data = self.make_hb_data(data, pc, pu, pa, selected_ident, variable)
+                data = self.hb_get_data(self.database, *args) # *args må forklares, kanskje denne biten burde bli refactored?
+                data = self.make_hb_data(data, pc, pu, pa, self.selected_ident, self.variable)
                 end_time = time.time()
                 logger.info(format_timespan(start_time, end_time))
-                return self.make_hb_figure(data, variable)
+                return self.make_hb_figure(data)
             else:
                 raise PreventUpdate
 
