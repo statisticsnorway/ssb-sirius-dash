@@ -6,6 +6,7 @@ from dash import Dash
 from dash import Input
 from dash import Output
 from dash import State
+from dash import callback
 from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 
@@ -56,7 +57,7 @@ def app_setup(port: int, service_prefix: str, domain: str, stylesheet: str) -> D
         external_stylesheets=[theme_map[stylesheet], dbc_css],
     )
 
-    @app.callback(  # type: ignore[misc]
+    @callback(  # type: ignore[misc]
         Output("main-varvelger", "style"),
         Input("sidebar-varvelger-button", "n_clicks"),
         State("main-varvelger", "style"),
