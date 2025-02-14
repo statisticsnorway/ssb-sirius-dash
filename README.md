@@ -53,7 +53,20 @@ or using poetry:
 poetry add ssb-sirius-dash
 ```
 
+The above will install the latest stable release.
+
+### Installing the pre-release version
+
+This version contains new features and improvements that are heading to the stable release eventually, but is still subject to changes.
+
+```console
+poetry add ssb-sirius-dash --allow-prereleases
+```
+
 ### Installing the development version
+
+This is the currently in-development version. Be aware that this is a very unstable version and is subject to rapid breaking changes.
+- Primarily intended for testing of in-development features.
 
 First add this to your pyproject.toml:
 
@@ -62,10 +75,10 @@ First add this to your pyproject.toml:
 > url = "https://test.pypi.org/simple"<br>
 > default = false<br>
 
-Then run this command, optionally with --allow-prereleases
+Then run this command, optionally with --allow-prereleases to ensure you get the latest version.
 
 ```console
-poetry add --source testpypi ssb-sirius-dash  --allow-prereleases
+poetry add --source testpypi ssb-sirius-dash --allow-prereleases
 ```
 
 ## Usage
