@@ -11,19 +11,22 @@ _renv = None
 
 
 def get_r():
+    renv = wr.library("renv")
     if _renv is not None:
+        logger.info("Loading existing renv")
         renv.autoload()
         return _renv
+    logger.info("Renv not found, will try installing.")
     start_time = timeit.default_timer()
-    renv = wr.library("renv")
     renv.init() # initialize renv
+    renv.install("devtools")
     devtools = wr.library("devtools")
 
     renv.install_github("statisticsnorway/ssb-metodebiblioteket")
-    renv.install("metodebiblioteket")
+    #renv.install("metodebiblioteket")
 
     renv.install_github("statisticsnorway/ssb-kostra")
-    renv.install("Kostra")
+    #renv.install("Kostra")
     
     renv.snapshot(type="all") # update lock-file
     globals()["_renv"] = renv
@@ -32,27 +35,6 @@ def get_r():
         (timeit.default_timer() - start_time),
     )
     return globals()["_renv"]
-
-
-
-
-
-
-
-def get_r():
-    """Uses the rwrapr to load R."""
-    if _r_kostra is not None:
-        return _r_kostra
-
-    start_time = timeit.default_timer()
-    
-    kostra = wr.library("Kostra")
-    globals()["_r_kostra"] = kostra
-    logger.info(
-        "Finished loading R environment in %3g seconds",
-        (timeit.default_timer() - start_time),
-    )
-    return globals()["_r_kostra"]
 
 
 def format_timespan(start: int | float, end: int | float) -> str:
