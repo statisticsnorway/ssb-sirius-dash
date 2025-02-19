@@ -32,49 +32,14 @@ Request features on the [Issue Tracker].
 
 ## Our design and making a new module
 
+Pre-requisites for building a new module:
+- basic understanding of how to create a class in python.
+- knowledge of plotly dash
+    - callbacks, input, output, state
+
 ### Should your module be a tab or a modal?
 
-Generally, in this framework, tabs are for micro-level information while modals are more macro oriented. This is not a rule, but it is often more intuitive this way.
-
-### The user should modify data to fit the requirements of your module
-
-In order to keep the code easier to work with, describe how the required data should look instead of creating functionality to handle different formats. If a user wants to use your module, they need to do the legwork to make their data fit (within reason).
-
-### Variableselector
-
-If you need to add an alternative to the Variableselector, have it added into the package. In order to keep the modules cross-compatible and standardized, we do not want users to add their own custom fields.
-
-#### Dynamic states
-
-In order to use the Variableselector in modules you can use dynamic states to include fields in callbacks.
-
-Your component should include all Variableselector fields that can be used as a State() in your module in the way depicted below.
-
-Firstly include the supported Variableselector options for your module:
-
-    states_options = [
-        {
-            "aar": ("var-aar", "value"),
-            "termin": ("var-termin", "value"),
-            "nace": ("var-nace", "value"),
-            "nspekfelt": ("var-nspekfelt", "value"),
-        }
-    ]
-
-Secondly include this in the callback method in your module class.
-
-    dynamic_states = [
-        State(states_dict[key][0], states_dict[key][1])
-        for key in selected_state_keys
-    ]
-
-Third add *dynamic_states in the callback to make the values included in the callback.
-
-    @callback(
-        callback_components_here,
-        *dynamic_states,
-    )
-
+Generally, in this framework, tabs are for micro-level information while modals are more macro oriented. This is not a rule, but it is often more intuitive this way.\
 
 ### The class structure
 
@@ -117,7 +82,52 @@ Each module is written as a class containing its layout and callbacks:
                     return not is_open
                 return is_open
 
+### Variableselector
+
+If you need to add an alternative to the Variableselector, have it added into the package. In order to keep the modules cross-compatible and standardized, we do not want users to add their own custom fields.
+
+#### Dynamic states
+
+In order to connect the Variableselector to your module, you can use dynamic states to include fields in callbacks.
+
+Your component should include all Variableselector fields that can be used as a State() and the accepted Inputs in your module in the way depicted below.
+
+Firstly include the supported Variableselector options for your module:
+
+    states_options = [
+        {
+            "aar": ("var-aar", "value"),
+            "termin": ("var-termin", "value"),
+            "nace": ("var-nace", "value"),
+            "nspekfelt": ("var-nspekfelt", "value"),
+        }
+    ]
+
+    ident_options = [
+        {
+            "orgb": ("var-bedrift", "value"),
+            "orgf": ("var-foretak", "value"),
+        }
+    ]
+
+
+Secondly include this in the callback method in your module class.
+
+    dynamic_states = [
+        State(states_dict[key][0], states_dict[key][1])
+        for key in selected_state_keys
+    ]
+
+Third add *dynamic_states in the callback to make the values included in the callback.
+
+    @callback(
+        callback_components_here,
+        *dynamic_states,
+    )
+
 ### Design choices
+
+Throughout development we have made some conscious choices regarding the structure of the code and how to solve certain issues. In order to simplify reuse and maintenance, we wish to keep the code style similar across different modules. 
 
 #### Include the layout as a method in the class
 
@@ -127,9 +137,13 @@ While not all modules will need parameters to its layout, it will be confusing f
 
 #### Use @callback
 
-In order for this to work you need to use @callback and not @app.callback. This is to make the callback code more modular and simplifying imports.
+In order for this code structure to work you need to use @callback and not @app.callback. This is to make the callback code more modular and simplifying imports.
 
 More information: https://community.plotly.com/t/dash-2-0-prerelease-candidate-available/55861#from-dash-import-callback-clientside_callback-5
+
+#### The user should modify data to fit the requirements of your module
+
+In order to keep the code easier to work with, describe how the required data should look instead of creating functionality to handle different formats. If a user wants to use your module, they need to do the legwork to make their data fit (within reason).
 
 #### User defined functions
 
@@ -149,11 +163,21 @@ As our goal is to make a library of easily reusable, customizable and expandable
 
 ### Tips and tricks
 
+#### Fix mypy complaining about callbacks
+
+Add "# type: ignore[misc]" to decorator to avoid mypy reporting it as an error.
+
+    @callback(  # type: ignore[misc]
+        Input(),
+        Output()
+    )
+
 #### Common annotations for callbacks to make mypy happy
 
 - rowData: list[dict[str, Any]]
 - columnDefs: list[dict[str, str]]
 - clickData: dict[str, list[dict[str, Any]]]
+- error_log: list[dict[str, Any]]
 
 #### Raise PreventUpdate early when possible
 
