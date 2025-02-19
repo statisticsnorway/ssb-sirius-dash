@@ -7,7 +7,36 @@ from dash import html
 
 logger = logging.getLogger(__name__)
 
-_r_kostra = None
+_renv = None
+
+
+def get_r():
+    if _renv is not None:
+        renv.autoload()
+        return _renv
+    start_time = timeit.default_timer()
+    renv = wr.library("renv")
+    renv.init() # initialize renv
+    devtools = wr.library("devtools")
+
+    renv.install_github("statisticsnorway/ssb-metodebiblioteket")
+    renv.install("metodebiblioteket")
+
+    renv.install_github("statisticsnorway/ssb-kostra")
+    renv.install("Kostra")
+    
+    renv.snapshot(type="all") # update lock-file
+    globals()["_renv"] = renv
+    logger.info(
+        "Finished loading R environment in %3g seconds",
+        (timeit.default_timer() - start_time),
+    )
+    return globals()["_renv"]
+
+
+
+
+
 
 
 def get_r():
@@ -16,8 +45,7 @@ def get_r():
         return _r_kostra
 
     start_time = timeit.default_timer()
-    devtools = wr.library("devtools")
-    devtools.install_github("statisticsnorway/ssb-kostra")
+    
     kostra = wr.library("Kostra")
     globals()["_r_kostra"] = kostra
     logger.info(
