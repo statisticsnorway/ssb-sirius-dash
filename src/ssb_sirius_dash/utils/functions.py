@@ -27,22 +27,6 @@ def get_r():
     return globals()["_r_kostra"]
 
 
-def get_r_kostra():
-    """Loads the R package Kostra.
-
-    :return: Kostra R package
-    """
-    if _kostra_r is not None:
-        return _kostra_r
-
-    start_time = timeit.default_timer()
-    globals()["_kostra_r"] = importr("Kostra")
-    logger.info(
-        "Finished loading Kostra in %3g seconds", (timeit.default_timer() - start_time)
-    )
-    return globals()["_kostra_r"]
-
-
 def format_timespan(start: int | float, end: int | float) -> str:
     """Formats the elapsed time between two time points into a human-readable string.
 
