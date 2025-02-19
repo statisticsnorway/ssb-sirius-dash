@@ -1,12 +1,31 @@
 import logging
+import timeit
 
-import rwrapr as wr
 import dash_bootstrap_components as dbc
+import rwrapr as wr
 from dash import html
 
 logger = logging.getLogger(__name__)
 
-_r_library_kostra = None
+_r_kostra = None
+
+
+def get_r():
+    """Uses the rwrapr to load R."""
+    if _r_kostra is not None:
+        return _r_kostra
+
+    start_time = timeit.default_timer()
+    devtools = wr.library("devtools")
+    devtools.install_github("statisticsnorway/ssb-kostra")
+    kostra = wr.library("Kostra")
+    globals()["_r_kostra"] = kostra
+    logger.info(
+        "Finished loading R environment in %3g seconds",
+        (timeit.default_timer() - start_time),
+    )
+    return globals()["_r_kostra"]
+
 
 def get_r_kostra():
     """Loads the R package Kostra.
@@ -17,7 +36,7 @@ def get_r_kostra():
         return _kostra_r
 
     start_time = timeit.default_timer()
-    globals()["_kostra_r"] = wr.library("kostra")
+    globals()["_kostra_r"] = importr("Kostra")
     logger.info(
         "Finished loading Kostra in %3g seconds", (timeit.default_timer() - start_time)
     )
