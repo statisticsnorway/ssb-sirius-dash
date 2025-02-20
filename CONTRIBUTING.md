@@ -37,6 +37,8 @@ Pre-requisites for building a new module:
 - knowledge of plotly dash
     - callbacks, input, output, state
 
+In order to simplify reuse and maintenance, we wish to keep the code style similar across different modules. We appreciate if you take a look at how other modules are structured and try to follow that general style/logic as far as practically possible.
+
 ### Should your module be a tab or a modal?
 
 Generally, in this framework, tabs are for micro-level information while modals are more macro oriented. This is not a rule, but it is often more intuitive this way.\
@@ -125,27 +127,35 @@ Third add *dynamic_states in the callback to make the values included in the cal
         *dynamic_states,
     )
 
-### Design choices
+## Design choices
 
-Throughout development we have made some conscious choices regarding the structure of the code and how to solve certain issues. In order to simplify reuse and maintenance, we wish to keep the code style similar across different modules. 
+Throughout development we have made some conscious choices regarding the structure of the code, data and how to solve certain issues.
 
-#### Include the layout as a method in the class
+Here we shall explain ourselves as well as memory permits. Hopefully that keeps us from repeating mistakes and makes the overall structure of the code easier to understand.
+
+### We assume a long data format
+
+The reason for this is simple. Different users will have different amounts of observations, variables and aggregation levels. If we had a wide format there are some cases where the dataset would simply be too wide, and would need to be subsetted.
+
+With a long format containing columns identifying the observation, the variable and the variable value it is a lot simpler to make something that fits all data with minimal adjustments to the framework. 
+
+### Include the layout as a method in the class
 
 Our reason for having the layout returned from a method instead of an attribute of the class is that having it as a method makes it possible to pass parameters. While it is possible to modify an attribute in the __init__ we consider it more readable if layout-specific parameters can be passed to the layout directly, making it clear what it is affecting.
 
 While not all modules will need parameters to its layout, it will be confusing for users if some layouts are attributes and some are returned from methods.
 
-#### Use @callback
+### Use @callback
 
 In order for this code structure to work you need to use @callback and not @app.callback. This is to make the callback code more modular and simplifying imports.
 
 More information: https://community.plotly.com/t/dash-2-0-prerelease-candidate-available/55861#from-dash-import-callback-clientside_callback-5
 
-#### The user should modify data to fit the requirements of your module
+### The user should modify data to fit the requirements of your module
 
 In order to keep the code easier to work with, describe how the required data should look instead of creating functionality to handle different formats. If a user wants to use your module, they need to do the legwork to make their data fit (within reason).
 
-#### User defined functions
+### User defined functions
 
 If you need the user to define a function for some use case in your module you can include user-created functions in the class by adding a parameter to the __init__:
 
@@ -157,11 +167,11 @@ If you need the user to define a function for some use case in your module you c
 
 An example of a use-case for this is a function to get/transform data to adhere to a specific format.
 
-#### All in one (AiO) components
+### All in one (AiO) components
 
-As our goal is to make a library of easily reusable, customizable and expandable modules/views we have decided to avoid using AiO when possible. They require more complicated syntax and it requires more effort to understand and contribute, which we want to avoid.
+As our goal is to make a library of easily reusable, customizable and expandable modules/views we have decided to avoid using AiO when possible. They require more complicated syntax and it requires more effort to understand and contribute, which we want to avoid. 
 
-### Tips and tricks
+## Tips and tricks
 
 #### Fix mypy complaining about callbacks
 
