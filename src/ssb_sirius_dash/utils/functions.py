@@ -9,14 +9,31 @@ logger = logging.getLogger(__name__)
 
 _renv = None
 
-#_r_kostra = None
+_r_kostra = None
+
+def get_r_kostra():
+    get_r()
+    if _r_kostra is not None:
+        return _r_kostra
+    start_time = timeit.default_timer()
+
+    kostra = wr.library("Kostra")
+    globals()["_r_kostra"] = kostra
+    logger.info(
+        "Finished loading R environment in %3g seconds",
+        (timeit.default_timer() - start_time),
+    )
+    return globals()["_renv"]
+    
+    
+    
 
 def get_r():
     renv = wr.library("renv")
     if _renv is not None:
         logger.info("Loading existing renv")
         renv.autoload()
-        return _renv#, _r_kostra
+        return _renv
     logger.info("Renv not found, will try installing.")
     start_time = timeit.default_timer()
     renv.init() # initialize renv
@@ -33,12 +50,11 @@ def get_r():
     
     renv.snapshot(type="all") # update lock-file
     globals()["_renv"] = renv
-    #globals()["_r_kostra"] = wr.
     logger.info(
         "Finished loading R environment in %3g seconds",
         (timeit.default_timer() - start_time),
     )
-    return globals()["_renv"]#, globals()["_r_kostra"]
+    return globals()["_renv"]
 
 
 def format_timespan(start: int | float, end: int | float) -> str:

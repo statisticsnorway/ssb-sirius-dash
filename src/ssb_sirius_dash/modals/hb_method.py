@@ -16,7 +16,7 @@ from dash.exceptions import PreventUpdate
 
 from ..setup.variableselector import VariableSelector
 from ..utils.functions import format_timespan
-from ..utils.functions import get_r
+from ..utils.functions import get_r_kostra
 from ..utils.functions import sidebar_button
 
 logger = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ class HBMethod:
             selected_ident (str): Identifier used for grouping or unique identification in the data.
             variable (str): Name of the value variable to analyze using the HB method.
         """
-        self.hb_method = get_r().Hb
+        self.hb_method = get_r_kostra().Hb
         self.selected_ident = selected_ident
         self.variable = variable
         self.database = database
