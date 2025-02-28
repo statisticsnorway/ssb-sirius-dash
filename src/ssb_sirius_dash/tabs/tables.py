@@ -214,14 +214,16 @@ class EditingTableLong:
             """
             if not edited:
                 raise PreventUpdate
-            states_values = dynamic_states[: len(self.states)]
+            states_values = dynamic_states[: len(self.variableselector.states)]
             state_params = {
                 key: value
-                for key, value in zip(self.states, states_values, strict=False)
+                for key, value in zip(
+                    self.variableselector.states, states_values, strict=False
+                )
             }
 
             args = []
-            for key in self.states:
+            for key in self.variableselector.states:
                 var = state_params.get(key)
                 if var is not None:
                     args.append(var)
@@ -230,9 +232,7 @@ class EditingTableLong:
             new_value = edited[0]["value"]
             row_id = edited[0]["data"]["row_id"]
             try:
-                self.update_table(
-                    self.database, variable, new_value, row_id, tabell, *args
-                )
+                self.update_table(self.database, tabell, variable, new_value, row_id)
 
                 error_log.append(
                     create_alert(
@@ -244,11 +244,12 @@ class EditingTableLong:
 
                 return error_log
 
-            except Exception:
+            except Exception as e:
+                logger.warning(e)
                 error_log.append(
                     create_alert(
                         f"Oppdatering av {variable} fra {old_value} til {new_value} feilet!",
-                        "info",
+                        "warning",
                         ephemeral=True,
                     )
                 )
