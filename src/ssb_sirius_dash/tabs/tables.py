@@ -231,7 +231,9 @@ class EditingTableLong:
             old_value = edited[0]["oldValue"]
             new_value = edited[0]["value"]
             row_id = edited[0]["data"]["row_id"]
+            print(edited)
             try:
+                print(self.database, tabell, variable, new_value, row_id)
                 self.update_table(self.database, tabell, variable, new_value, row_id)
 
                 error_log.append(
@@ -245,7 +247,8 @@ class EditingTableLong:
                 return error_log
 
             except Exception as e:
-                logger.warning(e)
+                logger.error(exc_info=True)
+                logger.error(e)
                 error_log.append(
                     create_alert(
                         f"Oppdatering av {variable} fra {old_value} til {new_value} feilet!",
