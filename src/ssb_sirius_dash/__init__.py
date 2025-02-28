@@ -4,7 +4,6 @@ from . import control
 from . import modals
 from . import setup
 from . import tabs
-from .kostra_r_wrapper import th_error
 
 # Re-import functions and classes from submodules explicitly for top-level access
 from .setup import main_layout
