@@ -79,9 +79,6 @@ class HBMethod:
         self.hb_get_data = hb_get_data_func
         self.is_valid()  # Needs to happen before VariableSelector
 
-        # To reduce loading time if needing to install R-Kostra
-        _get_kostra_r()
-
         self.variableselector = VariableSelector([selected_ident], selected_state_keys)
         self.callbacks()
 
