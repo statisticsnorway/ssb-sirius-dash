@@ -15,7 +15,8 @@ from dash import html
 from dash.exceptions import PreventUpdate
 
 from ..setup.variableselector import VariableSelector
-from ..kostra_r_wrapper import hb_method
+from ..utils import _get_kostra_r
+from ..utils import hb_method
 from ..utils.functions import format_timespan
 from ..utils.functions import sidebar_button
 
@@ -72,20 +73,21 @@ class HBMethod:
             selected_ident (str): Identifier used for grouping or unique identification in the data.
             variable (str): Name of the value variable to analyze using the HB method.
         """
-
         self.selected_ident = selected_ident
         self.variable = variable
         self.database = database
         self.hb_get_data = hb_get_data_func
-        self.is_valid() # Needs to happen before VariableSelector
+        self.is_valid()  # Needs to happen before VariableSelector
 
         self.variableselector = VariableSelector([selected_ident], selected_state_keys)
         self.callbacks()
 
     def is_valid(self):
         if not isinstance(self.selected_ident, str):
-            raise ValueError(f"selected_ident should be type str, received {type(self.selected_ident)}")
-    
+            raise ValueError(
+                f"selected_ident should be type str, received {type(self.selected_ident)}"
+            )
+
     def make_hb_data(
         self,
         data_df: pd.DataFrame,
@@ -312,9 +314,7 @@ class HBMethod:
             )
         )
 
-    def callbacks(
-        self
-    ) -> None:
+    def callbacks(self) -> None:
         """Registers callbacks for the HB method Dash app components.
 
         Args:
@@ -327,10 +327,12 @@ class HBMethod:
             running the HB method, toggling the modal, and passing results to `variabelvelger`.
         """
         time.time()
-        
+
         dynamic_states = self.variableselector.get_states()
-        output_object = self.variableselector.get_output_object(variable = self.selected_ident)
-#        output_object = Output(component_id, property_name, allow_duplicate=True)
+        output_object = self.variableselector.get_output_object(
+            variable=self.selected_ident
+        )
+        #        output_object = Output(component_id, property_name, allow_duplicate=True)
 
         @callback(  # type: ignore[misc]
             Output("hb_figure", "figure"),
@@ -360,12 +362,12 @@ class HBMethod:
             """
             start_time = time.time()
 
-            
-        
             states_values = dynamic_states[: len(self.variableselector.states)]
             state_params = {
                 key: value
-                for key, value in zip(self.variableselector.states, states_values, strict=False)
+                for key, value in zip(
+                    self.variableselector.states, states_values, strict=False
+                )
             }
 
             args: list[Any] = []
@@ -381,8 +383,12 @@ class HBMethod:
                 )  # TODO: Hva gjør dette egentlig? Burde omformuleres/dokumenteres
 
             if n_click:
-                data = self.hb_get_data(self.database, *args) # *args må forklares, kanskje denne biten burde bli refactored?
-                data = self.make_hb_data(data, pc, pu, pa, self.selected_ident, self.variable)
+                data = self.hb_get_data(
+                    self.database, *args
+                )  # *args må forklares, kanskje denne biten burde bli refactored?
+                data = self.make_hb_data(
+                    data, pc, pu, pa, self.selected_ident, self.variable
+                )
                 end_time = time.time()
                 logger.info(format_timespan(start_time, end_time))
                 return self.make_hb_figure(data)
