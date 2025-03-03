@@ -33,7 +33,7 @@ class DatabaseHelperAltinnEimerdb:
         pass
 
     def _make_schemas(self):
-        period_col = {"name": self.period, "type": "int16", "label": self.period}
+        period_col = {"name": self.period, "type": "int64", "label": self.period}
         ident_col = {
             "name": "enhetsident",
             "type": "string",
