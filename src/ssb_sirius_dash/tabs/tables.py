@@ -247,8 +247,7 @@ class EditingTableLong:
                 return error_log
 
             except Exception as e:
-                logger.error(exc_info=True)
-                logger.error(e)
+                logger.error(msg=e, exc_info=True)
                 error_log.append(
                     create_alert(
                         f"Oppdatering av {variable} fra {old_value} til {new_value} feilet!",
