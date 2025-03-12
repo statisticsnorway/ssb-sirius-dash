@@ -102,7 +102,7 @@ class HBMethod:
             x_1_field_name=self.variable,
             x_2_field_name=f"{self.variable}_1",
         )
-
+        logger.debug("Done, returning data")
         return hb_result.sort_values(by=["maxX"])
 
     def make_hb_figure(self, data: pd.DataFrame) -> go.Figure:
@@ -144,7 +144,7 @@ class HBMethod:
         )
         fig.update_xaxes(title=self.variable, range=[0, max(x) * 1.05])
         fig.update_yaxes(title="Forholdstallet")
-
+        logger.debug("Done, returning fig")
         return fig
 
     def layout(self) -> html.Div:
