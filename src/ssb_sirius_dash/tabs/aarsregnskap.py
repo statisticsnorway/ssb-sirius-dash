@@ -73,6 +73,7 @@ class Aarsregnskap:
                 ),
             ],
         )
+        logger.debug("Generated layout")
         return layout
 
     def callbacks(self) -> None:
@@ -143,3 +144,4 @@ class Aarsregnskap:
             pdf_base64 = base64.b64encode(pdf_bytes).decode("utf-8")
             pdf_data_uri = f"data:application/pdf;base64,{pdf_base64}"
             return pdf_data_uri
+        logger.debug("Generated callbacks")

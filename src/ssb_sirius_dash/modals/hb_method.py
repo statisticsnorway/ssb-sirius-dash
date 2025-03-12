@@ -22,23 +22,6 @@ from ..utils.functions import sidebar_button
 
 logger = logging.getLogger(__name__)
 
-states_options: list[dict[str, tuple[str, str]]] = [
-    {
-        "aar": ("var-aar", "value"),
-        "termin": ("var-termin", "value"),
-        "maaned": ("var-maaned", "value"),
-        "nace": ("var-nace", "value"),
-        "nspekfelt": ("var-nspekfelt", "value"),
-    }
-]
-
-ident_options: list[dict[str, tuple[str, str]]] = [
-    {
-        "orgb": ("var-bedrift", "value"),
-        "orgf": ("var-foretak", "value"),
-    }
-]
-
 
 class HBMethod:
     """Module for detecting outliers using the Hidiroglou-Berthelot (HB) method in a Dash application.
@@ -190,7 +173,7 @@ class HBMethod:
             ]
         )
 
-        return html.Div(
+        layout = html.Div(
             [
                 dbc.Modal(
                     [
@@ -260,6 +243,8 @@ class HBMethod:
                 sidebar_button("🥼", "HB-Metoden", "sidebar-hb-button"),
             ]
         )
+        logger.debug("Generated layout")
+        return layout
 
     def _build_input_field(
         self,
@@ -437,3 +422,4 @@ class HBMethod:
             ident = str(clickdata["points"][0]["hovertext"])
             logger.info(f"Transfering {ident} to {self.selected_ident}")
             return ident
+        logger.debug("Generated callbacks")

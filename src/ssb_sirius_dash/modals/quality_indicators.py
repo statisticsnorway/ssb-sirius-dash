@@ -20,10 +20,6 @@ from ..utils.functions import sidebar_button
 
 logger = logging.getLogger(__name__)
 
-logger.warning(
-    "This module is still in early development. Names for classes/functions in this module are subject to change with little warning."
-)
-
 
 class QualityIndicator:
     """A module for setting up the view for selected quality indicators.
@@ -60,7 +56,7 @@ class QualityIndicator:
         Returns:
             html.Div: A Dash HTML Div element containing the modal and the sidebar button.
         """
-        return html.Div(
+        return layout = html.Div(
             [
                 dbc.Modal(
                     [
