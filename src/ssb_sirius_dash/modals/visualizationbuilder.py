@@ -177,6 +177,7 @@ class VisualizationBuilder:
                 sidebar_button("🏗️", "Visualiseringsbygger", "sidebar-sql-button"),
             ],
         )
+        logger.debug("Generated layout")
         return layout
 
     def callbacks(self) -> None:
@@ -328,3 +329,4 @@ class VisualizationBuilder:
                 return fig
             else:
                 return {}
+        logger.debug("Generated callbacks")

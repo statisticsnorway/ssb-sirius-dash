@@ -115,6 +115,7 @@ class EditingTableLong:
                 ),
             ],
         )
+        logger.debug("Generated layout")
         return layout
 
     def callbacks(self) -> None:
@@ -231,9 +232,8 @@ class EditingTableLong:
             old_value = edited[0]["oldValue"]
             new_value = edited[0]["value"]
             row_id = edited[0]["data"]["row_id"]
-            print(edited)
+            logger.debug(f"Edited:\n{edited}")
             try:
-                print(self.database, tabell, variable, new_value, row_id)
                 self.update_table(self.database, tabell, variable, new_value, row_id)
 
                 error_log.append(
@@ -257,3 +257,4 @@ class EditingTableLong:
                 )
 
                 return error_log
+        logger.debug("Generated callbacks")

@@ -251,6 +251,7 @@ class BofInformation:
                 ),
             ],
         )
+        logger.debug("Generated layout")
         return layout
 
     def callbacks(self) -> None:
@@ -327,3 +328,4 @@ class BofInformation:
                     undersektor,
                     typen,
                 )
+        logger.debug("Generated callbacks")
