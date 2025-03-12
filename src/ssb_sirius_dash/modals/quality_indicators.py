@@ -56,7 +56,7 @@ class QualityIndicator:
         Returns:
             html.Div: A Dash HTML Div element containing the modal and the sidebar button.
         """
-        return layout = html.Div(
+        return html.Div(
             [
                 dbc.Modal(
                     [
