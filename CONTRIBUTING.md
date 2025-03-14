@@ -30,7 +30,7 @@ and/or steps to reproduce the issue.
 
 Request features on the [Issue Tracker].
 
-## Our design and making a new module
+# Our design and making a new module
 
 Pre-requisites for building a new module:
 - basic understanding of how to create a class in python.
@@ -39,27 +39,30 @@ Pre-requisites for building a new module:
 
 In order to simplify reuse and maintenance, we wish to keep the code style similar across different modules. We appreciate if you take a look at how other modules are structured and try to follow that general style/logic as far as practically possible.
 
-### Should your module be a tab or a modal?
+## Should your module be a tab or a modal?
 
-Generally, in this framework, tabs are for micro-level information while modals are more macro oriented. This is not a rule, but it is often more intuitive this way.\
+Generally, in this framework, tabs are for micro-level information while modals are more macro oriented. This is not a rule, but it is often more intuitive this way.
 
-### The class structure
+## The class structure
 
 Each module is written as a class containing its layout and callbacks:
 
     class Module:
-        def __init__(self, database):
-            self.database = database
-            self.callbacks()
+        def __init__(self, inputs, states):
+            self.variableselector = VariableSelector( # Each module should contain its own VariableSelector
+                selected_inputs = [inputs],
+                selected_states = [states]
+            )
+            self.callbacks() # Register the callbacks when the class is initialized.
 
-        def layout():
+        def layout(self):
             layout = html.Div(
                 [
                     dbc.Modal(
                         [
                             dbc.ModalHeader(
                                 [
-                                    dbc.ModalTitle("MODALNAVN")
+                                    dbc.ModalTitle("VIEWNAME")
                                 ]
                             ),
                             dbc.ModalBody(
@@ -67,65 +70,38 @@ Each module is written as a class containing its layout and callbacks:
                                     "Din layout her"
                                 ]
                             )
-                        ]
+                        ],
+                    id="viewname-modal",
+                    size="xl",
+                    fullscreen="xxl-down",
                     ),
-                    sidebar_button("icon", "label", "sidebar-MODALNAVN-button")
+                    sidebar_button("icon", "label", "sidebar-viewname-button")
                 ]
             )
 
-        def callbacks():
+        def callbacks(self):
             @callback(
-                Output("MODALNAVN-modal", "is_open"),
-                Input("sidebar-MODALNAVN-button", "n_clicks"),
-                State("MODALNAVN-modal", "is_open")
+                Output("viewname-modal", "is_open"),
+                Input("sidebar-viewname-button", "n_clicks"),
+                State("viewname-modal", "is_open")
             )
-            def MODALNAVN_modal_toggle(n, is_open):
+            def viewname_modal_toggle(n, is_open):
                 if n:
                     return not is_open
                 return is_open
 
-### Variableselector
 
-If you need to add an alternative to the Variableselector, have it added into the package. In order to keep the modules cross-compatible and standardized, we do not want users to add their own custom fields.
+## Variableselector
 
-#### Dynamic states
+See the docstrings for VariableSelector and VariableSelectorOption to get familiar with how they work.
 
-In order to connect the Variableselector to your module, you can use dynamic states to include fields in callbacks.
+The idea behind the Variableselector is that you have one module in the application keeping track of inputs and states for callbacks across modules. This means that updating one field in the Variable selector in your app, for an example the year, will make all modules in your app show the same year.
 
-Your component should include all Variableselector fields that can be used as a State() and the accepted Inputs in your module in the way depicted below.
+In order to account for different implementations of the framework requiring different variables, it has been built with flexibility in mind. 
 
-Firstly include the supported Variableselector options for your module:
-
-    states_options = [
-        {
-            "aar": ("var-aar", "value"),
-            "termin": ("var-termin", "value"),
-            "nace": ("var-nace", "value"),
-            "nspekfelt": ("var-nspekfelt", "value"),
-        }
-    ]
-
-    ident_options = [
-        {
-            "orgb": ("var-bedrift", "value"),
-            "orgf": ("var-foretak", "value"),
-        }
-    ]
+### Connecting your module to the variable selector
 
 
-Secondly include this in the callback method in your module class.
-
-    dynamic_states = [
-        State(states_dict[key][0], states_dict[key][1])
-        for key in selected_state_keys
-    ]
-
-Third add *dynamic_states in the callback to make the values included in the callback.
-
-    @callback(
-        callback_components_here,
-        *dynamic_states,
-    )
 
 ## Design choices
 
@@ -169,7 +145,21 @@ An example of a use-case for this is a function to get/transform data to adhere 
 
 ### All in one (AiO) components
 
-As our goal is to make a library of easily reusable, customizable and expandable modules/views we have decided to avoid using AiO when possible. They require more complicated syntax and it requires more effort to understand and contribute, which we want to avoid. 
+Our goal is to make a library of easily reusable, customizable and expandable modules/views. Our approach is a bit of a hybrid design where we get most of the benefits, without introducing all the costs from the AiO design.
+
+The benefits you gain from the AiO component design are in general
+- Encapsulation and modularity, as code related to a component is contained within its own class
+- Reusability, as all sub-components are connected in the class
+- Keeping the layout and callbacks separated and organized within the component
+- You can add more of the same component without affecting other components
+- They manage their own internal states
+- They don't affect eachother, potentially leading to easier debugging.
+
+There are some costs involved in using AiO components:
+- Increased complexity
+- Steeper learning curve
+- Potentially harder to track inter-component interactions
+- Debugging could be harder, as Dash's callback graph can be harder to interpret in the AiO pattern
 
 ## Tips and tricks
 
