@@ -14,11 +14,32 @@ logger = logging.getLogger(__name__)
 
 
 class VariableSelector:
-    """Bruk setters og getters to make class usable for functions."""
+    """Class containing options for shared states between modules in the framework.
 
-    _variableselectoroptions = []
+    Notes:
+        - Each module should have its own instance of the VariableSelector in its __init__ function.
+    """
 
-    def __init__(self, selected_inputs, selected_states, default_values=None):
+    _variableselectoroptions: list["VariableSelectorOption"] = []
+
+    def __init__(
+        self,
+        selected_inputs: list[str],
+        selected_states: list[str],
+        default_values: dict[str,str|int|float] | None =None
+    ) -> None:
+        """Initializes the VariableSelector class.
+
+        Args:
+            selected_inputs (List[str]): List of selected input variable names. Will trigger callbacks.
+            selected_states (List[str]): List of selected state variable names. Will not trigger callbacks.
+            default_values (Optional[Dict[str, Union[str, int, float]]], optional): 
+                Default values for variables. Defaults to None.
+        
+        Examples:
+            >>> VariableSelector(selected_inputs = ["foretak"], selected_states = ["aar"])
+            >>> VariableSelector(selected_inputs = ["foretak"], selected_states = ["aar"], default_values = {"aar": 2024})
+        """
         self.options = [option.title for option in self._variableselectoroptions]
         self.inputs = selected_inputs
         self.states = selected_states
@@ -26,14 +47,17 @@ class VariableSelector:
         self.default_values = default_values
 
         self.is_valid()
-
         if default_values:
             self.default_values_is_valid()
 
-    def is_valid(self):
+    def is_valid(self) -> None:
         valid_states_inputs = [
             option.title for option in VariableSelector._variableselectoroptions
         ]
+        for _option in self._variableselectoroptions:
+            if not isinstance(_option, VariableSelectorOption):
+                raise TypeError(f"Invalid type. Should only contain values of type VariableSelectorOption. Received type: {type(_option)}: {_option}")
+
         for _input in self.inputs:
             if _input not in valid_states_inputs:
                 raise ValueError(
@@ -45,7 +69,8 @@ class VariableSelector:
                     f"Invalid value for selected_states. Received {_state}. Expected one of {valid_states_inputs}"
                 )
 
-    def default_values_is_valid(self):
+    def default_values_is_valid(self) -> None:
+        """Validates the default values dictionary."""
         if not isinstance(self.default_values, dict):
             raise TypeError(
                 f"Expected default_values to be dict, received {type(self.default_values)}"
@@ -69,26 +94,41 @@ class VariableSelector:
                         f"Invalid type for {key} in default_value. Received type {type(self.default_values[key])} Expected int or float."
                     )
 
-    def get_option(self, variable_name):
+    def get_option(self, variable_name: str) -> "VariableSelectorOption":
+        """Retrieves a VariableSelectorOption by variable name."""
         for option in self._variableselectoroptions:
             if option.title == variable_name:
                 return option
+        raise ValueError(f"ValueError: {variable_name} not in list of options, expected one of {self.selected_variables}\nIf you need to add {variable_name} to the available options, refer to the VariableSelectorOption docstring.")
 
-    def get_inputs(self):
+
+    def get_inputs(self)-> list[Input]:
+        """Retrieves a list of Dash Input objects for selected inputs."""
         return [
             Input(option.id, "value")
             for option in self._variableselectoroptions
             if option.title in self.inputs
         ]
 
-    def get_states(self):
+    def get_states(self) -> list[State]:
+        """Retrieves a list of Dash State objects for selected states."""
         return [
             State(option.id, "value")
             for option in self._variableselectoroptions
             if option.title in self.states
         ]
 
-    def get_output_object(self, variable):
+    def get_output_object(self, variable: str) -> Output:
+        """Creates a Dash Output object for a given variable.
+
+        Use this if you need to have a module output back to the shared VariableSelector in the main layout.
+        
+        Args:
+            variable (str): The variable name.
+
+        Returns:
+            Output: The corresponding Dash Output object.
+        """
         if variable not in [option.title for option in self._variableselectoroptions]:
             raise ValueError(
                 f"Invalid variable name, expected one of {[option.title for option in self._variableselectoroptions]}. Received {variable}"
@@ -178,30 +218,8 @@ class VariableSelector:
 
     def layout(
         self,
-        #        selected_keys: list[str],
-        #        default_values: dict[str, str | float | int] | None = None,
     ) -> list[dbc.Col]:
-        """Generate a list of Dash Bootstrap cards based on selected variable keys.
-
-        Args:
-            selected_keys (list[str]): Keys representing variables to include as cards. Each key corresponds
-                                       to an entry in the `variable_options` dictionary.
-            default_values (dict, optional): A dictionary containing default values for the cards, where the keys
-                                             are variable names, and the values are the default input values.
-                                             Defaults to an empty dictionary.
-
-        Returns:
-            list[dbc.Col]: A list of cards, each represented as a Dash Bootstrap column.
-
-        Raises:
-            KeyError: If any required key ('title', 'id', 'type') is missing in `variable_options` for a selected key.
-            ValueError: If the `value` provided in `default_values` is not of a supported type.
-
-
-        Notes:
-            - The `variable_options` dictionary provides configuration for each card, including its title, ID, and type.
-            - If `selected_keys` includes keys not found in `variable_options`, those keys are ignored.
-        """
+        """Generate a list of Dash Bootstrap cards based on selected variable keys."""
         if self.default_values is None:
             default_values = {}
         else:
@@ -221,22 +239,38 @@ class VariableSelector:
 
 
 class VariableSelectorOption:
+    """Represents an individual variable selection option."""
+    def __init__(self, variable_title:str, variable_type:str) -> None:
+        """Initializes a VariableSelectorOption.
 
-    def __init__(self, variable_title, variable_type):
+        After checking its own validity, adds itself as an option for the VariableSelector by appending itself into the VariableSelector._variableselectoroptions class variable.
+
+        Args:
+            variable_title (str): The name of the variable.
+            variable_type (str): The type of the variable ("text" or "number").
+
+        Examples:
+            >>> VariableSelectorOption("my numeric option", "number")
+            >>> VariableSelectorOption("my text option", "text")
+        """
         self.title = variable_title
         self.id = f"var-{variable_title}"
         self.type = variable_type
 
+        self.is_valid()
+
         VariableSelector._variableselectoroptions.append(self)
 
     def is_valid(self):
+        """Validates the option before adding it to the list."""
         valid_types = ["text", "number"]
         if self.type not in valid_types:
             raise ValueError(
                 f"Invalid value for variable_type. Expected one of {valid_types}, received {self.type}"
             )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Returns a string representation of the variable option."""
         return f"Title: {self.title}\nId: {self.id}\nType: {self.type}\n"
 
 
