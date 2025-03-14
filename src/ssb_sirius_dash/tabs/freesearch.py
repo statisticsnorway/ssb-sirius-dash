@@ -87,6 +87,7 @@ class FreeSearch:
                 ),
             ]
         )
+        logger.debug("Generated layout")
         return layout
 
     def callbacks(self) -> None:
@@ -140,3 +141,4 @@ class FreeSearch:
                 for col in df.columns
             ]
             return df.to_dict("records"), columns
+        logger.debug("Generated callbacks")

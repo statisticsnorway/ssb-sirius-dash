@@ -64,7 +64,7 @@ class Control:
         Returns:
             dash.html.Div: Layout containing the control modal and interactive components.
         """
-        return html.Div(
+        layout = html.Div(
             [
                 dbc.Modal(
                     [
@@ -115,6 +115,8 @@ class Control:
                 sidebar_button("⚠️", "Kontroller", "sidebar-control-button"),
             ]
         )
+        logger.debug("Generated layout")
+        return layout
 
     def callbacks(self) -> None:
         """Sets up interactivity for the control modal, including linking table clicks and navigation back to the main view."""
@@ -209,3 +211,4 @@ class Control:
                     f"observation_id should be str, is {type(observation).__name__}"
                 )
             return str(observation)
+        logger.debug("Generated callbacks")

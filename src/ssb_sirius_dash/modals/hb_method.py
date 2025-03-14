@@ -22,23 +22,6 @@ from ..utils.functions import sidebar_button
 
 logger = logging.getLogger(__name__)
 
-states_options: list[dict[str, tuple[str, str]]] = [
-    {
-        "aar": ("var-aar", "value"),
-        "termin": ("var-termin", "value"),
-        "maaned": ("var-maaned", "value"),
-        "nace": ("var-nace", "value"),
-        "nspekfelt": ("var-nspekfelt", "value"),
-    }
-]
-
-ident_options: list[dict[str, tuple[str, str]]] = [
-    {
-        "orgb": ("var-bedrift", "value"),
-        "orgf": ("var-foretak", "value"),
-    }
-]
-
 
 class HBMethod:
     """Module for detecting outliers using the Hidiroglou-Berthelot (HB) method in a Dash application.
@@ -119,7 +102,7 @@ class HBMethod:
             x_1_field_name=self.variable,
             x_2_field_name=f"{self.variable}_1",
         )
-
+        logger.debug("Done, returning data")
         return hb_result.sort_values(by=["maxX"])
 
     def make_hb_figure(self, data: pd.DataFrame) -> go.Figure:
@@ -161,7 +144,7 @@ class HBMethod:
         )
         fig.update_xaxes(title=self.variable, range=[0, max(x) * 1.05])
         fig.update_yaxes(title="Forholdstallet")
-
+        logger.debug("Done, returning fig")
         return fig
 
     def layout(self) -> html.Div:
@@ -190,7 +173,7 @@ class HBMethod:
             ]
         )
 
-        return html.Div(
+        layout = html.Div(
             [
                 dbc.Modal(
                     [
@@ -260,6 +243,8 @@ class HBMethod:
                 sidebar_button("🥼", "HB-Metoden", "sidebar-hb-button"),
             ]
         )
+        logger.debug("Generated layout")
+        return layout
 
     def _build_input_field(
         self,
@@ -437,3 +422,4 @@ class HBMethod:
             ident = str(clickdata["points"][0]["hovertext"])
             logger.info(f"Transfering {ident} to {self.selected_ident}")
             return ident
+        logger.debug("Generated callbacks")

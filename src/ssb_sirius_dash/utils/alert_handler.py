@@ -81,7 +81,7 @@ class AlertHandler:
                 ),  # Unsure of performance, check if maybe it should update less often.
                 dbc.Modal(
                     [
-                        dbc.ModalHeader(dbc.ModalTitle("Feilmeldinger")),
+                        dbc.ModalHeader(dbc.ModalTitle("Varsler")),
                         dbc.ModalBody(
                             [
                                 # Filter buttons
