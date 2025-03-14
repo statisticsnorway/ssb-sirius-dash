@@ -6,6 +6,8 @@ import pkgutil
 from collections.abc import Iterator
 from typing import Any
 
+from .functions import _get_kostra_r
+
 current_dir = os.path.dirname(__file__)
 __all__: list[str] = []
 
