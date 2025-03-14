@@ -97,13 +97,33 @@ See the docstrings for VariableSelector and VariableSelectorOption to get famili
 
 The idea behind the Variableselector is that you have one module in the application keeping track of inputs and states for callbacks across modules. This means that updating one field in the Variable selector in your app, for an example the year, will make all modules in your app show the same year.
 
-In order to account for different implementations of the framework requiring different variables, it has been built with flexibility in mind. 
+In order to account for different implementations of the framework requiring different variables, it has been built with flexibility in mind.
 
 ### Connecting your module to the variable selector
 
+Note: You can use the ssb_sirius_dash/utils/debugger_modal.py to get familiar with how this works in practice.
 
+Use the module's VariableSelector to get the dynamic_states list.
 
-## Design choices
+    dynamic_states = [
+        self.variableselector.get_inputs(),
+        self.variableselector.get_states(),
+    ]
+
+This should be done inside the modules callbacks() function.
+
+Now in each callback, make sure to include the dynamic_states object
+
+    @callback(
+        Output("your component", "your attribute"),
+        *dynamic_states,
+    )
+    def your_callback_function(*dynamic_states):
+        do some useful stuff
+
+And that should be everything you need to have your module connected to the VariableSelector component in the main_layout. You can use *args in functions to access values from the 
+
+## Our design choices
 
 Throughout development we have made some conscious choices regarding the structure of the code, data and how to solve certain issues.
 
@@ -111,9 +131,11 @@ Here we shall explain ourselves as well as memory permits. Hopefully that keeps 
 
 ### We assume a long data format
 
-The reason for this is simple. Different users will have different amounts of observations, variables and aggregation levels. If we had a wide format there are some cases where the dataset would simply be too wide, and would need to be subsetted.
+The reason for this is simple. Different users will have different amounts of observations, variables and aggregation levels.
 
-With a long format containing columns identifying the observation, the variable and the variable value it is a lot simpler to make something that fits all data with minimal adjustments to the framework. 
+Using a few different files/tables and the long format makes it simple to keep track of observations, characteristics about the observations and data about/from the observatins. With a long format we can simplify the data structure so that adapting modules to different data is simpler.
+
+With a long format containing columns identifying the observation, the variable and the variable value it is a lot simpler to make something that fits all data with minimal adjustments to the module itself. 
 
 ### Include the layout as a method in the class
 
@@ -136,12 +158,10 @@ In order to keep the code easier to work with, describe how the required data sh
 If you need the user to define a function for some use case in your module you can include user-created functions in the class by adding a parameter to the __init__:
 
     class Module:
-        def __init__(self, database, selected_state_keys, selected_ident, variable, custom_function):
-            self.database = database
+        def __init__(self, custom_function):
             self.custom_function = custom_function
-            self.callbacks(selected_state_keys, selected_ident, variable)
 
-An example of a use-case for this is a function to get/transform data to adhere to a specific format.
+An example of a use-case for this is a function to get/transform data to adhere to a specific format, that might be different from the data connected to the application (transforming long data to wide data is an example of this).
 
 ### All in one (AiO) components
 
@@ -153,7 +173,7 @@ The benefits you gain from the AiO component design are in general
 - Keeping the layout and callbacks separated and organized within the component
 - You can add more of the same component without affecting other components
 - They manage their own internal states
-- They don't affect eachother, potentially leading to easier debugging.
+- They don't affect each other, potentially leading to easier debugging.
 
 There are some costs involved in using AiO components:
 - Increased complexity
